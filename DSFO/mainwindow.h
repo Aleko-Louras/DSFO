@@ -16,8 +16,14 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-public slots:
+
+private slots:
     void onNextClicked();
+    void onBackClicked();
+    void onPageChanged(int index);
+
+public slots:
+
 
 
 private:
