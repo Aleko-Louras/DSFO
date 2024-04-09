@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>emptynode.png</file>
+        <file>swbackground.png</file>
+        <file>fillednode.png</file>
+    </qresource>
+</RCC>

@@ -30,3 +30,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     classdiagram.qmodel
+
+RESOURCES += \
+    resources.qrc
