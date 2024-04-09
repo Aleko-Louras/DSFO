@@ -3,5 +3,6 @@
         <file>emptynode.png</file>
         <file>swbackground.png</file>
         <file>fillednode.png</file>
+        <file>slcToDenver.png</file>
     </qresource>
 </RCC>

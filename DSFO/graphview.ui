@@ -214,6 +214,48 @@
     </size>
    </property>
   </widget>
+  <widget class="QPushButton" name="vegasToLaEdge">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>250</y>
+     <width>51</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(0, 0, 0, 0);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="slcToDenverEdge">
+   <property name="geometry">
+    <rect>
+     <x>309</x>
+     <y>119</y>
+     <width>121</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(0, 0, 0, 0);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/slcToDenver.png</normaloff>:/slcToDenver.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>130</width>
+     <height>44</height>
+    </size>
+   </property>
+  </widget>
  </widget>
  <resources>
   <include location="resources.qrc"/>

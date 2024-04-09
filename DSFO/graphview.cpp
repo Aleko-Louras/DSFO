@@ -1,6 +1,9 @@
 #include "graphview.h"
 #include "ui_graphview.h"
 #include <QVector>
+#include <QDebug>
+#include <QPicture>
+#include <QPainter>
 
 GraphView::GraphView(QWidget *parent)
     : QWidget(parent)
@@ -21,10 +24,22 @@ GraphView::GraphView(QWidget *parent)
     //Is this genius or madness? Time will tell...
     for (QPushButton* node : nodes)
     connect(node, &QPushButton::clicked,
-            this, [this, node]{node->setIcon(QIcon(":/fillednode.png"));});
+                this, [this, node]{changeNode(node);});
 }
 
-GraphView::~GraphView()
-{
+GraphView::~GraphView() {
     delete ui;
+}
+
+void GraphView::changeNode(QPushButton* node) {
+    if (node->iconSize() == QSize(30, 30))
+    {
+        node->setIcon(QIcon(":/fillednode.png"));
+        node->setIconSize(QSize(31, 31));
+    }
+    else
+    {
+        node->setIcon(QIcon(":/emptynode.png"));
+        node->setIconSize(QSize(30, 30));
+    }
 }
