@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include <QStackedWidget>
 #include <QComboBox>
+#include <QDebug>
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -63,7 +65,7 @@ void MainWindow::onBackClicked() {
     // else
     //     ui->backButton->setEnabled(true);
 
-    ui->stackedPages->setCurrentIndex(std::min(previousPage, 0));
+    ui->stackedPages->setCurrentIndex(std::max(0, previousPage));
 
     ui->nextButton->setEnabled(true);
 }
@@ -80,7 +82,7 @@ void MainWindow::onNextClicked() {
     // else
     //     ui->nextButton->setEnabled(true);
 
-    ui->stackedPages->setCurrentIndex(std::max(nextPage, ui->stackedPages->count() - 1));
+    ui->stackedPages->setCurrentIndex(std::min(ui->stackedPages->count() - 1, nextPage));
     ui->backButton->setEnabled(true);
 }
 

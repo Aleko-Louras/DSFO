@@ -58,7 +58,8 @@ SOURCES += \
     graphview.cpp \
     main.cpp \
     mainwindow.cpp \
-    model.cpp
+    model.cpp \
+    title.cpp
 
 HEADERS += \
     Box2D/Box2D.h \
@@ -110,11 +111,13 @@ HEADERS += \
     Box2D/Rope/b2Rope.h \
     graphview.h \
     mainwindow.h \
-    model.h
+    model.h \
+    title.h
 
 FORMS += \
     graphview.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    title.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
