@@ -2,7 +2,7 @@
 #define GRAPHVIEW_H
 
 #include <QWidget>
-#include <QPushButton>
+#include <QToolButton>
 
 namespace Ui {
 class GraphView;
@@ -15,7 +15,9 @@ class GraphView : public QWidget
 public:
     explicit GraphView(QWidget *parent = nullptr);
     ~GraphView();
-    void changeNode(QPushButton* node);
+    void changeNode(QToolButton* node);
+    void startDijkstraAnimation();
+    void flashNode(QToolButton* node);
 
 private:
     Ui::GraphView *ui;

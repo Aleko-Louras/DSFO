@@ -32,7 +32,7 @@
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="saltLakeCityNode">
+  <widget class="QToolButton" name="saltLakeCityNode">
    <property name="geometry">
     <rect>
      <x>280</x>
@@ -58,7 +58,7 @@
     </size>
    </property>
   </widget>
-  <widget class="QPushButton" name="denverNode">
+  <widget class="QToolButton" name="denverNode">
    <property name="geometry">
     <rect>
      <x>420</x>
@@ -84,7 +84,7 @@
     </size>
    </property>
   </widget>
-  <widget class="QPushButton" name="albuquerqueNode">
+  <widget class="QToolButton" name="albuquerqueNode">
    <property name="geometry">
     <rect>
      <x>390</x>
@@ -110,7 +110,7 @@
     </size>
    </property>
   </widget>
-  <widget class="QPushButton" name="phoenixNode">
+  <widget class="QToolButton" name="phoenixNode">
    <property name="geometry">
     <rect>
      <x>230</x>
@@ -136,7 +136,7 @@
     </size>
    </property>
   </widget>
-  <widget class="QPushButton" name="losAngelesNode">
+  <widget class="QToolButton" name="losAngelesNode">
    <property name="geometry">
     <rect>
      <x>100</x>
@@ -162,7 +162,7 @@
     </size>
    </property>
   </widget>
-  <widget class="QPushButton" name="sanFranciscoNode">
+  <widget class="QToolButton" name="sanFranciscoNode">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -187,8 +187,11 @@
      <height>30</height>
     </size>
    </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
   </widget>
-  <widget class="QPushButton" name="lasVegasNode">
+  <widget class="QToolButton" name="lasVegasNode">
    <property name="geometry">
     <rect>
      <x>180</x>
@@ -212,6 +215,19 @@
      <width>30</width>
      <height>30</height>
     </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="animationButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>360</y>
+     <width>80</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Animate</string>
    </property>
   </widget>
  </widget>
