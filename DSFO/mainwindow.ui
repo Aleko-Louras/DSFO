@@ -103,9 +103,21 @@
        <item>
         <widget class="QStackedWidget" name="stackedPages">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
-         <widget class="QWidget" name="page">
+         <widget class="QWidget" name="titlePage">
+          <widget class="Title" name="widget_2" native="true">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>501</width>
+             <height>401</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="graphPage">
           <widget class="GraphView" name="widget" native="true">
            <property name="geometry">
             <rect>
@@ -115,22 +127,8 @@
              <height>420</height>
             </rect>
            </property>
-           <widget class="QLabel" name="label">
-            <property name="geometry">
-             <rect>
-              <x>180</x>
-              <y>40</y>
-              <width>63</width>
-              <height>20</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
           </widget>
          </widget>
-         <widget class="QWidget" name="page_3"/>
          <widget class="QWidget" name="page_2">
           <widget class="QCheckBox" name="checkBox">
            <property name="geometry">
@@ -159,7 +157,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>43</height>
     </rect>
    </property>
   </widget>
@@ -170,6 +168,12 @@
    <class>GraphView</class>
    <extends>QWidget</extends>
    <header>graphview.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Title</class>
+   <extends>QWidget</extends>
+   <header location="global">title.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

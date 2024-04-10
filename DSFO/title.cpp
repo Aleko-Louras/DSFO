@@ -34,15 +34,15 @@ Title::Title(QWidget *parent)
     fixtureDef.restitution = 0.9f;
     body->CreateFixture(&fixtureDef);
     body->SetLinearVelocity(b2Vec2(0, -1.0f));
-    body->SetAngularVelocity(-90 * DEGTORAD);
-    // connect(timer2, &QTimer::timeout, this, [this]() {body->SetAngularVelocity(-90 * DEGTORAD);});
-    // timer2->start(5000);
+    //body->SetAngularVelocity(-90 * DEGTORAD);
+    connect(timer2, &QTimer::timeout, this, [this]() {body->SetLinearVelocity(b2Vec2(1, 0.0f));});
+    timer2->start(5000);
 
     // QRect newPosition(0, 0, 429, 311);
     // for(int i = 0; i < 5; i++){
     //     QTimer::singleShot(100, [newPosition, this]() {ui->label->setGeometry(newPosition); qDebug() << "single shot!";});
     //     QRect position = ui->label->geometry();
-    //}
+    // }
 
 
 
@@ -66,7 +66,7 @@ void Title::handleTrigger(){
     b2Vec2 position = body->GetPosition();
 
     float angle = body->GetAngle();
-    qDebug() << position.y;
+    //qDebug() << position.y;
     int x = ui->label->geometry().x();
     ui->label->setGeometry(x, position.y - (position.y*30), 511, 231);
     //}
