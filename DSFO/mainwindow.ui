@@ -103,7 +103,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedPages">
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="page">
           <widget class="GraphView" name="widget" native="true">
@@ -115,8 +115,22 @@
              <height>420</height>
             </rect>
            </property>
+           <widget class="QLabel" name="label">
+            <property name="geometry">
+             <rect>
+              <x>180</x>
+              <y>40</y>
+              <width>63</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
           </widget>
          </widget>
+         <widget class="QWidget" name="page_3"/>
          <widget class="QWidget" name="page_2">
           <widget class="QCheckBox" name="checkBox">
            <property name="geometry">
@@ -145,7 +159,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
