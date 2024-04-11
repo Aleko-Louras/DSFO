@@ -13,6 +13,14 @@ class GraphView : public QWidget
     Q_OBJECT
 
 public:
+    class Node {
+    public:
+        int id;
+        Node(int id) : id(id) {}
+        void addConnection(GraphView::Node* node, QVector<GraphView::Node*> connections) {}
+        void createConnections() {}
+
+    };
     explicit GraphView(QWidget *parent = nullptr);
     ~GraphView();
     void changeNode(QToolButton* node);
