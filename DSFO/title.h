@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <Box2D/Box2D.h>
 #include <QTimer>
+#include <QPainter>
+#include <QTransform>
 
 namespace Ui {
 class Title;
@@ -16,10 +18,12 @@ class Title : public QWidget
 public:
     explicit Title(QWidget *parent = nullptr);
     ~Title();
+    void changeDirection(b2Vec2 position);
 
 public slots:
-   // void setPosition(QRect newPosition);
-    void handleTrigger();
+//               // void setPosition(QRect newPosition);
+     void handleTrigger();
+//     void setPosition();
 
 private:
     Ui::Title *ui;
@@ -27,6 +31,10 @@ private:
     b2Body* body;
     QTimer* timer;
     QTimer* timer2;
+    std::vector<b2Vec2> angles;
+    std::vector<QPixmap> images;
+    int angleIndex;
+
 };
 
 #endif // TITLE_H

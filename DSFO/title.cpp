@@ -7,11 +7,20 @@ Title::Title(QWidget *parent)
     , ui(new Ui::Title), world(b2Vec2(0.0f, 0.0f))
 {
     ui->setupUi(this);
+    QPixmap pixmap(":/image.png");
+    int w = ui->label->width();
+    int h = ui->label->height();
+// set a scaled pixmap to a w x h window keeping its aspect ratio
+    ui->label->setPixmap(pixmap.scaled(w,h,Qt::KeepAspectRatio));
+    //rotate pixmap
+
+    QPixmap pixmap2 = pixmap.transformed(QTransform().rotate(-90));
     timer = new QTimer(this);
-    timer2 = new QTimer(this);
+    ui->label->setPixmap(pixmap2.scaled(w,h,Qt::KeepAspectRatio));
+    // timer2 = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Title::handleTrigger);
     timer->start(25);
-    //connect(this, trigge, this, handleTrigger());
+    //connect(this, , this, handleTrigger());
     // b2Vec2 gravity(0.0f, -10.0f);
     // b2World world(gravity);
     b2BodyDef myBodyDef;
@@ -20,10 +29,10 @@ Title::Title(QWidget *parent)
     b2Body* groundBody = world.CreateBody(&groundBodyDef);
     b2PolygonShape groundBox;
     groundBox.SetAsBox(50.0f, 3.0f);
-    groundBody->CreateFixture(&groundBox, 0.0f);
+    groundBody->CreateFixture(&groundBox, -5.0f);
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(0.0f, 4.0f);
+    bodyDef.position.Set(0.0f, 2.0f);
     body = world.CreateBody(&bodyDef);
     b2PolygonShape dynamicBox;
     dynamicBox.SetAsBox(1.0f, 1.0f);
@@ -31,12 +40,22 @@ Title::Title(QWidget *parent)
     fixtureDef.shape = &dynamicBox;
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.3f;
-    fixtureDef.restitution = 0.9f;
+    //fixtureDef.restitution = 0.9f;
     body->CreateFixture(&fixtureDef);
-    body->SetLinearVelocity(b2Vec2(0, -1.0f));
+    //body->SetLinearVelocity(b2Vec2(0, -1.0f));
     //body->SetAngularVelocity(-90 * DEGTORAD);
-    connect(timer2, &QTimer::timeout, this, [this]() {body->SetLinearVelocity(b2Vec2(1, 0.0f));});
-    timer2->start(5000);
+    //left             /down          /right        up
+    //std::vector<b2Vec2> angles = {b2Vec2(-0.80f, 0), b2Vec2(0, -.80f), b2Vec2(0.80f, 0), b2Vec2(0, 0.80f)};
+    //angleIndex = 0;
+
+    // apply left impulse, but only if max velocity is not reached yet
+
+    // apply right impulse, but only if max velocity is not reached yet
+    //body->ApplyLinearImpulse( b2Vec2(0,-5), body->GetWorldCenter(), true);
+    body->ApplyForce( b2Vec2(-500.0f,0), body->GetWorldCenter(), true);
+    //body->ApplyForce(b2Vec2(-0.80f, 0), b2Vec2(pos.x, pos.y), true);
+    // connect(timer2, &QTimer::timeout, this, &Title::setPosition);
+    // timer2->start(5000);
 
     // QRect newPosition(0, 0, 429, 311);
     // for(int i = 0; i < 5; i++){
@@ -65,12 +84,33 @@ void Title::handleTrigger(){
     world.Step(timeStep, velocityIterations, positionIterations);
     b2Vec2 position = body->GetPosition();
 
-    float angle = body->GetAngle();
-    //qDebug() << position.y;
-    int x = ui->label->geometry().x();
-    ui->label->setGeometry(x, position.y - (position.y*30), 511, 231);
+    //float angle = body->GetAngle();
+    qDebug() << position.x * 30;
+    //int x = ui->label->geometry().x();
+
+    if(position.x * 30 == -230){
+        ui->label->setGeometry((position.x * 30)+480, position.y - (position.y*30), 511, 231);
+    }
+    else{
+        ui->label->setGeometry(position.x * 30, position.y - (position.y*30), 511, 231);
+    }
+
+
     //}
 }
+// void Title::setPosition(){
+//     b2Vec2 position = body->GetPosition();
+//     changeDirection(position);
+// }
+// void Title::changeDirection(b2Vec2 position){
+//     qDebug() << "hello";
+//     body->SetLinearVelocity(b2Vec2(0,0));
+//     int w = ui->label->width();
+//     int h = ui->label->height();
+//     ui->label->setPixmap(images[angleIndex].scaled(w,h,Qt::KeepAspectRatio));
+//     body->ApplyLinearImpulse(angles[angleIndex], position, true);
+//     angleIndex++;
+// }
 Title::~Title()
 {
     delete ui;
