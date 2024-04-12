@@ -4,5 +4,6 @@
         <file>swbackground.png</file>
         <file>fillednode.png</file>
         <file>flashednode.png</file>
+        <file>image.png</file>
     </qresource>
 </RCC>
