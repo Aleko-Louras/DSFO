@@ -6,6 +6,9 @@
 #include <QDebug>
 #include <QLayout>
 #include <QResizeEvent>
+#include <QSequentialAnimationGroup>
+#include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
 
 StackView::StackView(QWidget *parent) : QGraphicsView(parent) {
 
@@ -13,54 +16,89 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent) {
     stackScene = new QGraphicsScene(sceneBox, this);
 
     qreal horizontalCenter = sceneBox.center().x();
+    qreal tunnelWidth = 100;
+    qreal tunnelHeight = 50;
+    qreal conveyorWidth = 75;
+    qreal conveyorHeight = 200;
 
-    QSizeF conveyorDim = QSizeF(75, 200);
-    QSizeF tunnelDim = QSizeF(100, 50);
-
-    QPointF receivingTunnelPos((horizontalCenter - tunnelDim.width()) / 2, sceneBox.top());
-    QPointF sendingTunnelPos(horizontalCenter + (horizontalCenter - tunnelDim.width()) / 2, sceneBox.bottom() - tunnelDim.height());
-
-    QPointF receivingConveyorPos((horizontalCenter - conveyorDim.width()) / 2, sceneBox.top() + tunnelDim.height());
-    QPointF sendingConveyorPos(horizontalCenter + (horizontalCenter - conveyorDim.width()) / 2, sceneBox.bottom() - tunnelDim.height() - conveyorDim.height());
+    qreal leftTunnelX = (horizontalCenter - tunnelWidth) / 2;
+    qreal leftTunnelY = sceneBox.top();
+    qreal leftConveyorX = (horizontalCenter - conveyorWidth) / 2;
+    qreal leftConveyorY = sceneBox.top() + tunnelHeight;
+    qreal rightTunnelX = horizontalCenter + (horizontalCenter - tunnelWidth) / 2;
+    qreal rightTunnelY = sceneBox.bottom() - tunnelHeight;
+    qreal rightConveyorX = horizontalCenter + (horizontalCenter - conveyorWidth) / 2;
+    qreal rightConveyorY = sceneBox.bottom() - tunnelHeight - conveyorHeight;
 
     QLineF dividingLine(horizontalCenter, sceneBox.top(), horizontalCenter, sceneBox.bottom());
 
-    receivingTunnel = stackScene->addRect(QRectF(receivingTunnelPos, tunnelDim), QPen(Qt::black, 3), Qt::gray);
-    receivingTunnel->setFlag(QGraphicsItem::ItemIsMovable);
+    receivingTunnel = stackScene->addRect(leftTunnelX, leftTunnelY, tunnelWidth, tunnelHeight, QPen(Qt::black, 3), Qt::gray);
 
-    receivingConveyor = stackScene->addRect(QRectF(receivingConveyorPos, conveyorDim), QPen(Qt::black, 3), Qt::gray);
-    receivingConveyor->setFlag(QGraphicsItem::ItemIsMovable);
+    receivingConveyor = stackScene->addRect(leftConveyorX, leftConveyorY, conveyorWidth, conveyorHeight, QPen(Qt::black, 3), Qt::gray);
 
-    sendingTunnel = stackScene->addRect(QRectF(sendingTunnelPos, tunnelDim), QPen(Qt::black, 3), Qt::gray);
-    sendingTunnel->setFlag(QGraphicsItem::ItemIsMovable);
+    sendingTunnel = stackScene->addRect(rightTunnelX, rightTunnelY, tunnelWidth, tunnelHeight, QPen(Qt::black, 3), Qt::gray);
 
-    sendingConveyor = stackScene->addRect(QRectF(sendingConveyorPos, conveyorDim), QPen(Qt::black, 3), Qt::gray);
-    sendingConveyor->setFlag(QGraphicsItem::ItemIsMovable);
+    sendingConveyor = stackScene->addRect(rightConveyorX, rightConveyorY, conveyorWidth, conveyorHeight, QPen(Qt::black, 3), Qt::gray);
 
     divider = stackScene->addLine(dividingLine, QPen(Qt::black, 3));
-    divider->setFlag(QGraphicsItem::ItemIsMovable);
+
+    luggage = stackScene->addRect(0, 0, 50, 50, QPen(Qt::black, 5), Qt::black);
+
+    animator = new LuggageAnimator(luggage);
+
+    QParallelAnimationGroup *animation = new QParallelAnimationGroup(this);
+    // luggage->setFlag(QGraphicsItem::ItemIsMovable);
+
+    // animator->animation()->setStartValue(QPointF(200, 50));
+    animator->animation()->setKeyValueAt(0, QPointF(50, 200));
+    animator->animation()->setKeyValueAt(0.25, QPointF(200, 200));
+    animator->animation()->setKeyValueAt(0.5, QPointF(200, 50));
+    animator->animation()->setKeyValueAt(0.75, QPointF(50, 50));
+    animator->animation()->setEndValue(QPointF(50, 200));
+    animator->animation()->setDuration(500);
+    // animator->animation()->setEasingCurve(QEasingCurve::SineCurve);
+
+    animation->addAnimation(animator->animation());
+
+    animation->setLoopCount(-1);
+    animation->start();
+
+    // animator->setFlag(QGraphicsItem::ItemIsMovable);
+    // QGraphicsItemGroup *leftConveyor;
+    // leftConveyor->addToGroup({receivingTunnel, receivingConveyor});
+
+    // luggage =
 
     setScene(stackScene);
+// animator->animation()->start();
 
-    qDebug() << receivingTunnel->scenePos();
-    qDebug() << receivingTunnel->pos();
+
+
+
+    // QPropertyAnimation *luggageAnim = new QPropertyAnimation(animator, "scale");
+    // luggageAnim->setStartValue(1);
+    // luggageAnim->setEndValue(1.4);
+    // luggageAnim->setDuration(5000);
+    // luggageAnim->setEasingCurve(QEasingCurve::SineCurve);
+    // luggageAnim->start();
+
+
+
+    // QPropertyAnimation *luggageAnimation = new QPropertyAnimation(luggage, "y");
+
+
 }
 
 void StackView::resizeEvent(QResizeEvent *event) {
-    // qDebug() << event->oldSize();
-    qDebug() << event->size();
-    qDebug() << rect();
-    // qDebug() << sceneRect();
-
     qreal horizontalCenter = rect().center().x();
 
     fitInView(stackScene->sceneRect(), Qt::KeepAspectRatio);
     centerOn(horizontalCenter, rect().center().y());
 
-
     // divider->moveBy(100, 0);
 
     // divider->setLine(horizontalCenter, rect().top(), horizontalCenter, rect().bottom());
+
 
     // QWidget *parent = parentWidget();
     // if (!parent) return;
@@ -79,3 +117,27 @@ void StackView::resizeEvent(QResizeEvent *event) {
 
     // setImage(image);
 }
+
+LuggageAnimator::LuggageAnimator(QAbstractGraphicsShapeItem * parent) : QGraphicsObject(parent), mParent(parent) {
+
+    // QPainter painter;
+    // painter.fillRect(0, 0, 100, 100, Qt::black);
+
+    setFlags(QGraphicsItem::ItemHasNoContents);
+    mAnimation = new QPropertyAnimation(this, "pos");
+    qDebug() << mAnimation->propertyName();
+
+    // QPropertyAnimation *anim = new QPropertyAnimation(this, "pos", this);
+    // anim->setDuration(10000);
+    // anim->setStartValue(QPoint(0, 0));
+    // anim->setEndValue(QPoint(100, 250));
+    // anim->start();
+}
+
+void LuggageAnimator::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {}
+
+QRectF LuggageAnimator::boundingRect() const { return QRectF(); }
+
+QPropertyAnimation* LuggageAnimator::animation() const { return mAnimation; }
+
+

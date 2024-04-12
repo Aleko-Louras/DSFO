@@ -5,6 +5,35 @@
 #include <QWidget>
 #include <QGraphicsRectItem>
 #include <QGraphicsView>
+#include <QGraphicsWidget>
+#include <QPropertyAnimation>
+
+// Credit to Marek R from StackOverflow for this idea
+// Post Link: https://stackoverflow.com/questions/30317184/how-to-animate-the-outline-of-a-qgraphicsitem-in-real-time
+class LuggageAnimator : public QGraphicsObject {
+    Q_OBJECT
+
+private:
+    QAbstractGraphicsShapeItem *mParent;
+    QPropertyAnimation *mAnimation;
+    // QGraphicsRectItem *luggage;
+public:
+    Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+
+    LuggageAnimator(QAbstractGraphicsShapeItem * parent);
+
+    QPointF pos() const {
+        return mParent->pos();
+    }
+public slots:
+    void setPos(const QPointF &newPos) {
+        mParent->setPos(newPos);
+    }
+public:
+    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
+    QRectF boundingRect() const;
+    QPropertyAnimation *animation() const;
+};
 
 class StackView : public QGraphicsView
 {
@@ -18,8 +47,11 @@ class StackView : public QGraphicsView
         QGraphicsRectItem *receivingConveyor;
         QGraphicsRectItem *sendingTunnel;
         QGraphicsRectItem *sendingConveyor;
-        QGraphicsRectItem *luggage;
+
         QGraphicsLineItem *divider;
+
+        QGraphicsRectItem *luggage;
+        LuggageAnimator *animator;
 
         QGraphicsProxyWidget *node;
 
