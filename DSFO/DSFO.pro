@@ -59,6 +59,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     model.cpp \
+    stackview.cpp \
     title.cpp
 
 HEADERS += \
@@ -112,6 +113,7 @@ HEADERS += \
     graphview.h \
     mainwindow.h \
     model.h \
+    stackview.h \
     title.h
 
 FORMS += \

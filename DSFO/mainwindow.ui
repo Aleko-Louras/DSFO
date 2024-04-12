@@ -103,7 +103,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedPages">
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="titlePage">
           <widget class="Title" name="widget_2" native="true">
@@ -130,19 +130,57 @@
           </widget>
          </widget>
          <widget class="QWidget" name="page_2">
-          <widget class="QCheckBox" name="checkBox">
-           <property name="geometry">
-            <rect>
-             <x>140</x>
-             <y>130</y>
-             <width>85</width>
-             <height>20</height>
-            </rect>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <property name="leftMargin">
+            <number>0</number>
            </property>
-           <property name="text">
-            <string>CheckBox</string>
+           <property name="topMargin">
+            <number>0</number>
            </property>
-          </widget>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="StackView" name="stackView">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>523</width>
+               <height>403</height>
+              </size>
+             </property>
+             <property name="lineWidth">
+              <number>-3</number>
+             </property>
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
+             </property>
+             <property name="horizontalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QAbstractScrollArea::AdjustToContents</enum>
+             </property>
+             <property name="backgroundBrush">
+              <brush brushstyle="CrossPattern">
+               <color alpha="255">
+                <red>0</red>
+                <green>0</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </widget>
        </item>
@@ -157,7 +195,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>43</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
@@ -175,6 +213,11 @@
    <extends>QWidget</extends>
    <header location="global">title.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>StackView</class>
+   <extends>QGraphicsView</extends>
+   <header>stackview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

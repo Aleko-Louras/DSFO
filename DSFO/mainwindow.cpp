@@ -9,14 +9,16 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-   ui->setupUi(this);
-   ui->stackedPages->setCurrentIndex(0);
 
-   connect(ui->nextButton, &QPushButton::clicked,
+    ui->setupUi(this);
+    qDebug() << ui->stackedPages->rect();
+    ui->stackedPages->setCurrentIndex(0);
+
+    connect(ui->nextButton, &QPushButton::clicked,
            this, &MainWindow::onNextClicked);
-   connect(ui->backButton, &QPushButton::clicked,
+    connect(ui->backButton, &QPushButton::clicked,
            this, &MainWindow::onBackClicked);
-   connect(ui->stackedPages, &QStackedWidget::currentChanged,
+    connect(ui->stackedPages, &QStackedWidget::currentChanged,
            this, &MainWindow::onPageChanged);
 
    // QStackedWidget *stackedWidget = new QStackedWidget;
