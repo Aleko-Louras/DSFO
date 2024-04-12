@@ -16,9 +16,10 @@ class Title : public QWidget
 public:
     explicit Title(QWidget *parent = nullptr);
     ~Title();
+    void changeDirection();
 
 public slots:
-   // void setPosition(QRect newPosition);
+              // void setPosition(QRect newPosition);
     void handleTrigger();
 
 private:
@@ -27,6 +28,9 @@ private:
     b2Body* body;
     QTimer* timer;
     QTimer* timer2;
+    std::vector<b2Vec2> angles;
+    int angleIndex;
+
 };
 
 #endif // TITLE_H

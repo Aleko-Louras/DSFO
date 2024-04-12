@@ -7,6 +7,8 @@ Title::Title(QWidget *parent)
     , ui(new Ui::Title), world(b2Vec2(0.0f, 0.0f))
 {
     ui->setupUi(this);
+    QPixmap pixmap(":/image.png");
+    ui->label->setPixmap(pixmap);
     timer = new QTimer(this);
     timer2 = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Title::handleTrigger);
@@ -31,12 +33,22 @@ Title::Title(QWidget *parent)
     fixtureDef.shape = &dynamicBox;
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.3f;
-    fixtureDef.restitution = 0.9f;
+    //fixtureDef.restitution = 0.9f;
     body->CreateFixture(&fixtureDef);
-    body->SetLinearVelocity(b2Vec2(0, -1.0f));
+    //body->SetLinearVelocity(b2Vec2(0, -1.0f));
     //body->SetAngularVelocity(-90 * DEGTORAD);
-    connect(timer2, &QTimer::timeout, this, [this]() {body->SetLinearVelocity(b2Vec2(1, 0.0f));});
-    timer2->start(5000);
+    b2Vec2 pos = body->GetPosition();//left             /down          /right        up
+    std::vector<b2Vec2> angles = {b2Vec2(-0.80f, 0), b2Vec2(0, -.80f), b2Vec2(0.80f, 0), b2Vec2(0, 0.80f)};
+    angleIndex = 0;
+
+    // apply left impulse, but only if max velocity is not reached yet
+
+    // apply right impulse, but only if max velocity is not reached yet
+    //body->ApplyLinearImpulse( b2Vec2(0,-5), body->GetWorldCenter(), true);
+    //body->ApplyLinearImpulse( b2Vec2(0,5), body->GetWorldCenter(), true);
+    //body->ApplyForce(b2Vec2(-0.80f, 0), b2Vec2(pos.x, pos.y), true);
+    connect(timer2, &QTimer::timeout, this, &Title::changeDirection);
+    timer2->start(100);
 
     // QRect newPosition(0, 0, 429, 311);
     // for(int i = 0; i < 5; i++){
@@ -65,11 +77,16 @@ void Title::handleTrigger(){
     world.Step(timeStep, velocityIterations, positionIterations);
     b2Vec2 position = body->GetPosition();
 
-    float angle = body->GetAngle();
+    //float angle = body->GetAngle();
     //qDebug() << position.y;
-    int x = ui->label->geometry().x();
-    ui->label->setGeometry(x, position.y - (position.y*30), 511, 231);
+    //int x = ui->label->geometry().x();
+    ui->label->setGeometry(position.x * 30, position.y - (position.y*30), 511, 231);
     //}
+}
+void Title::changeDirection(){
+    body->SetLinearVelocity(b2Vec2(0,0));
+    //body->ApplyLinearImpulse(angles[angleIndex], b2Vec2(pos.x, pos.y), true);
+    angleIndex++;
 }
 Title::~Title()
 {
