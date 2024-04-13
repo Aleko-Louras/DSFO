@@ -85,7 +85,7 @@ void Title::handleTrigger(){
     b2Vec2 position = body->GetPosition();
 
     //float angle = body->GetAngle();
-    qDebug() << position.x * 30;
+    // qDebug() << position.x * 30;
     //int x = ui->label->geometry().x();
 
     if(position.x * 30 == -230){

@@ -12,27 +12,20 @@
 // Post Link: https://stackoverflow.com/questions/30317184/how-to-animate-the-outline-of-a-qgraphicsitem-in-real-time
 class LuggageAnimator : public QGraphicsObject {
     Q_OBJECT
-
-private:
-    QAbstractGraphicsShapeItem *mParent;
-    QPropertyAnimation *mAnimation;
-    // QGraphicsRectItem *luggage;
-public:
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+    private:
+        QAbstractGraphicsShapeItem *mParent;
+        QPropertyAnimation *mAnimation;
+    public:
+        LuggageAnimator(QAbstractGraphicsShapeItem * parent);
 
-    LuggageAnimator(QAbstractGraphicsShapeItem * parent);
-
-    QPointF pos() const {
-        return mParent->pos();
-    }
-public slots:
-    void setPos(const QPointF &newPos) {
-        mParent->setPos(newPos);
-    }
-public:
-    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
-    QRectF boundingRect() const;
-    QPropertyAnimation *animation() const;
+        QPointF pos() const;
+    public slots:
+        void setPos(const QPointF &newPos);
+    public:
+        void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
+        QRectF boundingRect() const;
+        QPropertyAnimation *animation() const;
 };
 
 class StackView : public QGraphicsView

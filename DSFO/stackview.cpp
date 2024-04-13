@@ -39,6 +39,8 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent) {
     sendingTunnel = stackScene->addRect(rightTunnelX, rightTunnelY, tunnelWidth, tunnelHeight, QPen(Qt::black, 3), Qt::gray);
 
     sendingConveyor = stackScene->addRect(rightConveyorX, rightConveyorY, conveyorWidth, conveyorHeight, QPen(Qt::black, 3), Qt::gray);
+    // sendingConveyor->setFlag(QGraphicsItem::ItemIsSelectable);
+
 
     divider = stackScene->addLine(dividingLine, QPen(Qt::black, 3));
 
@@ -70,69 +72,47 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent) {
     // luggage =
 
     setScene(stackScene);
-// animator->animation()->start();
 
-
-
-
-    // QPropertyAnimation *luggageAnim = new QPropertyAnimation(animator, "scale");
-    // luggageAnim->setStartValue(1);
-    // luggageAnim->setEndValue(1.4);
-    // luggageAnim->setDuration(5000);
-    // luggageAnim->setEasingCurve(QEasingCurve::SineCurve);
-    // luggageAnim->start();
-
-
-
-    // QPropertyAnimation *luggageAnimation = new QPropertyAnimation(luggage, "y");
-
-
+    centerOn(horizontalCenter, rect().center().y());
 }
 
 void StackView::resizeEvent(QResizeEvent *event) {
-    qreal horizontalCenter = rect().center().x();
-
-    fitInView(stackScene->sceneRect(), Qt::KeepAspectRatio);
-    centerOn(horizontalCenter, rect().center().y());
 
     // divider->moveBy(100, 0);
 
-    // divider->setLine(horizontalCenter, rect().top(), horizontalCenter, rect().bottom());
+    QWidget *parent = parentWidget();
+    if (!parent) return;
 
+    int newWidth = event->size().width();
+    int newHeight = event->size().height();
 
-    // QWidget *parent = parentWidget();
-    // if (!parent) return;
+    if (newWidth < newHeight)
+        resize(newWidth, newWidth);
+    else resize(newHeight, newHeight);
 
-    // int newWidth = event->size().width();
-    // int newHeight = event->size().height();
+    fitInView(stackScene->sceneRect(), Qt::KeepAspectRatio);
 
-    // if (newWidth < newHeight)
-    //     if (newHeight < parent->width() * 0.5)
-    //         setGeometry(pos().x(), pos().y(), newHeight, newHeight);
-    //     else setGeometry(pos().x(), pos().y(), newWidth, newWidth);
-    // else
-    //     if (newHeight < parent->height() - 150)
-    //         setGeometry(pos().x(), pos().y(), newWidth, newWidth);
-    //     else setGeometry(pos().x(), pos().y(), newHeight, newHeight);
+    int x = (parent->width() - width()) / 2;
+    int y = (parent->height() - height()) / 2;
 
-    // setImage(image);
+    // qDebug() << QPoint(x, y);
+    // qDebug() << parent->width();
+    // qDebug() << width();
+    // qDebug() << parent->height();
+    // qDebug() << newHeight;
+
+    move(x,y);
 }
 
 LuggageAnimator::LuggageAnimator(QAbstractGraphicsShapeItem * parent) : QGraphicsObject(parent), mParent(parent) {
 
-    // QPainter painter;
-    // painter.fillRect(0, 0, 100, 100, Qt::black);
-
     setFlags(QGraphicsItem::ItemHasNoContents);
     mAnimation = new QPropertyAnimation(this, "pos");
-    qDebug() << mAnimation->propertyName();
-
-    // QPropertyAnimation *anim = new QPropertyAnimation(this, "pos", this);
-    // anim->setDuration(10000);
-    // anim->setStartValue(QPoint(0, 0));
-    // anim->setEndValue(QPoint(100, 250));
-    // anim->start();
 }
+
+QPointF LuggageAnimator::pos() const { return mParent->pos(); }
+
+void LuggageAnimator::setPos(const QPointF &newPos) { mParent->setPos(newPos); }
 
 void LuggageAnimator::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {}
 

@@ -96,8 +96,14 @@
         <verstretch>1</verstretch>
        </sizepolicy>
       </property>
+      <property name="layoutDirection">
+       <enum>Qt::RightToLeft</enum>
+      </property>
       <property name="title">
        <string>GraphView</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -130,6 +136,15 @@
           </widget>
          </widget>
          <widget class="QWidget" name="page_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <property name="leftMargin">
             <number>0</number>
@@ -153,8 +168,8 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>523</width>
-               <height>403</height>
+               <width>500</width>
+               <height>400</height>
               </size>
              </property>
              <property name="lineWidth">
@@ -177,6 +192,9 @@
                 <blue>0</blue>
                </color>
               </brush>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
