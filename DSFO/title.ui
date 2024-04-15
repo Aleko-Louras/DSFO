@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>619</width>
-    <height>372</height>
+    <width>585</width>
+    <height>367</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,14 +39,20 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>160</y>
-     <width>201</width>
-     <height>131</height>
+     <x>10</x>
+     <y>220</y>
+     <width>480</width>
+     <height>54</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Helvetica</family>
+     <pointsize>54</pointsize>
+    </font>
+   </property>
    <property name="text">
-    <string>Master Quinns airport simulator!</string>
+    <string>Welcome to DSFO! </string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
