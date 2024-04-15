@@ -34,6 +34,8 @@ class StackView : public QGraphicsView
     public:
         StackView(QWidget *parent = nullptr);
     private:
+        qreal aspectRatio;
+
         QGraphicsScene *stackScene;
 
         QGraphicsRectItem *receivingTunnel;
@@ -45,6 +47,8 @@ class StackView : public QGraphicsView
 
         QGraphicsRectItem *luggage;
         LuggageAnimator *animator;
+
+        QGraphicsProxyWidget *luggageAdder;
 
         QGraphicsProxyWidget *node;
 
