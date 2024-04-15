@@ -10,16 +10,16 @@ Title::Title(QWidget *parent)
     QPixmap pixmap(":/image.png");
     int w = ui->label->width();
     int h = ui->label->height();
-// set a scaled pixmap to a w x h window keeping its aspect ratio
+    // set a scaled pixmap to a w x h window keeping its aspect ratio
     ui->label->setPixmap(pixmap.scaled(w,h,Qt::KeepAspectRatio));
     //rotate pixmap
 
-    QPixmap pixmap2 = pixmap.transformed(QTransform().rotate(-90));
+    QPixmap pixmap2 = pixmap.transformed(QTransform().scale(-1,1));
     timer = new QTimer(this);
     ui->label->setPixmap(pixmap2.scaled(w,h,Qt::KeepAspectRatio));
     // timer2 = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Title::handleTrigger);
-    timer->start(25);
+    timer->start(10);
     //connect(this, , this, handleTrigger());
     // b2Vec2 gravity(0.0f, -10.0f);
     // b2World world(gravity);
@@ -32,7 +32,7 @@ Title::Title(QWidget *parent)
     groundBody->CreateFixture(&groundBox, -5.0f);
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(0.0f, 2.0f);
+    bodyDef.position.Set(0.0f, 0.0f);
     body = world.CreateBody(&bodyDef);
     b2PolygonShape dynamicBox;
     dynamicBox.SetAsBox(1.0f, 1.0f);
@@ -63,6 +63,11 @@ Title::Title(QWidget *parent)
     //     QRect position = ui->label->geometry();
     // }
 
+    timerUpDown = new QTimer(this);
+    connect(timerUpDown, &QTimer::timeout, this, &Title::movePlaneUpDown);
+    int interval = 1000;
+    timerUpDown->start(interval);
+
 
 
     // qDebug() << "Title is being hit";
@@ -75,28 +80,30 @@ Title::Title(QWidget *parent)
 //     ui->label->setGeometry(newPosition);
 // }
 void Title::handleTrigger(){
+
     float timeStep = 1.0f / 60.0f;
     int32 velocityIterations = 6;
     int32 positionIterations = 2;
-    // for (int32 i = 0; i < 60; ++i)
-    // {
-    //qDebug() << "Got called";
+
     world.Step(timeStep, velocityIterations, positionIterations);
     b2Vec2 position = body->GetPosition();
 
-    //float angle = body->GetAngle();
-    // qDebug() << position.x * 30;
-    //int x = ui->label->geometry().x();
+    // Convert position from meters to pixels
+    float pixelsPerMeter = 30;
+    float xPosPixels = position.x * pixelsPerMeter;
+    float yPosPixels = position.y * pixelsPerMeter;
 
-    if(position.x * 30 == -230){
-        ui->label->setGeometry((position.x * 30)+480, position.y - (position.y*30), 511, 231);
-    }
-    else{
-        ui->label->setGeometry(position.x * 30, position.y - (position.y*30), 511, 231);
-    }
+    int widgetWidth = this->width();
+    int labelWidth = ui->label->width();
 
+    const int wrapWidth = widgetWidth + labelWidth; // Total width for wrapping
 
-    //}
+    float wrappedXPos = std::fmod(xPosPixels, wrapWidth);
+
+    if (wrappedXPos < 0)
+        wrappedXPos += wrapWidth;
+
+    ui->label->move(wrappedXPos - labelWidth, yPosPixels - (yPosPixels * 30));
 }
 // void Title::setPosition(){
 //     b2Vec2 position = body->GetPosition();
@@ -114,4 +121,26 @@ void Title::handleTrigger(){
 Title::~Title()
 {
     delete ui;
+}
+
+void Title::movePlaneUpDown() {
+    b2Vec2 position = body->GetPosition();
+
+    // maximum and minimum y positions for the plane
+    float maxYPos = 2.0f;
+    float minYPos = 0.0f;
+    // int w = ui->label->width();
+    // int h = ui->label->height();
+    QPixmap pixmap(":/image.png");
+    // QPixmap pixmapDown = pixmap.transformed(QTransform().rotate(-35));
+    // QPixmap pixmapUp = pixmap.transformed(QTransform().rotate(270));
+    if (position.y * 100 >= maxYPos) {
+        // If at the maximum y position, move it down
+        body->ApplyForce(b2Vec2(0.0f, -5.0f), body->GetWorldCenter(), true);
+       //ui->label->setPixmap(pixmapDown.scaled(w,h,Qt::KeepAspectRatio));
+    } else if (position.y * 100 <= minYPos) {
+        // If at the minimum y position, move it up
+        body->ApplyForce(b2Vec2(0.0f, 1.0f), body->GetWorldCenter(), true);
+        //ui->label->setPixmap(pixmapUp.scaled(w,h,Qt::KeepAspectRatio));
+    }
 }
