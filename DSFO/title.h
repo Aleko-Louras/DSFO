@@ -24,6 +24,7 @@ public slots:
 //               // void setPosition(QRect newPosition);
      void handleTrigger();
 //     void setPosition();
+     void movePlaneUpDown();
 
 private:
     Ui::Title *ui;
@@ -31,6 +32,7 @@ private:
     b2Body* body;
     QTimer* timer;
     QTimer* timer2;
+    QTimer* timerUpDown;
     std::vector<b2Vec2> angles;
     std::vector<QPixmap> images;
     int angleIndex;
