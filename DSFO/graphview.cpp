@@ -29,7 +29,15 @@ GraphView::GraphView(QWidget *parent)
     connect(button, &QToolButton::clicked,
                 this, [this, button]{changeNode(button);});
 
-    connect(ui->animationButton, &QToolButton::clicked, this, [this]{startDijkstraAnimation(sanFranciscoNode);});
+    connect(ui->animationButton, &QToolButton::clicked, this, &GraphView::startDijkstraAnimation);
+
+    ui->animationChooseBox->addItem("Albuquerque");
+    ui->animationChooseBox->addItem("Denver");
+    ui->animationChooseBox->addItem("Phoenix");
+    ui->animationChooseBox->addItem("Las Vegas");
+    ui->animationChooseBox->addItem("Los Angeles");
+    ui->animationChooseBox->addItem("Salt Lake City");
+    ui->animationChooseBox->addItem("San Francisco");
 }
 
 GraphView::~GraphView() {
@@ -56,24 +64,28 @@ void GraphView::changeNode(QToolButton* node) {
     }
 }
 
-void GraphView::startDijkstraAnimation(Node* node) {
+void GraphView::startDijkstraAnimation() {
+    Node* node = nodes.at(ui->animationChooseBox->currentIndex());
     for (Node* node : nodes)
     {
         node->button->setText("∞");
         node->total = 5000;
+        node->visited = false;
+        unflashNode(node->button);
     }
     node->total = 0;
     advanceDijkstraStep(node);
+    ui->animationButton->setEnabled(false);
 }
 
 void GraphView::advanceDijkstraStep(Node* node) {
     flashNode(node->button, QString::number(node->total));
-    node->visit();
+    node->visited = true;
     int i = 1;
     for (Edge edge : graph.value(node))
     {
         //Calculate the value of the path to target node by adding the total cost of this current node to the cost of the current edge.
-        //If this value is lower than the target node's current total cost, a better path has been found, update this
+        //If this value is lower than the target node's current total cost, a better path has been found, update the cost
         if (node->total + edge.cost < edge.node->total && !edge.node->visited)
             edge.node->total = node->total + edge.cost;
         QTimer::singleShot(i*1000, this, [this, edge]{updateCost(edge.node->button, QString::number(edge.node->total));});
@@ -98,6 +110,8 @@ void GraphView::findNextStep() {
     }
     if (!allVisited)
         advanceDijkstraStep(minNode);
+    else
+        ui->animationButton->setEnabled(true);
 }
 
 void GraphView::flashNode(QToolButton* node, QString value) {

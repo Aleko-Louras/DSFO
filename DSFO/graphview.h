@@ -21,7 +21,6 @@ public:
         bool visited;
         int total;
         Node(QToolButton* button, bool visited, int total) : button(button), visited(visited), total(total) {}
-        void visit () {visited = true;}
     };
     class Edge {
     public:
@@ -45,7 +44,7 @@ public:
     explicit GraphView(QWidget *parent = nullptr);
     ~GraphView();
     void changeNode(QToolButton* node);
-    void startDijkstraAnimation(Node* node);
+    void startDijkstraAnimation();
     void advanceDijkstraStep(Node* node);
     void findNextStep();
     void flashNode(QToolButton* node, QString value);
