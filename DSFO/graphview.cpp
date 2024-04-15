@@ -29,12 +29,17 @@ GraphView::GraphView(QWidget *parent)
     connect(button, &QToolButton::clicked,
                 this, [this, button]{changeNode(button);});
 
-    connect(ui->animationButton, &QToolButton::clicked, this, [this]{startDijkstraAnimation(ui->sanFranciscoNode);});
+    connect(ui->animationButton, &QToolButton::clicked, this, [this]{startDijkstraAnimation(sanFranciscoNode);});
 }
 
-
-
 GraphView::~GraphView() {
+    delete albuquerqueNode;
+    delete denverNode;
+    delete phoenixNode;
+    delete lasVegasNode;
+    delete losAngelesNode;
+    delete saltLakeCityNode;
+    delete sanFranciscoNode;
     delete ui;
 }
 
@@ -51,119 +56,57 @@ void GraphView::changeNode(QToolButton* node) {
     }
 }
 
-void GraphView::startDijkstraAnimation(QToolButton* node) {
-    //Set all node lengths to infinity
-    for (QToolButton* button : buttons)
-        button->setText("∞");
-    //Start indexing and intiialize minimum (as a high value)
-    int i = 1;
-    QTimer::singleShot(10, this, [this, node]{flashNode(node, QString::number(0));});
-    for (Edge& neighbor : graph.value(node))
+void GraphView::startDijkstraAnimation(Node* node) {
+    for (Node* node : nodes)
     {
-        QTimer::singleShot(i*1000, this, [this, neighbor]{flashNode(neighbor.node.button, QString::number(neighbor.cost));});
-        i ++;
+        node->button->setText("∞");
+        node->total = 5000;
     }
-    //Update visited values
-    QVector<Edge> edges = graph.value(node);
-    for(Edge& edge : edges)
-        edge.visit();
-    graph[node] = edges;
-    QTimer::singleShot(i*1000, this, [this]{findNextStep();});
+    node->total = 0;
+    advanceDijkstraStep(node);
 }
 
-void GraphView::advanceDijkstraStep(QToolButton* node) {
+void GraphView::advanceDijkstraStep(Node* node) {
+    flashNode(node->button, QString::number(node->total));
+    node->visit();
     int i = 1;
-    QVector<QString> banned;
-    bool infExist = false;
-    for (int k = 0; k < nodes.size(); k ++)
+    for (Edge edge : graph.value(node))
     {
-        if (nodes.at(k).button->text() == "∞")
-        {
-            infExist = true;
-        }
-    }
-    for (int k = 0; k < nodes.size(); k ++)
-    {
-        if (!infExist)
-        {
-            if (nodes.at(k).visited == true)
-            {
-                //qDebug() << " instructing to skip " << nodes.at(k).button->objectName() << "...";
-               banned.append(nodes.at(k).button->objectName());
-            }
-        }
-        else
-        {
-            if (nodes.at(k).button->text() != "∞")
-            {
-                //qDebug() << " instructing to skip " << nodes.at(k).button->objectName() << "...";
-                banned.append(nodes.at(k).button->objectName());
-            }
-        }
-    }
-    for (Edge neighbor : graph.value(node))
-    {
-        if (banned.contains(neighbor.node.button->objectName()))
-        {
-            //qDebug() << " skipping" << neighbor.node.button->objectName() << " bc it is BANNED";
-            continue;
-        }
-        int newCost = neighbor.cost + node->text().removeFirst().toInt();
-        if (neighbor.node.button->text().length() > 1)
-            if (newCost > neighbor.node.button->text().removeFirst().toInt())
-                newCost = neighbor.node.button->text().removeFirst().toInt();
-        qDebug() << "new cost " << newCost << " neighbor cost " << neighbor.cost;
-        QTimer::singleShot(i*1000, this, [this, neighbor, newCost]{flashNode(neighbor.node.button, QString::number(newCost));});
+        //Calculate the value of the path to target node by adding the total cost of this current node to the cost of the current edge.
+        //If this value is lower than the target node's current total cost, a better path has been found, update this
+        if (node->total + edge.cost < edge.node->total && !edge.node->visited)
+            edge.node->total = node->total + edge.cost;
+        QTimer::singleShot(i*1000, this, [this, edge]{updateCost(edge.node->button, QString::number(edge.node->total));});
         i ++;
     }
-
-    QVector<Edge> edges = graph.value(node);
-    for(Edge& edge : edges)
-        edge.visit();
-    graph[node] = edges;
     QTimer::singleShot(i*1000, this, [this]{findNextStep();});
 }
 
 void GraphView::findNextStep() {
-    int i = 0;
-    for (QToolButton* button : buttons)
+    int minCost = 5000;
+    Node* minNode;
+    bool allVisited = true;
+    for (Node* node : nodes)
     {
-        QVector<Edge> neighbors = graph[button];
-        bool nonVisitedNeighbor = false;
-        for (Edge neighbor : neighbors)
-            if (neighbor.visited == false)
-                nonVisitedNeighbor = true;
-        if (!nonVisitedNeighbor)
-            nodes[i].visit();
-        i ++;
-    }
-    int min = 5000;
-    Node minNode = Node(ui->albuquerqueNode, false, 0);
-    int fullyVisited = 0;
-    for (Node node : nodes)
-    {
-        if (node.visited == true)
+        if (node->total <= minCost && !node->visited)
         {
-            //qDebug() << " skipping " << node.button->objectName() << " because it was fully visited...";
-            fullyVisited = 0;
-            continue;
-        }
-        if (node.button->text() != "∞")
-            node.total = node.button->text().removeFirst().toInt();
-        if (node.total <= min)
-        {
+            minCost = node->total;
             minNode = node;
-            min = node.total;
         }
+        if (!node->visited)
+            allVisited = false;
     }
-    //qDebug() << minNode.button->objectName() << " is global min name with a min value of " << min;
-    if (fullyVisited < nodes.size())
-        QTimer::singleShot(10, this, [this, minNode]{advanceDijkstraStep(minNode.button);});
+    if (!allVisited)
+        advanceDijkstraStep(minNode);
 }
 
 void GraphView::flashNode(QToolButton* node, QString value) {
     node->setIconSize(QSize(29, 29));
     node->setIcon(QIcon(":/flashednode.png"));
+    node->setText("$" + value);
+}
+
+void GraphView::updateCost(QToolButton* node, QString value) {
     node->setText("$" + value);
 }
 
@@ -175,13 +118,13 @@ void GraphView::unflashNode(QToolButton* node) {
 //Create the connections
 void GraphView::createConnections() {
 
-    Node albuquerqueNode(ui->albuquerqueNode, false, 2000);
-    Node denverNode(ui->denverNode, false, 2000);
-    Node phoenixNode(ui->phoenixNode, false, 2000);
-    Node lasVegasNode(ui->lasVegasNode, false, 2000);
-    Node losAngelesNode(ui->losAngelesNode, false, 2000);
-    Node saltLakeCityNode(ui->saltLakeCityNode, false, 2000);
-    Node sanFranciscoNode(ui->sanFranciscoNode, false, 2000);
+    albuquerqueNode = new Node(ui->albuquerqueNode, false, 2000);
+    denverNode = new Node(ui->denverNode, false, 2000);
+    phoenixNode = new Node(ui->phoenixNode, false, 2000);
+    lasVegasNode = new Node(ui->lasVegasNode, false, 2000);
+    losAngelesNode = new Node(ui->losAngelesNode, false, 2000);
+    saltLakeCityNode = new Node(ui->saltLakeCityNode, false, 2000);
+    sanFranciscoNode = new Node(ui->sanFranciscoNode, false, 2000);
 
     nodes.append(albuquerqueNode);
     nodes.append(denverNode);
@@ -192,42 +135,43 @@ void GraphView::createConnections() {
     nodes.append(sanFranciscoNode);
 
     QVector<Edge> albuquerqueConnections;
-    albuquerqueConnections.push_back(Edge(denverNode, false, 80));
-    albuquerqueConnections.push_back(Edge(phoenixNode, false, 80));
-    graph.insert(ui->albuquerqueNode, albuquerqueConnections);
+    albuquerqueConnections.push_back(Edge(denverNode, 80));
+    albuquerqueConnections.push_back(Edge(phoenixNode, 80));
+    graph.insert(albuquerqueNode, albuquerqueConnections);
 
     QVector<Edge> denverConnections;
-    denverConnections.push_back(Edge(albuquerqueNode, false, 80));
-    denverConnections.push_back(Edge(saltLakeCityNode, false, 120));
-    graph.insert(ui->denverNode, denverConnections);
+    denverConnections.push_back(Edge(albuquerqueNode, 80));
+    denverConnections.push_back(Edge(saltLakeCityNode, 120));
+    graph.insert(denverNode, denverConnections);
 
     QVector<Edge> phoenixConnections;
-    phoenixConnections.push_back(Edge(albuquerqueNode, false, 80));
-    phoenixConnections.push_back(Edge(losAngelesNode, false, 130));
-    phoenixConnections.push_back(Edge(saltLakeCityNode, false, 200));
-    graph.insert(ui->phoenixNode, phoenixConnections);
+    phoenixConnections.push_back(Edge(albuquerqueNode, 80));
+    phoenixConnections.push_back(Edge(losAngelesNode, 130));
+    phoenixConnections.push_back(Edge(saltLakeCityNode, 200));
+    graph.insert(phoenixNode, phoenixConnections);
 
     QVector<Edge> saltLakeCityConnections;
-    saltLakeCityConnections.push_back(Edge(denverNode, false, 120));
-    saltLakeCityConnections.push_back(Edge(lasVegasNode, false, 90));
-    saltLakeCityConnections.push_back(Edge(phoenixNode, false, 200));
-    graph.insert(ui->saltLakeCityNode, saltLakeCityConnections);
+    saltLakeCityConnections.push_back(Edge(denverNode, 120));
+    saltLakeCityConnections.push_back(Edge(lasVegasNode, 90));
+    saltLakeCityConnections.push_back(Edge(phoenixNode, 200));
+    graph.insert(saltLakeCityNode, saltLakeCityConnections);
 
     QVector<Edge> lasVegasConnections;
-    lasVegasConnections.push_back(Edge(saltLakeCityNode, false, 90));
-    lasVegasConnections.push_back(Edge(losAngelesNode, false, 50));
-    lasVegasConnections.push_back(Edge(sanFranciscoNode, false, 180));
-    graph.insert(ui->lasVegasNode, lasVegasConnections);
+    lasVegasConnections.push_back(Edge(saltLakeCityNode, 90));
+    lasVegasConnections.push_back(Edge(losAngelesNode, 50));
+    lasVegasConnections.push_back(Edge(sanFranciscoNode, 180));
+    graph.insert(lasVegasNode, lasVegasConnections);
 
     QVector<Edge> losAngelesConnections;
-    losAngelesConnections.push_back(Edge(lasVegasNode, false, 50));
-    losAngelesConnections.push_back(Edge(sanFranciscoNode, false, 100));
-    losAngelesConnections.push_back(Edge(phoenixNode, false, 130));
-    graph.insert(ui->losAngelesNode, losAngelesConnections);
+    losAngelesConnections.push_back(Edge(lasVegasNode, 50));
+    losAngelesConnections.push_back(Edge(sanFranciscoNode, 100));
+    losAngelesConnections.push_back(Edge(phoenixNode, 130));
+    graph.insert(losAngelesNode, losAngelesConnections);
 
 
     QVector<Edge> sanFranciscoConnections;
-    sanFranciscoConnections.push_back(Edge(losAngelesNode, false, 100));
-    sanFranciscoConnections.push_back(Edge(lasVegasNode, false, 180));
-    graph.insert(ui->sanFranciscoNode, sanFranciscoConnections);
+    sanFranciscoConnections.push_back(Edge(losAngelesNode, 100));
+    sanFranciscoConnections.push_back(Edge(lasVegasNode, 180));
+    graph.insert(sanFranciscoNode, sanFranciscoConnections);
+
 }

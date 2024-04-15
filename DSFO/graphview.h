@@ -25,24 +25,31 @@ public:
     };
     class Edge {
     public:
-        Node node;
-        bool visited;
+        Node* node;
         int cost;
-        Edge(Node node, bool visited, int cost) : node(node), visited(visited), cost(cost) {}
-        void visit () {visited = true;}
+        Edge(Node* node, int cost) : node(node), cost(cost) {}
     };
 
-    QMap<QToolButton*, QVector<Edge>> graph;
+    QMap<Node*, QVector<Edge>> graph;
     QVector<QToolButton*> buttons;
-    QVector<Node> nodes;
+    QVector<Node*> nodes;
+
+    Node* albuquerqueNode;
+    Node* denverNode;
+    Node* phoenixNode;
+    Node* lasVegasNode;
+    Node* losAngelesNode;
+    Node* saltLakeCityNode;
+    Node* sanFranciscoNode;
 
     explicit GraphView(QWidget *parent = nullptr);
     ~GraphView();
     void changeNode(QToolButton* node);
-    void startDijkstraAnimation(QToolButton* node);
-    void advanceDijkstraStep(QToolButton* node);
+    void startDijkstraAnimation(Node* node);
+    void advanceDijkstraStep(Node* node);
     void findNextStep();
     void flashNode(QToolButton* node, QString value);
+    void updateCost(QToolButton* node, QString value);
     void unflashNode(QToolButton* node);
     void createConnections();
 
