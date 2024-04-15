@@ -129,7 +129,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES += \
     Box2D/Box2DConfig.cmake \
     Box2D/CMakeLists.txt \
-    classdiagram.qmodel
+    classdiagram.qmodel \
+    image (1).png
 
 RESOURCES += \
     resources.qrc

@@ -10,11 +10,11 @@ Title::Title(QWidget *parent)
     QPixmap pixmap(":/image.png");
     int w = ui->label->width();
     int h = ui->label->height();
-// set a scaled pixmap to a w x h window keeping its aspect ratio
+    // set a scaled pixmap to a w x h window keeping its aspect ratio
     ui->label->setPixmap(pixmap.scaled(w,h,Qt::KeepAspectRatio));
     //rotate pixmap
 
-    QPixmap pixmap2 = pixmap.transformed(QTransform().rotate(-90));
+    QPixmap pixmap2 = pixmap.transformed(QTransform().scale(-1,1));
     timer = new QTimer(this);
     ui->label->setPixmap(pixmap2.scaled(w,h,Qt::KeepAspectRatio));
     // timer2 = new QTimer(this);
@@ -129,13 +129,18 @@ void Title::movePlaneUpDown() {
     // maximum and minimum y positions for the plane
     float maxYPos = 2.0f;
     float minYPos = 0.0f;
-
+    // int w = ui->label->width();
+    // int h = ui->label->height();
+    QPixmap pixmap(":/image.png");
+    // QPixmap pixmapDown = pixmap.transformed(QTransform().rotate(-35));
+    // QPixmap pixmapUp = pixmap.transformed(QTransform().rotate(270));
     if (position.y * 100 >= maxYPos) {
         // If at the maximum y position, move it down
         body->ApplyForce(b2Vec2(0.0f, -5.0f), body->GetWorldCenter(), true);
-
+       //ui->label->setPixmap(pixmapDown.scaled(w,h,Qt::KeepAspectRatio));
     } else if (position.y * 100 <= minYPos) {
-        // If at the minimum y position, move it down
+        // If at the minimum y position, move it up
         body->ApplyForce(b2Vec2(0.0f, 1.0f), body->GetWorldCenter(), true);
+        //ui->label->setPixmap(pixmapUp.scaled(w,h,Qt::KeepAspectRatio));
     }
 }
