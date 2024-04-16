@@ -12,22 +12,8 @@ GraphView::GraphView(QWidget *parent)
 {
     ui->setupUi(this);
 
-    //Right now each node is a button, linking all of them is clunky and annoying so put em in a vector instead
-    buttons.push_back(ui->albuquerqueNode);
-    buttons.push_back(ui->denverNode);
-    buttons.push_back(ui->phoenixNode);
-    buttons.push_back(ui->lasVegasNode);
-    buttons.push_back(ui->losAngelesNode);
-    buttons.push_back(ui->saltLakeCityNode);
-    buttons.push_back(ui->sanFranciscoNode);
-
     //Create a collection of nodes and their connections
     createConnections();
-
-    //Link everything at once
-    for (QToolButton* button : buttons)
-    connect(button, &QToolButton::clicked,
-                this, [this, button]{changeNode(button);});
 
     connect(ui->animationButton, &QToolButton::clicked, this, &GraphView::startDijkstraAnimation);
 
@@ -51,27 +37,16 @@ GraphView::~GraphView() {
     delete ui;
 }
 
-void GraphView::changeNode(QToolButton* node) {
-    if (node->iconSize() == QSize(30, 30))
-    {
-        node->setIcon(QIcon(":/fillednode.png"));
-        node->setIconSize(QSize(31, 31));
-    }
-    else
-    {
-        node->setIcon(QIcon(":/emptynode.png"));
-        node->setIconSize(QSize(30, 30));
-    }
-}
-
 void GraphView::startDijkstraAnimation() {
+    //Get start from combo box
     Node* node = nodes.at(ui->animationChooseBox->currentIndex());
+    //Reset the view and values from previous animation
     for (Node* node : nodes)
     {
-        node->button->setText("∞");
+        node->label->setText("∞");
         node->total = 5000;
         node->visited = false;
-        unflashNode(node->button);
+        unflashNode(node->button, node->label);
     }
     node->total = 0;
     advanceDijkstraStep(node);
@@ -79,27 +54,37 @@ void GraphView::startDijkstraAnimation() {
 }
 
 void GraphView::advanceDijkstraStep(Node* node) {
-    flashNode(node->button, QString::number(node->total));
+    //Illuminate the current node
+    flashNode(node->button, node->label, QString::number(node->total));
     node->visited = true;
     int i = 1;
     for (Edge edge : graph.value(node))
     {
+        //Flash edges while "looking" at a node/edge
+        QTimer::singleShot((i-1)*animationSpeed, this, [this, edge, node]{flashEdge(edge, node);});
+
         //Calculate the value of the path to target node by adding the total cost of this current node to the cost of the current edge.
         //If this value is lower than the target node's current total cost, a better path has been found, update the cost
         if (node->total + edge.cost < edge.node->total && !edge.node->visited)
             edge.node->total = node->total + edge.cost;
-        QTimer::singleShot(i*1000, this, [this, edge]{updateCost(edge.node->button, QString::number(edge.node->total));});
+        //Update the cost in label after staggered times
+        QTimer::singleShot(i*animationSpeed, this, [this, edge]{updateCost(edge.node->label, QString::number(edge.node->total));});
         i ++;
     }
-    QTimer::singleShot(i*1000, this, [this]{findNextStep();});
+    //Reset the background and dim the node to mark it as visited, then find the next step
+    QTimer::singleShot((i-1)*animationSpeed, this, [this]{ui->backgroundlabel->setStyleSheet("border-image: url(:/images/swbackground.png) 0 0 0 0 stretch stretch;");});
+    QTimer::singleShot((i-1)*animationSpeed, this, [this, node]{dimNode(node->button, node->label);});
+    QTimer::singleShot(i*animationSpeed, this, [this]{findNextStep();});
 }
 
 void GraphView::findNextStep() {
+    //Just set some high cost for the initial min, bc the cost will never be this high
     int minCost = 5000;
     Node* minNode;
     bool allVisited = true;
     for (Node* node : nodes)
     {
+        //Simple minimize function, also check to see if we have visited every node to end Dijkstra
         if (node->total <= minCost && !node->visited)
         {
             minCost = node->total;
@@ -111,34 +96,79 @@ void GraphView::findNextStep() {
     if (!allVisited)
         advanceDijkstraStep(minNode);
     else
+        //If we've visited every node, the animation is over so enable the button again. Don't do anything else cuz we are done
         ui->animationButton->setEnabled(true);
 }
 
-void GraphView::flashNode(QToolButton* node, QString value) {
-    node->setIconSize(QSize(29, 29));
-    node->setIcon(QIcon(":/flashednode.png"));
-    node->setText("$" + value);
+void GraphView::flashEdge(Edge edge, Node* node) {
+    //Hacky switch statement to change backgrounds bc thats prolly the easiest thing cause drawing lines sucks 🤠
+    switch(edge.cost)
+    {
+        //Basically just look at the cost of the edge to know which one to target
+        case 50:
+            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/la-lv.png) 0 0 0 0 stretch stretch;");
+            break;
+        case 90:
+            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/slc-lv.png) 0 0 0 0 stretch stretch;");
+            break;
+        case 100:
+            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/la-sf.png) 0 0 0 0 stretch stretch;");
+            break;
+        case 120:
+            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/slc-dv.png) 0 0 0 0 stretch stretch;");
+            break;
+        case 130:
+            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/px-la.png) 0 0 0 0 stretch stretch;");
+            break;
+        case 180:
+            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/lv-sf.png) 0 0 0 0 stretch stretch;");
+            break;
+        case 200:
+            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/slc-px.png) 0 0 0 0 stretch stretch;");
+            break;
+        //But two nodes have cost 80, luckily they both go to/come from Albuquerque, so check the neighboring nodes to the edge for correct one
+        case 80:
+            if (node->button->objectName() == "phoenixNode" || edge.node->button->objectName() == "phoenixNode")
+                ui->backgroundlabel->setStyleSheet("border-image: url(:/images/aq-px.png) 0 0 0 0 stretch stretch;");
+            else
+                ui->backgroundlabel->setStyleSheet("border-image: url(:/images/dv-aq.png) 0 0 0 0 stretch stretch;");
+            break;
+    }
 }
 
-void GraphView::updateCost(QToolButton* node, QString value) {
-    node->setText("$" + value);
+
+void GraphView::flashNode(QToolButton* node, QLabel* label, QString value) {
+    node->setIcon(QIcon(":/images/flashednode.png"));
+    label->setText("$" + value);
 }
 
-void GraphView::unflashNode(QToolButton* node) {
-    node->setIconSize(QSize(30, 30));
-    node->setIcon(QIcon(":/emptynode.png"));
+void GraphView::updateCost(QLabel* label, QString value) {
+    label->setText("$" + value);
 }
 
-//Create the connections
+void GraphView::unflashNode(QToolButton* node, QLabel* label) {
+    node->setIcon(QIcon(":/images/emptynode.png"));
+    label->setStyleSheet("color: black");
+}
+
+void GraphView::dimNode(QToolButton* node, QLabel* label) {
+    node->setIcon(QIcon(":/images/fillednode.png"));
+    label->setStyleSheet("color: white");
+}
+
 void GraphView::createConnections() {
 
-    albuquerqueNode = new Node(ui->albuquerqueNode, false, 2000);
-    denverNode = new Node(ui->denverNode, false, 2000);
-    phoenixNode = new Node(ui->phoenixNode, false, 2000);
-    lasVegasNode = new Node(ui->lasVegasNode, false, 2000);
-    losAngelesNode = new Node(ui->losAngelesNode, false, 2000);
-    saltLakeCityNode = new Node(ui->saltLakeCityNode, false, 2000);
-    sanFranciscoNode = new Node(ui->sanFranciscoNode, false, 2000);
+    //Have to use new keyword bc have to use pointers for map and dont know how to initialize otherwise.
+    //The only bad thing about this is then we have to delete these but we can't delete them at the end of this method,
+    //So I just made them member variables for now so we have access to delete them in the constructor. If someone knows a better way they
+    //can suggest? I don't think I learned pointers enough tbh.
+    albuquerqueNode = new Node(ui->albuquerqueNode, ui->albuquerqueLabel, false, 2000);
+    denverNode = new Node(ui->denverNode, ui->denverLabel, false, 2000);
+    phoenixNode = new Node(ui->phoenixNode, ui->phoenixLabel, false, 2000);
+    lasVegasNode = new Node(ui->lasVegasNode, ui->lasVegasLabel, false, 2000);
+    losAngelesNode = new Node(ui->losAngelesNode, ui->losAngelesLabel, false, 2000);
+    saltLakeCityNode = new Node(ui->saltLakeCityNode, ui->saltLakeCityLabel, false, 2000);
+    sanFranciscoNode = new Node(ui->sanFranciscoNode, ui->sanFranciscoLabel, false, 2000);
 
     nodes.append(albuquerqueNode);
     nodes.append(denverNode);

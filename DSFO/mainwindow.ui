@@ -109,7 +109,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedPages">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="titlePage">
           <widget class="Title" name="widget_2" native="true">
@@ -213,7 +213,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

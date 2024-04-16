@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">border-image: url(:/swbackground.png) 0 0 0 0 stretch stretch;</string>
+    <string notr="true">border-image: url(:/images/swbackground.png) 0 0 0 0 stretch stretch;</string>
    </property>
    <property name="text">
     <string/>
@@ -38,7 +38,7 @@
      <x>280</x>
      <y>90</y>
      <width>40</width>
-     <height>51</height>
+     <height>40</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -49,7 +49,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/emptynode.png</normaloff>:/emptynode.png</iconset>
+     <normaloff>:/images/emptynode.png</normaloff>:/images/emptynode.png</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -58,7 +58,7 @@
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
   </widget>
   <widget class="QToolButton" name="denverNode">
@@ -67,7 +67,7 @@
      <x>420</x>
      <y>140</y>
      <width>40</width>
-     <height>51</height>
+     <height>40</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -78,7 +78,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/emptynode.png</normaloff>:/emptynode.png</iconset>
+     <normaloff>:/images/emptynode.png</normaloff>:/images/emptynode.png</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -87,7 +87,7 @@
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
   </widget>
   <widget class="QToolButton" name="albuquerqueNode">
@@ -96,7 +96,7 @@
      <x>390</x>
      <y>260</y>
      <width>40</width>
-     <height>51</height>
+     <height>40</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -107,7 +107,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/emptynode.png</normaloff>:/emptynode.png</iconset>
+     <normaloff>:/images/emptynode.png</normaloff>:/images/emptynode.png</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -116,7 +116,7 @@
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
   </widget>
   <widget class="QToolButton" name="phoenixNode">
@@ -125,7 +125,7 @@
      <x>230</x>
      <y>310</y>
      <width>40</width>
-     <height>51</height>
+     <height>40</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -136,7 +136,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/emptynode.png</normaloff>:/emptynode.png</iconset>
+     <normaloff>:/images/emptynode.png</normaloff>:/images/emptynode.png</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -145,7 +145,7 @@
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
   </widget>
   <widget class="QToolButton" name="losAngelesNode">
@@ -154,7 +154,7 @@
      <x>100</x>
      <y>270</y>
      <width>40</width>
-     <height>51</height>
+     <height>40</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -165,7 +165,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/emptynode.png</normaloff>:/emptynode.png</iconset>
+     <normaloff>:/images/emptynode.png</normaloff>:/images/emptynode.png</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -174,7 +174,7 @@
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
   </widget>
   <widget class="QToolButton" name="sanFranciscoNode">
@@ -183,7 +183,7 @@
      <x>30</x>
      <y>130</y>
      <width>40</width>
-     <height>51</height>
+     <height>40</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -194,7 +194,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/emptynode.png</normaloff>:/emptynode.png</iconset>
+     <normaloff>:/images/emptynode.png</normaloff>:/images/emptynode.png</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -203,7 +203,7 @@
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
   </widget>
   <widget class="QToolButton" name="lasVegasNode">
@@ -212,7 +212,7 @@
      <x>180</x>
      <y>220</y>
      <width>40</width>
-     <height>51</height>
+     <height>40</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -223,7 +223,7 @@
    </property>
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/emptynode.png</normaloff>:/emptynode.png</iconset>
+     <normaloff>:/images/emptynode.png</normaloff>:/images/emptynode.png</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -232,7 +232,7 @@
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
   </widget>
   <widget class="QPushButton" name="animationButton">
@@ -256,6 +256,121 @@
      <width>121</width>
      <height>24</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="sanFranciscoLabel">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>130</y>
+     <width>40</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::MarkdownText</enum>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="losAngelesLabel">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>270</y>
+     <width>40</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lasVegasLabel">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>220</y>
+     <width>40</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="phoenixLabel">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>310</y>
+     <width>40</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="albuquerqueLabel">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>260</y>
+     <width>40</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="denverLabel">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>140</y>
+     <width>40</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="saltLakeCityLabel">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>90</y>
+     <width>40</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
  </widget>

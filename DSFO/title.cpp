@@ -7,7 +7,7 @@ Title::Title(QWidget *parent)
     , ui(new Ui::Title), world(b2Vec2(0.0f, 0.0f))
 {
     ui->setupUi(this);
-    QPixmap pixmap(":/image.png");
+    QPixmap pixmap(":/images/image.png");
     int w = ui->label->width();
     int h = ui->label->height();
     // set a scaled pixmap to a w x h window keeping its aspect ratio
@@ -131,7 +131,7 @@ void Title::movePlaneUpDown() {
     float minYPos = 0.0f;
     // int w = ui->label->width();
     // int h = ui->label->height();
-    QPixmap pixmap(":/image.png");
+    QPixmap pixmap(":/images/image.png");
     // QPixmap pixmapDown = pixmap.transformed(QTransform().rotate(-35));
     // QPixmap pixmapUp = pixmap.transformed(QTransform().rotate(270));
     if (position.y * 100 >= maxYPos) {
