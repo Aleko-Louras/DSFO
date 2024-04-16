@@ -16,5 +16,6 @@
         <file>images/slc-dv.png</file>
         <file>images/slc-lv.png</file>
         <file>images/slc-px.png</file>
+        <file>texts/descriptions.txt</file>
     </qresource>
 </RCC>

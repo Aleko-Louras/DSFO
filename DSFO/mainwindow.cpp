@@ -4,6 +4,8 @@
 #include <QComboBox>
 #include <QDebug>
 #include <iostream>
+#include <QFile>
+#include <QTextStream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -20,6 +22,16 @@ MainWindow::MainWindow(QWidget *parent)
            this, &MainWindow::onBackClicked);
     connect(ui->stackedPages, &QStackedWidget::currentChanged,
            this, &MainWindow::onPageChanged);
+
+    QFile texts(":/texts/descriptions.txt");
+    texts.open(QFile::ReadOnly);
+    QTextStream stream(&texts);
+    while (!stream.atEnd())
+    {
+        descriptions.append(stream.readLine());
+    }
+
+    ui->summary->setText(descriptions.at(0));
 
    // QStackedWidget *stackedWidget = new QStackedWidget;
 
@@ -88,7 +100,8 @@ void MainWindow::onNextClicked() {
     ui->backButton->setEnabled(true);
 }
 
-void MainWindow::onPageChanged(int index) {
+void MainWindow::onPageChanged() {
     ui->pageTracker->setText(QString("Page " + QString::number(ui->stackedPages->currentIndex() + 1) +
                                      " of " + QString::number(ui->stackedPages->count())));
+    ui->summary->setText(descriptions.at(ui->stackedPages->currentIndex()));
 }

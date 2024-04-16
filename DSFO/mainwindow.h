@@ -21,7 +21,7 @@ public:
 private slots:
     void onNextClicked();
     void onBackClicked();
-    void onPageChanged(int index);
+    void onPageChanged();
 
 public slots:
 
@@ -29,5 +29,6 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
+    QVector<QString> descriptions;
 };
 #endif // MAINWINDOW_H
