@@ -72,13 +72,14 @@ Title::Title(QWidget *parent)
 
     // qDebug() << "Title is being hit";
 
+    //Initialize read more button
 
-}
 
 // void Title::setPosition(QRect newPosition) {
 //     newPosition.setY(newPosition.y() + 1);
 //     ui->label->setGeometry(newPosition);
 // }
+}
 void Title::handleTrigger(){
 
     float timeStep = 1.0f / 60.0f;

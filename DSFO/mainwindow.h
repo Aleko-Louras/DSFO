@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QGraphicsScene>
+#include <QPushButton>
+#include <QDialog>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,11 +27,16 @@ private slots:
     void onPageChanged();
 
 public slots:
+    void showMoreInfo();
 
 
 
 private:
     Ui::MainWindow *ui;
     QVector<QString> descriptions;
+    QVector<QString> additionalDescriptions;
+    QPushButton* readMoreButton;
+    QDialog* info;
+    QLabel* infoText;
 };
 #endif // MAINWINDOW_H
