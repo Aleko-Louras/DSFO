@@ -55,6 +55,7 @@ SOURCES += \
     Box2D/Dynamics/b2World.cpp \
     Box2D/Dynamics/b2WorldCallbacks.cpp \
     Box2D/Rope/b2Rope.cpp \
+    graphicsanimator.cpp \
     graphview.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -110,6 +111,7 @@ HEADERS += \
     Box2D/Dynamics/b2World.h \
     Box2D/Dynamics/b2WorldCallbacks.h \
     Box2D/Rope/b2Rope.h \
+    graphicsanimator.h \
     graphview.h \
     mainwindow.h \
     model.h \
