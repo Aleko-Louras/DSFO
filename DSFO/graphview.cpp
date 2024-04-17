@@ -40,6 +40,9 @@ GraphView::~GraphView() {
 void GraphView::startDijkstraAnimation() {
     //Get start from combo box
     Node* node = nodes.at(ui->animationChooseBox->currentIndex());
+    //Get speed from slider and disable slider
+    animationSpeed = 100000/ui->animationSpeedSlider->value();
+    ui->animationSpeedSlider->setEnabled(false);
     //Reset the view and values from previous animation
     for (Node* node : nodes)
     {
@@ -63,6 +66,9 @@ void GraphView::advanceDijkstraStep(Node* node) {
         //Flash edges while "looking" at a node/edge
         QTimer::singleShot((i-1)*animationSpeed, this, [this, edge, node]{flashEdge(edge, node);});
 
+        int currentTotal = edge.node->total;
+        QTimer::singleShot((i-1)*animationSpeed, this, [this, edge, node, currentTotal]{updateStepLabel(edge, node, currentTotal);});
+
         //Calculate the value of the path to target node by adding the total cost of this current node to the cost of the current edge.
         //If this value is lower than the target node's current total cost, a better path has been found, update the cost
         if (node->total + edge.cost < edge.node->total && !edge.node->visited)
@@ -74,7 +80,7 @@ void GraphView::advanceDijkstraStep(Node* node) {
     //Reset the background and dim the node to mark it as visited, then find the next step
     QTimer::singleShot((i-1)*animationSpeed, this, [this]{ui->backgroundlabel->setStyleSheet("border-image: url(:/images/swbackground.png) 0 0 0 0 stretch stretch;");});
     QTimer::singleShot((i-1)*animationSpeed, this, [this, node]{dimNode(node->button, node->label);});
-    QTimer::singleShot(i*animationSpeed, this, [this]{findNextStep();});
+    QTimer::singleShot((i-1)*animationSpeed, this, [this]{findNextStep();});
 }
 
 void GraphView::findNextStep() {
@@ -94,10 +100,33 @@ void GraphView::findNextStep() {
             allVisited = false;
     }
     if (!allVisited)
-        advanceDijkstraStep(minNode);
+    {
+        ui->stepLabel->setText("The cheapest non visited city is " + minNode->name + ", so visit there next.");
+        QTimer::singleShot(animationSpeed, this, [this, minNode]{advanceDijkstraStep(minNode);});
+    }
     else
-        //If we've visited every node, the animation is over so enable the button again. Don't do anything else cuz we are done
+    {
+        //If we've visited every node, the animation is over so enable the button again, enable the slider and update the label
         ui->animationButton->setEnabled(true);
+        ui->animationSpeedSlider->setEnabled(false);
+        ui->stepLabel->setText("Every city is visited, so we are done!");
+
+    }
+}
+
+void GraphView::updateStepLabel(Edge edge, Node* node, int oldTotal) {
+    QString string;
+    string += "The cost of travelling to " + edge.node->name + " from " + node->name + " is ";
+    string += "$" + std::to_string(node->total) + " + $" + std::to_string(edge.cost) + " = $" + std::to_string(node->total + edge.cost) + ".";
+    if (edge.node->visited)
+        string = edge.node->name + " has already been visited, so don't update the cost.";
+    else if (!(node->total + edge.cost == edge.node->total))
+        string += " This is more expensive than the known cost of " + std::to_string(edge.node->total) + ", so don't update the cost.";
+    else if (oldTotal == 5000)
+        string += " This is the first path we have found to the node, so update the cost.";
+    else
+        string += " This is cheaper than the known cost of " + std::to_string(oldTotal) + ", so update the cost.";
+    ui->stepLabel->setText(string);
 }
 
 void GraphView::flashEdge(Edge edge, Node* node) {
@@ -162,13 +191,13 @@ void GraphView::createConnections() {
     //The only bad thing about this is then we have to delete these but we can't delete them at the end of this method,
     //So I just made them member variables for now so we have access to delete them in the constructor. If someone knows a better way they
     //can suggest? I don't think I learned pointers enough tbh.
-    albuquerqueNode = new Node(ui->albuquerqueNode, ui->albuquerqueLabel, false, 2000);
-    denverNode = new Node(ui->denverNode, ui->denverLabel, false, 2000);
-    phoenixNode = new Node(ui->phoenixNode, ui->phoenixLabel, false, 2000);
-    lasVegasNode = new Node(ui->lasVegasNode, ui->lasVegasLabel, false, 2000);
-    losAngelesNode = new Node(ui->losAngelesNode, ui->losAngelesLabel, false, 2000);
-    saltLakeCityNode = new Node(ui->saltLakeCityNode, ui->saltLakeCityLabel, false, 2000);
-    sanFranciscoNode = new Node(ui->sanFranciscoNode, ui->sanFranciscoLabel, false, 2000);
+    albuquerqueNode = new Node(ui->albuquerqueNode, ui->albuquerqueLabel, "Albuquerque", false, 2000);
+    denverNode = new Node(ui->denverNode, ui->denverLabel, "Denver", false, 2000);
+    phoenixNode = new Node(ui->phoenixNode, ui->phoenixLabel, "Phoenix", false, 2000);
+    lasVegasNode = new Node(ui->lasVegasNode, ui->lasVegasLabel, "Las Vegas", false, 2000);
+    losAngelesNode = new Node(ui->losAngelesNode, ui->losAngelesLabel, "Los Angeles", false, 2000);
+    saltLakeCityNode = new Node(ui->saltLakeCityNode, ui->saltLakeCityLabel, "Salt Lake City", false, 2000);
+    sanFranciscoNode = new Node(ui->sanFranciscoNode, ui->sanFranciscoLabel, "San Francisco", false, 2000);
 
     nodes.append(albuquerqueNode);
     nodes.append(denverNode);

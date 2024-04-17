@@ -20,9 +20,10 @@ public:
     public:
         QToolButton* button;
         QLabel* label;
+        QString name;
         bool visited;
         int total;
-        Node(QToolButton* button, QLabel* label, bool visited, int total) : button(button), label(label), visited(visited), total(total) {}
+        Node(QToolButton* button, QLabel* label, QString name, bool visited, int total) : button(button), label(label), name(name), visited(visited), total(total) {}
     };
     class Edge {
     public:
@@ -34,7 +35,7 @@ public:
     QMap<Node*, QVector<Edge>> graph;
     QVector<Node*> nodes;
 
-    int animationSpeed = 2000;
+    int animationSpeed = 0;
 
     Node* albuquerqueNode;
     Node* denverNode;
@@ -49,6 +50,7 @@ public:
     void startDijkstraAnimation();
     void advanceDijkstraStep(Node* node);
     void findNextStep();
+    void updateStepLabel(Edge edge, Node* node, int oldTotal);
     void flashNode(QToolButton* node, QLabel* label, QString value);
     void updateCost(QLabel* label, QString value);
     void unflashNode(QToolButton* node, QLabel* label);

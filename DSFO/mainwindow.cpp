@@ -4,6 +4,8 @@
 #include <QComboBox>
 #include <QDebug>
 #include <iostream>
+#include <QFile>
+#include <QTextStream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -21,6 +23,23 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->stackedPages, &QStackedWidget::currentChanged,
            this, &MainWindow::onPageChanged);
 
+    QFile texts(":/texts/descriptions.txt");
+    texts.open(QFile::ReadOnly);
+    QTextStream stream(&texts);
+    while (!stream.atEnd())
+    {
+        descriptions.append(stream.readLine());
+    }
+
+    ui->summary->setText(descriptions.at(0));
+
+    QFile additionalTexts(":/texts/additionalDescriptions.txt");
+    additionalTexts.open(QFile::ReadOnly);
+    QTextStream stream2(&additionalTexts);
+    while (!stream2.atEnd())
+    {
+        additionalDescriptions.append(stream2.readLine());
+    }
    // QStackedWidget *stackedWidget = new QStackedWidget;
 
    // QWidget *firstPageWidget = new QWidget;
@@ -49,7 +68,34 @@ MainWindow::MainWindow(QWidget *parent)
 //    pageComboBox->addItem(tr("Page 3"));
 //    connect(pageComboBox, &QComboBox::activated,
 //            stackedWidget, &QStackedWidget::setCurrentIndex);
- }
+
+    //Initialize read more button
+    readMoreButton = new QPushButton(this);
+    readMoreButton->setText("Read More");
+    readMoreButton->setGeometry(0, 0, 100, 50);
+
+    //Initialize info dialog
+    info = new QDialog(this);
+    info->setWindowTitle("More Information");
+    info->resize(300,200);
+    infoText = new QLabel(info);
+    infoText->setWordWrap(true);
+    infoText->setGeometry(QRect(0,0,300,150));
+    QPushButton *closeButton = new QPushButton("Close", info);
+    closeButton->setGeometry(QRect(100,150,100,30));
+    connect(closeButton, &QPushButton::clicked, info, &QDialog::close);
+    connect(readMoreButton, &QPushButton::clicked, this, &MainWindow::showMoreInfo);
+}
+
+void MainWindow::showMoreInfo() {
+    int currentPageIndex = ui->stackedPages->currentIndex();
+    if(currentPageIndex < descriptions.size()) {
+        ui->summary->setText(descriptions.at(currentPageIndex));
+    } else {
+        infoText->setText("No additional information available");
+    }
+    info->exec();
+}
 
 
 MainWindow::~MainWindow()
@@ -88,7 +134,14 @@ void MainWindow::onNextClicked() {
     ui->backButton->setEnabled(true);
 }
 
-void MainWindow::onPageChanged(int index) {
+void MainWindow::onPageChanged() {
     ui->pageTracker->setText(QString("Page " + QString::number(ui->stackedPages->currentIndex() + 1) +
                                      " of " + QString::number(ui->stackedPages->count())));
+    ui->summary->setText(descriptions.at(ui->stackedPages->currentIndex()));
+    int currentPage = ui->stackedPages->currentIndex();
+    if(currentPage < additionalDescriptions.size()) {
+        infoText->setText(additionalDescriptions.at(currentPage));
+    } else {
+        infoText->setText("No additional information available");
+    }
 }
