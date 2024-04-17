@@ -14,12 +14,10 @@
 
 StackView::StackView(QWidget *parent) : QGraphicsView(parent)
 {
-    // These are helpful for relative positioning and resizing
-    aspectRatio = 1.25;
-    QRectF sceneBox(0, 0, 500, 400);
+    // These are helpful for relative positioning
+    QRectF sceneBox(0, 0, 500, 400); //! This is linked to the aspect ratio
     qreal horizontalCenter = sceneBox.center().x();
 
-    // Defining the dimensions first also helps with relative positioning
     qreal tunnelWidth = 100;
     qreal tunnelHeight = 50;
     qreal conveyorWidth = 75;

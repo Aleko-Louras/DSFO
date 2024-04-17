@@ -85,6 +85,8 @@ MainWindow::MainWindow(QWidget *parent)
     closeButton->setGeometry(QRect(100,150,100,30));
     connect(closeButton, &QPushButton::clicked, info, &QDialog::close);
     connect(readMoreButton, &QPushButton::clicked, this, &MainWindow::showMoreInfo);
+
+    ui->summaryLayout->setVisible(false);
 }
 
 void MainWindow::showMoreInfo() {
@@ -144,4 +146,6 @@ void MainWindow::onPageChanged() {
     } else {
         infoText->setText("No additional information available");
     }
+
+    ui->summaryLayout->setVisible(currentPage != 0);
 }

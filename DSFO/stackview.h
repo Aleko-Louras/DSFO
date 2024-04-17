@@ -15,7 +15,8 @@ class StackView : public QGraphicsView
     public:
         StackView(QWidget *parent = nullptr);
     private:
-        qreal aspectRatio;
+        // Ratio of width to height (currently 5:4)
+        qreal aspectRatio = 1.25;
 
         QGraphicsScene *stackScene;
         // Items drawn in the QGraphicsScene
@@ -29,8 +30,7 @@ class StackView : public QGraphicsView
         GraphicsAnimator *animator;
         QGraphicsProxyWidget *luggageAdder;
 
-        QGraphicsProxyWidget *node;
-
+        /// Resizes 'this' StackView alongside its parent widget.
         void resizeEvent(QResizeEvent *event) override;
 };
 
