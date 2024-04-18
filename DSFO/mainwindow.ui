@@ -180,7 +180,7 @@
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QStackedWidget" name="stackedPages">
          <property name="currentIndex">
@@ -198,17 +198,55 @@
            </property>
           </widget>
          </widget>
-         <widget class="QWidget" name="graphPage">
-          <widget class="GraphView" name="widget" native="true">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>530</width>
-             <height>420</height>
-            </rect>
+         <widget class="QWidget" name="page_1">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="leftMargin">
+            <number>0</number>
            </property>
-          </widget>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="GraphView" name="graphicsView">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>500</width>
+               <height>400</height>
+              </size>
+             </property>
+             <property name="lineWidth">
+              <number>0</number>
+             </property>
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
+             </property>
+             <property name="horizontalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QAbstractScrollArea::AdjustToContents</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
          <widget class="QWidget" name="page_2">
           <property name="sizePolicy">
@@ -248,7 +286,7 @@
               </size>
              </property>
              <property name="lineWidth">
-              <number>-3</number>
+              <number>0</number>
              </property>
              <property name="verticalScrollBarPolicy">
               <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -296,12 +334,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>GraphView</class>
-   <extends>QWidget</extends>
-   <header>graphview.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>Title</class>
    <extends>QWidget</extends>
    <header location="global">title.h</header>
@@ -311,6 +343,11 @@
    <class>StackView</class>
    <extends>QGraphicsView</extends>
    <header>stackview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GraphView</class>
+   <extends>QGraphicsView</extends>
+   <header>graphview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

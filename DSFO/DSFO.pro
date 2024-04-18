@@ -119,7 +119,6 @@ HEADERS += \
     title.h
 
 FORMS += \
-    graphview.ui \
     mainwindow.ui \
     title.ui
 

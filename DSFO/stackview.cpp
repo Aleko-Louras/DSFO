@@ -89,6 +89,18 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
     // centerOn(horizontalCenter, rect().center().y());
 }
 
+StackView::~StackView() {
+    delete stackScene;
+    delete receivingTunnel;
+    delete receivingConveyor;
+    delete sendingTunnel;
+    delete sendingConveyor;
+    delete divider;
+    delete luggage;
+    delete animator;
+    delete luggageAdder;
+}
+
 void StackView::resizeEvent(QResizeEvent *event)
 {
     QWidget *parent = parentWidget();
