@@ -11,19 +11,15 @@ TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
 
     QRectF sceneBox(0, 0, width(), height());
     QImage planeImage = QImage(":/images/image.png").scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation).mirrored(true, false);
-    // qreal horizontalCenter = sceneBox.center().x();
 
     titleScene = new QGraphicsScene(sceneBox, this);
     plane = titleScene->addPixmap(QPixmap::fromImage(planeImage));
-    plane->setPos(0, 100);
-
     title = titleScene->addText("Welcome to DSFO!", QFont("Arial Rounded MT Bold", 30));
     title->setPos(sceneBox.center().x() - title->boundingRect().width() / 2, sceneBox.center().y() - title->boundingRect().height() / 2);
 
-
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &TitleView::handleTrigger);
-    timer->start(100);
+    timer->start(timeStep * 1000);
 
     b2BodyDef groundBodyDef;
     groundBodyDef.position.Set(0.0f, -10.0f);
@@ -33,7 +29,7 @@ TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
     groundBody->CreateFixture(&groundBox, -5.0f);
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(0.0f, 0.0f);
+    bodyDef.position.Set(0.0f, -1.5f);
     body = world.CreateBody(&bodyDef);
     b2PolygonShape dynamicBox;
     dynamicBox.SetAsBox(1.0f, 1.0f);
@@ -41,48 +37,44 @@ TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
     fixtureDef.shape = &dynamicBox;
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.3f;
-    //fixtureDef.restitution = 0.9f;
     body->CreateFixture(&fixtureDef);
 
-    // apply left impulse, but only if max velocity is not reached yet
-
     // apply right impulse, but only if max velocity is not reached yet
-    //body->ApplyLinearImpulse( b2Vec2(0,-5), body->GetWorldCenter(), true);
-    body->ApplyForce( b2Vec2(-500.0f,0), body->GetWorldCenter(), true);
-
-    timerUpDown = new QTimer(this);
-    connect(timerUpDown, &QTimer::timeout, this, &TitleView::movePlaneUpDown);
-    int interval = 1000;
-    timerUpDown->start(interval);
+    body->ApplyForce( b2Vec2(-1000.0f, 0), body->GetWorldCenter(), true);
 
     setScene(titleScene);
 }
 
 void TitleView::handleTrigger(){
-
-
-
     world.Step(timeStep, velocityIterations, positionIterations);
     b2Vec2 position = body->GetPosition();
 
-    // Convert position from meters to pixels
-    float pixelsPerMeter = 30;
+    // // Convert position from meters to pixels
     float xPosPixels = position.x * pixelsPerMeter;
     float yPosPixels = position.y * pixelsPerMeter;
 
     int widgetWidth = this->width();
-    int labelWidth = plane->boundingRect().width();
+    int planeWidth = plane->boundingRect().width();
 
-    const int wrapWidth = widgetWidth + labelWidth; // Total width for wrapping
+    const int wrapWidth = widgetWidth + planeWidth; // Total width for wrapping
 
     float wrappedXPos = std::fmod(xPosPixels, wrapWidth);
-    qDebug() << xPosPixels << " " << yPosPixels;
-    qDebug() << plane->x() << " " << plane->y();
 
     if (wrappedXPos < 0)
         wrappedXPos += wrapWidth;
 
-    plane->setPos(wrappedXPos - labelWidth, yPosPixels - (yPosPixels * 30));
+    plane->setPos(wrappedXPos - planeWidth, -yPosPixels);
+
+    // maximum and minimum y positions for the plane
+    float maxYPos = -50.0f;
+    float minYPos = -100.0f;
+
+    if (yPosPixels >= maxYPos)
+        // If at the maximum y position, move it down
+        body->ApplyForce(b2Vec2(0.0f, -5.0f), body->GetWorldCenter(), true);
+    else if (yPosPixels <= minYPos)
+        // If at the minimum y position, move it up
+        body->ApplyForce(b2Vec2(0.0f, 5.0f), body->GetWorldCenter(), true);
 }
 
 TitleView::~TitleView()
@@ -91,22 +83,7 @@ TitleView::~TitleView()
     delete plane;
     delete title;
     delete timer;
-    delete timerUpDown;
-}
-
-void TitleView::movePlaneUpDown() {
-    b2Vec2 position = body->GetPosition();
-
-    // maximum and minimum y positions for the plane
-    float maxYPos = 0.0f;
-    float minYPos = -10.0f;
-    if (position.y * 100 >= maxYPos)
-        // If at the maximum y position, move it down
-        body->ApplyForce(b2Vec2(0.0f, -5.0f), body->GetWorldCenter(), true);
-    else if (position.y * 100 <= minYPos) {
-        // If at the minimum y position, move it up
-        body->ApplyForce(b2Vec2(0.0f, 1.0f), body->GetWorldCenter(), true);
-    }
+    // delete timerUpDown;
 }
 
 void TitleView::resizeEvent(QResizeEvent *event)

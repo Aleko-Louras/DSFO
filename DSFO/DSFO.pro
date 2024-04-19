@@ -60,7 +60,6 @@ SOURCES += \
     graphview.cpp \
     main.cpp \
     mainwindow.cpp \
-    model.cpp \
     stackview.cpp \
     title.cpp \
     titleview.cpp
@@ -117,14 +116,12 @@ HEADERS += \
     graphicsanimator.h \
     graphview.h \
     mainwindow.h \
-    model.h \
     stackview.h \
     title.h \
     titleview.h
 
 FORMS += \
     endscreen.ui \
-    graphview.ui \
     mainwindow.ui \
     title.ui
 
