@@ -25,7 +25,11 @@ private:
 
     qreal aspectRatio = 1.25;
 
+    // Maximum and minimum y positions for the plane
+    float maxYPos = -50.0f;
+    float minYPos = -100.0f;
     float pixelsPerMeter = 30;
+    // Physics settings
     float timeStep = 1.0f / 60.0f;
     int32 velocityIterations = 6;
     int32 positionIterations = 2;

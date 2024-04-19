@@ -65,10 +65,6 @@ void TitleView::handleTrigger(){
 
     plane->setPos(wrappedXPos - planeWidth, -yPosPixels);
 
-    // maximum and minimum y positions for the plane
-    float maxYPos = -50.0f;
-    float minYPos = -100.0f;
-
     if (yPosPixels >= maxYPos)
         // If at the maximum y position, move it down
         body->ApplyForce(b2Vec2(0.0f, -5.0f), body->GetWorldCenter(), true);
@@ -83,7 +79,6 @@ TitleView::~TitleView()
     delete plane;
     delete title;
     delete timer;
-    // delete timerUpDown;
 }
 
 void TitleView::resizeEvent(QResizeEvent *event)
