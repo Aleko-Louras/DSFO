@@ -15,8 +15,6 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     QImage westCoastMap = QImage(":/images/swbackground.png").scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     graphScene = new QGraphicsScene(sceneBox, this);
-
-
     westCoast = graphScene->addPixmap(QPixmap::fromImage(westCoastMap));
 
     addEdge("Albuquerque", "Denver", 80);
@@ -24,7 +22,7 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     addEdge("Denver", "Salt Lake City", 120);
     addEdge("Phoenix", "Los Angeles", 130);
     addEdge("Phoenix", "Salt Lake City", 200);
-    addEdge("Salt Lake City", "Las Vegas", 90);
+    addEdge("Las Vegas", "Salt Lake City", 90);
     addEdge("Las Vegas", "Los Angeles", 50);
     addEdge("Las Vegas", "San Francisco", 180);
     addEdge("Los Angeles", "San Francisco", 100);
@@ -50,9 +48,8 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
 
     for (Edge *flightPath : edges) {
         auto& flight = flightPath->neighbors;
-        QPointF pointA(flight.first->rect().center());
-        QPointF pointB(flight.second->rect().center());
-        flightPath->setLine(QLineF(pointA.y() < pointB.y() ? pointA, pointB : pointB, pointA));
+        QLineF flightLine(flight.first->rect().center(), flight.second->rect().center());
+        flightPath->setLine(flightLine);
         graphScene->addItem(flightPath);
     }
 
@@ -71,7 +68,8 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
 GraphView::~GraphView() {
     delete graphScene;
     delete westCoast;
-    delete node;
+    delete airportSelector;
+    delete animationButton;
 }
 
 void GraphView::addEdge(QString port1, QString port2, int cost) {
@@ -79,10 +77,8 @@ void GraphView::addEdge(QString port1, QString port2, int cost) {
     // create a new object and add it to the graph
     if(!vertices.contains(port1))
         vertices[port1] = new Node();
-
     if(!vertices.contains(port2))
         vertices[port2] = new Node();
-
     // Adds a new edge from vertex1 to vertex2
     vertices[port1]->addEdge(vertices[port2], cost);
 }
@@ -152,7 +148,6 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     QFont font("Helvetica [Cronyx]", 10);
     font.setBold(true);
     painter->setFont(font);
-    painter->setPen(Qt::black);
     painter->drawText(textBox, Qt::AlignCenter, cost == INT_MAX ? "∞" : QString::number(cost));
 
     // qDebug() << line().angle();

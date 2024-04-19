@@ -184,19 +184,30 @@
        <item>
         <widget class="QStackedWidget" name="stackedPages">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="titlePage">
-          <widget class="Title" name="widget_2" native="true">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>501</width>
-             <height>401</height>
-            </rect>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <property name="leftMargin">
+            <number>0</number>
            </property>
-          </widget>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="TitleView" name="titleView">
+             <property name="lineWidth">
+              <number>0</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
          <widget class="QWidget" name="page_1">
           <property name="sizePolicy">
@@ -334,12 +345,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Title</class>
-   <extends>QWidget</extends>
-   <header location="global">title.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>StackView</class>
    <extends>QGraphicsView</extends>
    <header>stackview.h</header>
@@ -348,6 +353,11 @@
    <class>GraphView</class>
    <extends>QGraphicsView</extends>
    <header>graphview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TitleView</class>
+   <extends>QGraphicsView</extends>
+   <header>titleview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

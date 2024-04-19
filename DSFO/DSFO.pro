@@ -61,7 +61,8 @@ SOURCES += \
     mainwindow.cpp \
     model.cpp \
     stackview.cpp \
-    title.cpp
+    title.cpp \
+    titleview.cpp
 
 HEADERS += \
     Box2D/Box2D.h \
@@ -116,7 +117,8 @@ HEADERS += \
     mainwindow.h \
     model.h \
     stackview.h \
-    title.h
+    title.h \
+    titleview.h
 
 FORMS += \
     mainwindow.ui \
