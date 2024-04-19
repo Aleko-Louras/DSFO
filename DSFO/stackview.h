@@ -14,6 +14,7 @@ class StackView : public QGraphicsView
     Q_OBJECT
     public:
         StackView(QWidget *parent = nullptr);
+        ~StackView();
     private:
         // Ratio of width to height (currently 5:4)
         qreal aspectRatio = 1.25;

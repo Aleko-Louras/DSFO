@@ -1,250 +1,214 @@
 #include "graphview.h"
-#include "ui_graphview.h"
-#include <QVector>
-#include <QDebug>
-#include <QPicture>
-#include <QPainter>
+#include <QGraphicsItem>
+#include <QResizeEvent>
+#include <QPushButton>
+#include <QGraphicsProxyWidget>
+#include <QComboBox>
+#include <queue>
 #include <QTimer>
 
-GraphView::GraphView(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::GraphView)
-{
-    ui->setupUi(this);
+GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
+    // ESSENTIAL SETTINGS!
+    setMinimumSize(500, 400);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    //Create a collection of nodes and their connections
-    createConnections();
+    QRectF sceneBox(0, 0, width(), height());
+    QImage westCoastMap = QImage(":/images/swbackground.png").scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    connect(ui->animationButton, &QToolButton::clicked, this, &GraphView::startDijkstraAnimation);
+    graphScene = new QGraphicsScene(sceneBox, this);
 
-    ui->animationChooseBox->addItem("Albuquerque");
-    ui->animationChooseBox->addItem("Denver");
-    ui->animationChooseBox->addItem("Phoenix");
-    ui->animationChooseBox->addItem("Las Vegas");
-    ui->animationChooseBox->addItem("Los Angeles");
-    ui->animationChooseBox->addItem("Salt Lake City");
-    ui->animationChooseBox->addItem("San Francisco");
+
+    westCoast = graphScene->addPixmap(QPixmap::fromImage(westCoastMap));
+
+    addEdge("Albuquerque", "Denver", 80);
+    addEdge("Albuquerque", "Phoenix", 80);
+    addEdge("Denver", "Salt Lake City", 120);
+    addEdge("Phoenix", "Los Angeles", 130);
+    addEdge("Phoenix", "Salt Lake City", 200);
+    addEdge("Salt Lake City", "Las Vegas", 90);
+    addEdge("Las Vegas", "Los Angeles", 50);
+    addEdge("Las Vegas", "San Francisco", 180);
+    addEdge("Los Angeles", "San Francisco", 100);
+
+    vertices["Albuquerque"]->setRect(360, 250, 25, 25);
+    vertices["Denver"]->setRect(390, 140, 25, 25);
+    vertices["Phoenix"]->setRect(225, 290, 25, 25);
+    vertices["Salt Lake City"]->setRect(260, 90, 25, 25);
+    vertices["Los Angeles"]->setRect(95, 260, 25, 25);
+    vertices["Las Vegas"]->setRect(165, 200, 25, 25);
+    vertices["San Francisco"]->setRect(30, 130, 25, 25);
+
+    qDebug() << vertices.count();
+
+    QSet<Edge*> edges;
+
+    for (Node *airport : vertices) {
+        graphScene->addItem(airport);
+        for (Edge *flightPath : airport->neighbors)
+            edges << flightPath;
+        airport->setZValue(1);
+    }
+
+    for (Edge *flightPath : edges) {
+        auto& flight = flightPath->neighbors;
+        QPointF pointA(flight.first->rect().center());
+        QPointF pointB(flight.second->rect().center());
+        flightPath->setLine(QLineF(pointA.y() < pointB.y() ? pointA, pointB : pointB, pointA));
+        graphScene->addItem(flightPath);
+    }
+
+    selector = new QComboBox();
+    for (const QString& airport : vertices.keys())
+        selector->addItem(airport);
+    airportSelector = graphScene->addWidget(selector);
+
+    QPushButton *animate = new QPushButton("Animate");
+    animationButton = graphScene->addWidget(animate);
+    animationButton->setPos(50, 50);
+
+    connect(animate, &QPushButton::clicked, this, &GraphView::startAnimation);
+
+    setScene(graphScene);
 }
 
 GraphView::~GraphView() {
-    delete albuquerqueNode;
-    delete denverNode;
-    delete phoenixNode;
-    delete lasVegasNode;
-    delete losAngelesNode;
-    delete saltLakeCityNode;
-    delete sanFranciscoNode;
-    delete ui;
+    delete graphScene;
+    delete westCoast;
+    delete node;
 }
 
-void GraphView::startDijkstraAnimation() {
-    //Get start from combo box
-    Node* node = nodes.at(ui->animationChooseBox->currentIndex());
-    //Get speed from slider and disable slider
-    animationSpeed = 100000/ui->animationSpeedSlider->value();
-    ui->animationSpeedSlider->setEnabled(false);
-    //Reset the view and values from previous animation
-    for (Node* node : nodes)
-    {
-        node->label->setText("∞");
-        node->total = 5000;
-        node->visited = false;
-        unflashNode(node->button, node->label);
-    }
+void GraphView::addEdge(QString port1, QString port2, int cost) {
+    // If a vertex doesn't already exists in the graph,
+    // create a new object and add it to the graph
+    if(!vertices.contains(port1))
+        vertices[port1] = new Node();
+
+    if(!vertices.contains(port2))
+        vertices[port2] = new Node();
+
+    // Adds a new edge from vertex1 to vertex2
+    vertices[port1]->addEdge(vertices[port2], cost);
+}
+
+void GraphView::resizeEvent(QResizeEvent *event)
+{
+    QWidget *parent = parentWidget();
+    if (!parent) return;
+
+    int newWidth = event->size().width();
+    int newHeight = event->size().height();
+    // Ensures that the width and height don't violate the aspect ratio.
+    if (newWidth < newHeight * aspectRatio)
+        resize(newWidth, newWidth / aspectRatio);
+    else resize(newHeight * aspectRatio, newHeight);
+    // Fairly straightforward: scales the QGraphicsScene
+    fitInView(graphScene->sceneRect(), Qt::KeepAspectRatio);
+
+    // Centers StackView inside its parent widget
+    int x = (parent->width() - width()) / 2;
+    int y = (parent->height() - height()) / 2;
+    move(x,y);
+}
+
+void GraphView::startAnimation() {
+    Node* node = vertices[selector->currentText()];
+    for (Node* node : vertices.values())
+        node->reset();
     node->total = 0;
-    advanceDijkstraStep(node);
-    ui->animationButton->setEnabled(false);
+    std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue = new std::priority_queue<Node*, QVector<Node*>, Comparison>();
+    priorityQueue->push(node);
+    animationStep(priorityQueue);
 }
 
-void GraphView::advanceDijkstraStep(Node* node) {
-    //Illuminate the current node
-    flashNode(node->button, node->label, QString::number(node->total));
-    node->visited = true;
-    int i = 1;
-    for (Edge edge : graph.value(node))
+void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue) {
+    Node* node = priorityQueue->top();
+    priorityQueue->pop();
+
+    //Update the node that we are visiting
+    node->setBrush(QBrush(Qt::yellow));
+
+    int staggerTiming = 0;
+    for (Edge* edge : node->neighbors)
     {
-        //Flash edges while "looking" at a node/edge
-        QTimer::singleShot((i-1)*animationSpeed, this, [this, edge, node]{flashEdge(edge, node);});
+        //Find neighbor based on edge
+        Node* neighbor;
+        if (edge->neighbors.first == node)
+            neighbor = edge->neighbors.second;
+        else
+            neighbor = edge->neighbors.first;
+        //Flash and unflash edges we are looking at
+        QTimer::singleShot(staggerTiming*1000, this, [this, edge]{edge->setPen(QPen(Qt::yellow, 5));});
+        QTimer::singleShot((staggerTiming+1)*1000, this, [this, edge]{edge->setPen(QPen(Qt::black, 5));});
 
-        int currentTotal = edge.node->total;
-        QTimer::singleShot((i-1)*animationSpeed, this, [this, edge, node, currentTotal]{updateStepLabel(edge, node, currentTotal);});
-
-        //Calculate the value of the path to target node by adding the total cost of this current node to the cost of the current edge.
-        //If this value is lower than the target node's current total cost, a better path has been found, update the cost
-        if (node->total + edge.cost < edge.node->total && !edge.node->visited)
-            edge.node->total = node->total + edge.cost;
-        //Update the cost in label after staggered times
-        QTimer::singleShot(i*animationSpeed, this, [this, edge]{updateCost(edge.node->label, QString::number(edge.node->total));});
-        i ++;
-    }
-    //Reset the background and dim the node to mark it as visited, then find the next step
-    QTimer::singleShot((i-1)*animationSpeed, this, [this]{ui->backgroundlabel->setStyleSheet("border-image: url(:/images/swbackground.png) 0 0 0 0 stretch stretch;");});
-    QTimer::singleShot((i-1)*animationSpeed, this, [this, node]{dimNode(node->button, node->label);});
-    QTimer::singleShot((i-1)*animationSpeed, this, [this]{findNextStep();});
-}
-
-void GraphView::findNextStep() {
-    //Just set some high cost for the initial min, bc the cost will never be this high
-    int minCost = 5000;
-    Node* minNode;
-    bool allVisited = true;
-    for (Node* node : nodes)
-    {
-        //Simple minimize function, also check to see if we have visited every node to end Dijkstra
-        if (node->total <= minCost && !node->visited)
+        if (node->total + edge->cost < neighbor->total && !neighbor->visited)
         {
-            minCost = node->total;
-            minNode = node;
+            neighbor->total = node->total + edge->cost;
+            priorityQueue->push(neighbor);
         }
-        if (!node->visited)
-            allVisited = false;
+        staggerTiming ++;
     }
-    if (!allVisited)
+    //Stagger updating node so text does not turn white until after visiting
+    QTimer::singleShot((staggerTiming+1)*1000, this, [this, node]{node->setBrush(QBrush(Qt::black));});
+    QTimer::singleShot((staggerTiming+1)*1000, this, [this, node]{node->visited = true;});
+    if (!priorityQueue->empty())
     {
-        ui->stepLabel->setText("The cheapest non visited city is " + minNode->name + ", so visit there next.");
-        QTimer::singleShot(animationSpeed, this, [this, minNode]{advanceDijkstraStep(minNode);});
-    }
-    else
-    {
-        //If we've visited every node, the animation is over so enable the button again, enable the slider and update the label
-        ui->animationButton->setEnabled(true);
-        ui->animationSpeedSlider->setEnabled(false);
-        ui->stepLabel->setText("Every city is visited, so we are done!");
 
+        QTimer::singleShot((staggerTiming+2)*1000, this, [this, priorityQueue]{animationStep(priorityQueue);});
     }
 }
 
-void GraphView::updateStepLabel(Edge edge, Node* node, int oldTotal) {
-    QString string;
-    string += "The cost of travelling to " + edge.node->name + " from " + node->name + " is ";
-    string += "$" + std::to_string(node->total) + " + $" + std::to_string(edge.cost) + " = $" + std::to_string(node->total + edge.cost) + ".";
-    if (edge.node->visited)
-        string = edge.node->name + " has already been visited, so don't update the cost.";
-    else if (!(node->total + edge.cost == edge.node->total))
-        string += " This is more expensive than the known cost of " + std::to_string(edge.node->total) + ", so don't update the cost.";
-    else if (oldTotal == 5000)
-        string += " This is the first path we have found to the node, so update the cost.";
-    else
-        string += " This is cheaper than the known cost of " + std::to_string(oldTotal) + ", so update the cost.";
-    ui->stepLabel->setText(string);
+Node::Node(QGraphicsItem *parent) : QGraphicsEllipseItem(parent)
+{
+    setBrush(Qt::gray);
 }
 
-void GraphView::flashEdge(Edge edge, Node* node) {
-    //Hacky switch statement to change backgrounds bc thats prolly the easiest thing cause drawing lines sucks 🤠
-    switch(edge.cost)
-    {
-        //Basically just look at the cost of the edge to know which one to target
-        case 50:
-            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/la-lv.png) 0 0 0 0 stretch stretch;");
-            break;
-        case 90:
-            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/slc-lv.png) 0 0 0 0 stretch stretch;");
-            break;
-        case 100:
-            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/la-sf.png) 0 0 0 0 stretch stretch;");
-            break;
-        case 120:
-            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/slc-dv.png) 0 0 0 0 stretch stretch;");
-            break;
-        case 130:
-            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/px-la.png) 0 0 0 0 stretch stretch;");
-            break;
-        case 180:
-            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/lv-sf.png) 0 0 0 0 stretch stretch;");
-            break;
-        case 200:
-            ui->backgroundlabel->setStyleSheet("border-image: url(:/images/slc-px.png) 0 0 0 0 stretch stretch;");
-            break;
-        //But two nodes have cost 80, luckily they both go to/come from Albuquerque, so check the neighboring nodes to the edge for correct one
-        case 80:
-            if (node->button->objectName() == "phoenixNode" || edge.node->button->objectName() == "phoenixNode")
-                ui->backgroundlabel->setStyleSheet("border-image: url(:/images/aq-px.png) 0 0 0 0 stretch stretch;");
-            else
-                ui->backgroundlabel->setStyleSheet("border-image: url(:/images/dv-aq.png) 0 0 0 0 stretch stretch;");
-            break;
-    }
+Node::~Node()
+{
+    //delete totalText;
 }
 
-
-void GraphView::flashNode(QToolButton* node, QLabel* label, QString value) {
-    node->setIcon(QIcon(":/images/flashednode.png"));
-    label->setText("$" + value);
+void Node::reset() {
+    visited = false;
+    total = INT_MAX;
+    setBrush(Qt::gray);
 }
 
-void GraphView::updateCost(QLabel* label, QString value) {
-    label->setText("$" + value);
+void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    QGraphicsEllipseItem::paint(painter, option, widget);
+    painter->setFont(QFont("Helvetica [Cronyx]", 6));
+    if (visited)
+        painter->setPen(QPen(Qt::white));
+    painter->drawText(boundingRect(), Qt::AlignCenter, total == INT_MAX ? "∞" : "$" + QString::number(total));
 }
 
-void GraphView::unflashNode(QToolButton* node, QLabel* label) {
-    node->setIcon(QIcon(":/images/emptynode.png"));
-    label->setStyleSheet("color: black");
+void Node::addEdge(Node* neighbor, int cost) {
+    Edge *edge = new Edge(this, neighbor, cost);
+    neighbors.push_back(edge);
+    neighbor->neighbors.push_back(edge);
 }
 
-void GraphView::dimNode(QToolButton* node, QLabel* label) {
-    node->setIcon(QIcon(":/images/fillednode.png"));
-    label->setStyleSheet("color: white");
+Edge::Edge(Node *n1, Node *n2, int cost, QGraphicsItem *parent) : QGraphicsLineItem(parent), neighbors(n1, n2), cost(cost)
+{
+    setPen(QPen(Qt::black, 5));
+    // n1->setPos(100, 50);
+    // setLine(QLineF(n1->pos(), n2->pos()));
 }
 
-void GraphView::createConnections() {
+void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    QGraphicsLineItem::paint(painter, option, widget);
 
-    //Have to use new keyword bc have to use pointers for map and dont know how to initialize otherwise.
-    //The only bad thing about this is then we have to delete these but we can't delete them at the end of this method,
-    //So I just made them member variables for now so we have access to delete them in the constructor. If someone knows a better way they
-    //can suggest? I don't think I learned pointers enough tbh.
-    albuquerqueNode = new Node(ui->albuquerqueNode, ui->albuquerqueLabel, "Albuquerque", false, 2000);
-    denverNode = new Node(ui->denverNode, ui->denverLabel, "Denver", false, 2000);
-    phoenixNode = new Node(ui->phoenixNode, ui->phoenixLabel, "Phoenix", false, 2000);
-    lasVegasNode = new Node(ui->lasVegasNode, ui->lasVegasLabel, "Las Vegas", false, 2000);
-    losAngelesNode = new Node(ui->losAngelesNode, ui->losAngelesLabel, "Los Angeles", false, 2000);
-    saltLakeCityNode = new Node(ui->saltLakeCityNode, ui->saltLakeCityLabel, "Salt Lake City", false, 2000);
-    sanFranciscoNode = new Node(ui->sanFranciscoNode, ui->sanFranciscoLabel, "San Francisco", false, 2000);
+    qreal angleInRadians(line().angle() * M_PI / 180);
+    QVector2D angleVector(sin(angleInRadians), cos(angleInRadians));
+    QRectF textBox(boundingRect().topLeft() - angleVector.toPointF() * 20, boundingRect().size());
 
-    nodes.append(albuquerqueNode);
-    nodes.append(denverNode);
-    nodes.append(phoenixNode);
-    nodes.append(lasVegasNode);
-    nodes.append(losAngelesNode);
-    nodes.append(saltLakeCityNode);
-    nodes.append(sanFranciscoNode);
+    QFont font("Helvetica [Cronyx]", 10);
+    font.setBold(true);
+    painter->setFont(font);
+    painter->setPen(Qt::black);
+    painter->drawText(textBox, Qt::AlignCenter, cost == INT_MAX ? "∞" : QString::number(cost));
 
-    QVector<Edge> albuquerqueConnections;
-    albuquerqueConnections.push_back(Edge(denverNode, 80));
-    albuquerqueConnections.push_back(Edge(phoenixNode, 80));
-    graph.insert(albuquerqueNode, albuquerqueConnections);
-
-    QVector<Edge> denverConnections;
-    denverConnections.push_back(Edge(albuquerqueNode, 80));
-    denverConnections.push_back(Edge(saltLakeCityNode, 120));
-    graph.insert(denverNode, denverConnections);
-
-    QVector<Edge> phoenixConnections;
-    phoenixConnections.push_back(Edge(albuquerqueNode, 80));
-    phoenixConnections.push_back(Edge(losAngelesNode, 130));
-    phoenixConnections.push_back(Edge(saltLakeCityNode, 200));
-    graph.insert(phoenixNode, phoenixConnections);
-
-    QVector<Edge> saltLakeCityConnections;
-    saltLakeCityConnections.push_back(Edge(denverNode, 120));
-    saltLakeCityConnections.push_back(Edge(lasVegasNode, 90));
-    saltLakeCityConnections.push_back(Edge(phoenixNode, 200));
-    graph.insert(saltLakeCityNode, saltLakeCityConnections);
-
-    QVector<Edge> lasVegasConnections;
-    lasVegasConnections.push_back(Edge(saltLakeCityNode, 90));
-    lasVegasConnections.push_back(Edge(losAngelesNode, 50));
-    lasVegasConnections.push_back(Edge(sanFranciscoNode, 180));
-    graph.insert(lasVegasNode, lasVegasConnections);
-
-    QVector<Edge> losAngelesConnections;
-    losAngelesConnections.push_back(Edge(lasVegasNode, 50));
-    losAngelesConnections.push_back(Edge(sanFranciscoNode, 100));
-    losAngelesConnections.push_back(Edge(phoenixNode, 130));
-    graph.insert(losAngelesNode, losAngelesConnections);
-
-
-    QVector<Edge> sanFranciscoConnections;
-    sanFranciscoConnections.push_back(Edge(losAngelesNode, 100));
-    sanFranciscoConnections.push_back(Edge(lasVegasNode, 180));
-    graph.insert(sanFranciscoNode, sanFranciscoConnections);
-
+    // qDebug() << line().angle();
+    // qDebug() << angleInRadians;
+    // qDebug() << angleVector;
 }
