@@ -55,6 +55,7 @@ SOURCES += \
     Box2D/Dynamics/b2World.cpp \
     Box2D/Dynamics/b2WorldCallbacks.cpp \
     Box2D/Rope/b2Rope.cpp \
+    endscreen.cpp \
     graphicsanimator.cpp \
     graphview.cpp \
     main.cpp \
@@ -111,6 +112,7 @@ HEADERS += \
     Box2D/Dynamics/b2World.h \
     Box2D/Dynamics/b2WorldCallbacks.h \
     Box2D/Rope/b2Rope.h \
+    endscreen.h \
     graphicsanimator.h \
     graphview.h \
     mainwindow.h \
@@ -119,6 +121,7 @@ HEADERS += \
     title.h
 
 FORMS += \
+    endscreen.ui \
     graphview.ui \
     mainwindow.ui \
     title.ui
