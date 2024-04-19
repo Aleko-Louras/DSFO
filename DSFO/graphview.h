@@ -8,6 +8,8 @@
 #include <QLabel>
 #include <QGraphicsView>
 #include <QGraphicsEllipseItem>
+#include <QComboBox>
+#include <queue>
 
 class Edge;
 class Node : public QGraphicsEllipseItem {
@@ -15,15 +17,13 @@ public:
     QList<Edge*> neighbors;
     bool visited = false;
     int total = INT_MAX;
-
     Node(QGraphicsItem *parent = nullptr);
     ~Node();
-
     void addEdge(Node* neighbor, int cost);
     void reset();
-private:
     QGraphicsTextItem *totalText;
 
+private:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 };
 
@@ -35,6 +35,12 @@ public:
 
 private:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+};
+
+struct Comparison {
+    bool operator()(const Node* first, const Node* second){
+        return first->total > second->total;
+    }
 };
 
 class GraphView : public QGraphicsView
@@ -62,6 +68,9 @@ private:
 
     void addEdge(QString port1, QString port2, int cost);
 
+    void startAnimation();
+    void animationStep(std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue);
+
     /// Resizes 'this' StackView alongside its parent widget.
     void resizeEvent(QResizeEvent *event) override;
 
@@ -76,6 +85,7 @@ private:
     QGraphicsPixmapItem *westCoast;
     QGraphicsProxyWidget *airportSelector;
     QGraphicsProxyWidget *animationButton;
+    QComboBox *selector;
     // Ratio of width to height (currently 5:4)
     // qreal aspectRatio = 1.25;
 
