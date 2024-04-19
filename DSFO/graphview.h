@@ -82,14 +82,17 @@ private:
     // Ratio of width to height (currently 5:4)
     qreal aspectRatio = 1.25;
 
-    int animationSpeed = 1000;
+    int animationSpeed;
 
     QGraphicsScene *graphScene;
     QGraphicsEllipseItem *node;
     QGraphicsPixmapItem *westCoast;
     QGraphicsProxyWidget *airportSelector;
     QGraphicsProxyWidget *animationButton;
+    QGraphicsProxyWidget *animationLabel;
+    QGraphicsProxyWidget *animationSlider;
     QComboBox *selector;
+    QSlider *slider;
     // Ratio of width to height (currently 5:4)
     // qreal aspectRatio = 1.25;
 

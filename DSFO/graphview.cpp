@@ -59,10 +59,23 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     for (const QString& airport : vertices.keys())
         selector->addItem(airport);
     airportSelector = graphScene->addWidget(selector);
+    airportSelector->setPos(0, 250);
+    airportSelector->setZValue(1);
 
     QPushButton *animate = new QPushButton("Animate");
     animationButton = graphScene->addWidget(animate);
-    animationButton->setPos(50, 50);
+    animationButton->setPos(100, 375);
+
+    slider = new QSlider(Qt::Horizontal);
+    animationSlider = graphScene->addWidget(slider);
+    animationSlider->setPos(0, 350);
+    slider->setMinimum(10);
+    slider->setMaximum(200);
+    slider->setValue(60);
+
+    QLabel *label = new QLabel("label");
+    animationLabel = graphScene->addWidget(label);
+    animationLabel->setPos(380, 25);
 
     connect(animate, &QPushButton::clicked, this, &GraphView::startAnimation);
 
@@ -74,6 +87,8 @@ GraphView::~GraphView() {
     delete westCoast;
     delete airportSelector;
     delete animationButton;
+    delete animationSlider;
+    delete animationLabel;
 }
 
 void GraphView::addEdge(QString port1, QString port2, int cost) {
@@ -118,6 +133,8 @@ void GraphView::startAnimation() {
 }
 
 void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue) {
+
+    animationSpeed = slider->value()*20;
 
     Node* node = priorityQueue->top();
     priorityQueue->pop();
