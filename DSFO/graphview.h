@@ -13,12 +13,18 @@ class Edge;
 class Node : public QGraphicsEllipseItem {
 public:
     QList<Edge*> neighbors;
-
     bool visited = false;
     int total = INT_MAX;
-    // Node(qreal x, qreal y, qreal width, qreal height, QGraphicsItem *parent = nullptr);
+
     Node(QGraphicsItem *parent = nullptr);
+    ~Node();
+
     void addEdge(Node* neighbor, int cost);
+    void reset();
+private:
+    QGraphicsTextItem *totalText;
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 };
 
 class Edge : public QGraphicsLineItem {
@@ -26,6 +32,9 @@ public:
     std::pair<Node*, Node*> neighbors;
     int cost;
     Edge(Node* n1, Node* n2, int cost, QGraphicsItem *parent = nullptr);
+
+private:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 };
 
 class GraphView : public QGraphicsView
@@ -33,34 +42,6 @@ class GraphView : public QGraphicsView
     Q_OBJECT
 
 public:
-    // class Node {
-    // public:
-    //     QToolButton* button;
-    //     QLabel* label;
-    //     QString name;
-    //     bool visited;
-    //     int total;
-    //     Node(QToolButton* button, QLabel* label, QString name, bool visited, int total) : button(button), label(label), name(name), visited(visited), total(total) {}
-    // };
-    // class Edge {
-    // public:
-    //     Node* node;
-    //     int cost;
-    //     Edge(Node* node, int cost) : node(node), cost(cost) {}
-    // };
-
-    // QMap<Node*, QVector<Edge>> graph;
-    // QVector<Node*> nodes;
-
-    // int animationSpeed = 0;
-
-    // Node* albuquerqueNode;
-    // Node* denverNode;
-    // Node* phoenixNode;
-    // Node* lasVegasNode;
-    // Node* losAngelesNode;
-    // Node* saltLakeCityNode;
-    // Node* sanFranciscoNode;
 
     GraphView(QWidget *parent = nullptr);
     ~GraphView();

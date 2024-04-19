@@ -50,22 +50,22 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
 
     for (Edge *flightPath : edges) {
         auto& flight = flightPath->neighbors;
-        flightPath->setLine(QLineF(flight.first->rect().center(), flight.second->rect().center()));
+        QPointF pointA(flight.first->rect().center());
+        QPointF pointB(flight.second->rect().center());
+        flightPath->setLine(QLineF(pointA.y() < pointB.y() ? pointA, pointB : pointB, pointA));
         graphScene->addItem(flightPath);
     }
 
     QComboBox *selector = new QComboBox();
-
     for (const QString& airport : vertices.keys())
         selector->addItem(airport);
     airportSelector = graphScene->addWidget(selector);
-    // luggageAdder->resize(luggageAdderWidth, luggageAdderHeight);
-    // luggageAdder->setPos(luggageAdderX, luggageAdderY);
-    // luggage = stackScene->addRect(0, 0, 60, 50, QPen(Qt::black, 2), Qt::white);
 
+    QPushButton *animate = new QPushButton("Animate");
+    animationButton = graphScene->addWidget(animate);
+    animationButton->setPos(50, 50);
 
     setScene(graphScene);
-
 }
 
 GraphView::~GraphView() {
@@ -98,7 +98,6 @@ void GraphView::resizeEvent(QResizeEvent *event)
     if (newWidth < newHeight * aspectRatio)
         resize(newWidth, newWidth / aspectRatio);
     else resize(newHeight * aspectRatio, newHeight);
-
     // Fairly straightforward: scales the QGraphicsScene
     fitInView(graphScene->sceneRect(), Qt::KeepAspectRatio);
 
@@ -113,6 +112,23 @@ Node::Node(QGraphicsItem *parent) : QGraphicsEllipseItem(parent)
     setBrush(Qt::gray);
 }
 
+Node::~Node()
+{
+    delete totalText;
+}
+
+void Node::reset() {
+    visited = false;
+    total = INT_MAX;
+    setBrush(Qt::gray);
+}
+
+void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    QGraphicsEllipseItem::paint(painter, option, widget);
+    painter->setFont(QFont("Helvetica [Cronyx]", 10));
+    painter->drawText(boundingRect(), Qt::AlignCenter, total == INT_MAX ? "∞" : QString::number(total));
+}
+
 void Node::addEdge(Node* neighbor, int cost) {
     Edge *edge = new Edge(this, neighbor, cost);
     neighbors.push_back(edge);
@@ -124,4 +140,22 @@ Edge::Edge(Node *n1, Node *n2, int cost, QGraphicsItem *parent) : QGraphicsLineI
     setPen(QPen(Qt::black, 5));
     // n1->setPos(100, 50);
     // setLine(QLineF(n1->pos(), n2->pos()));
+}
+
+void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    QGraphicsLineItem::paint(painter, option, widget);
+
+    qreal angleInRadians(line().angle() * M_PI / 180);
+    QVector2D angleVector(sin(angleInRadians), cos(angleInRadians));
+    QRectF textBox(boundingRect().topLeft() - angleVector.toPointF() * 20, boundingRect().size());
+
+    QFont font("Helvetica [Cronyx]", 10);
+    font.setBold(true);
+    painter->setFont(font);
+    painter->setPen(Qt::black);
+    painter->drawText(textBox, Qt::AlignCenter, cost == INT_MAX ? "∞" : QString::number(cost));
+
+    // qDebug() << line().angle();
+    // qDebug() << angleInRadians;
+    // qDebug() << angleVector;
 }
