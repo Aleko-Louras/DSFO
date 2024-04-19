@@ -16,6 +16,7 @@ class Node : public QGraphicsEllipseItem {
 public:
     QList<Edge*> neighbors;
     bool visited = false;
+    bool addedToQueue = false;
     int total = INT_MAX;
     Node(QGraphicsItem *parent = nullptr);
     ~Node();
@@ -79,6 +80,8 @@ private:
 
     // Ratio of width to height (currently 5:4)
     qreal aspectRatio = 1.25;
+
+    int animationSpeed = 1000;
 
     QGraphicsScene *graphScene;
     QGraphicsEllipseItem *node;
