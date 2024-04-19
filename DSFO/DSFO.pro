@@ -55,13 +55,15 @@ SOURCES += \
     Box2D/Dynamics/b2World.cpp \
     Box2D/Dynamics/b2WorldCallbacks.cpp \
     Box2D/Rope/b2Rope.cpp \
+    endscreen.cpp \
     graphicsanimator.cpp \
     graphview.cpp \
     main.cpp \
     mainwindow.cpp \
     model.cpp \
     stackview.cpp \
-    title.cpp
+    title.cpp \
+    titleview.cpp
 
 HEADERS += \
     Box2D/Box2D.h \
@@ -111,14 +113,18 @@ HEADERS += \
     Box2D/Dynamics/b2World.h \
     Box2D/Dynamics/b2WorldCallbacks.h \
     Box2D/Rope/b2Rope.h \
+    endscreen.h \
     graphicsanimator.h \
     graphview.h \
     mainwindow.h \
     model.h \
     stackview.h \
-    title.h
+    title.h \
+    titleview.h
 
 FORMS += \
+    endscreen.ui \
+    graphview.ui \
     mainwindow.ui \
     title.ui
 
