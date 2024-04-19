@@ -18,11 +18,10 @@ public:
     bool visited = false;
     bool addedToQueue = false;
     int total = INT_MAX;
+
     Node(QGraphicsItem *parent = nullptr);
-    ~Node();
     void addEdge(Node* neighbor, int cost);
     void reset();
-    QGraphicsTextItem *totalText;
 
 private:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -30,16 +29,18 @@ private:
 
 class Edge : public QGraphicsLineItem {
 public:
-    std::pair<Node*, Node*> neighbors;
+    QGraphicsSimpleTextItem *costText;
+    Node *first;
+    Node *second;
     int cost;
-    Edge(Node* n1, Node* n2, int cost, QGraphicsItem *parent = nullptr);
 
-private:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    Edge(Node* n1, Node* n2, int cost, QGraphicsItem *parent = nullptr);
+    ~Edge();
+    void updateLine();
 };
 
 struct Comparison {
-    bool operator()(const Node* first, const Node* second){
+    bool operator()(const Node* first, const Node* second) {
         return first->total > second->total;
     }
 };

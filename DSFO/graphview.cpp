@@ -6,6 +6,7 @@
 #include <QComboBox>
 #include <queue>
 #include <QTimer>
+#include <QMargins>
 
 GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     // ESSENTIAL SETTINGS!
@@ -49,10 +50,9 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     }
 
     for (Edge *flightPath : edges) {
-        auto& flight = flightPath->neighbors;
-        QLineF flightLine(flight.first->rect().center(), flight.second->rect().center());
-        flightPath->setLine(flightLine);
+        flightPath->updateLine();
         graphScene->addItem(flightPath);
+        graphScene->addItem(flightPath->costText);
     }
 
     selector = new QComboBox();
@@ -130,19 +130,20 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
     {
         //Find neighbor based on edge
         Node* neighbor;
-        if (edge->neighbors.first == node)
-            neighbor = edge->neighbors.second;
+        if (edge->first == node)
+            neighbor = edge->second;
         else
-            neighbor = edge->neighbors.first;
-        //Flash and unflash edges we are looking at
-        QTimer::singleShot(staggerTiming*animationSpeed, this, [this, edge]{edge->setPen(QPen(Qt::yellow, 5));});
-        QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [this, edge]{edge->setPen(QPen(Qt::black, 5));});
+            neighbor = edge->first;
 
-        if (!neighbor->visited)
-        {
-            QTimer::singleShot(staggerTiming*animationSpeed, this, [this, neighbor]{neighbor->setBrush(QBrush(Qt::lightGray));});
-            QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [this, neighbor]{neighbor->setBrush(QBrush(Qt::gray));});
-        }
+        if (neighbor->visited)
+            continue;
+
+        //Flash and unflash edges we are looking at
+        QTimer::singleShot(staggerTiming*animationSpeed, this, [edge]{edge->setPen(QPen(Qt::yellow, 5)); edge->costText->setBrush(Qt::yellow);});
+        QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [edge]{edge->setPen(QPen(Qt::black, 5)); edge->costText->setBrush(Qt::black);});
+
+        QTimer::singleShot(staggerTiming*animationSpeed, this, [neighbor]{neighbor->setBrush(Qt::lightGray);});
+        QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [neighbor]{neighbor->setBrush(Qt::gray);});
 
         if (node->total + edge->cost < neighbor->total && !neighbor->visited)
         {
@@ -154,24 +155,19 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
                 neighbor->addedToQueue = true;
             }
         }
-        staggerTiming ++;
+        staggerTiming++;
     }
 
     //Stagger updating node so text does not turn white until after visiting
-    QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [this, node]{node->setBrush(QBrush(Qt::black));});
-    QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [this, node]{node->visited = true;});
+    QTimer::singleShot((staggerTiming)*animationSpeed, this, [node]{node->setBrush(QBrush(Qt::black)); node->visited = true;});
+    // QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [node]{});
     if (!priorityQueue->empty())
-        QTimer::singleShot((staggerTiming+2)*animationSpeed, this, [this, priorityQueue]{animationStep(priorityQueue);});
+        QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [this, priorityQueue]{animationStep(priorityQueue);});
 }
 
 Node::Node(QGraphicsItem *parent) : QGraphicsEllipseItem(parent)
 {
     setBrush(Qt::gray);
-}
-
-Node::~Node()
-{
-    //delete totalText;
 }
 
 void Node::reset() {
@@ -195,26 +191,26 @@ void Node::addEdge(Node* neighbor, int cost) {
     neighbor->neighbors.push_back(edge);
 }
 
-Edge::Edge(Node *n1, Node *n2, int cost, QGraphicsItem *parent) : QGraphicsLineItem(parent), neighbors(n1, n2), cost(cost)
+Edge::Edge(Node *n1, Node *n2, int cost, QGraphicsItem *parent) : QGraphicsLineItem(parent), first(n1), second(n2), cost(cost)
 {
     setPen(QPen(Qt::black, 5));
-    // n1->setPos(100, 50);
-    // setLine(QLineF(n1->pos(), n2->pos()));
 }
 
-void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    QGraphicsLineItem::paint(painter, option, widget);
+Edge::~Edge()
+{
+    delete costText;
+}
+
+void Edge::updateLine() {
+    QGraphicsLineItem::setLine(QLineF(first->rect().center(), second->rect().center()));
 
     qreal angleInRadians(line().angle() * M_PI / 180);
     QVector2D angleVector(sin(angleInRadians), cos(angleInRadians));
-    QRectF textBox(boundingRect().topLeft() - angleVector.toPointF() * 20, boundingRect().size());
-
+    QRectF textBox(boundingRect().topLeft() - angleVector.toPointF() * 15, boundingRect().size());
     QFont font("Helvetica [Cronyx]", 10);
     font.setBold(true);
-    painter->setFont(font);
-    painter->drawText(textBox, Qt::AlignCenter, cost == INT_MAX ? "∞" : QString::number(cost));
 
-    // qDebug() << line().angle();
-    // qDebug() << angleInRadians;
-    // qDebug() << angleVector;
+    costText = new QGraphicsSimpleTextItem(QString::number(cost));
+    costText->setFont(font);
+    costText->setPos(textBox.center().x() - costText->boundingRect().width() / 2, textBox.center().y() - costText->boundingRect().height() / 2);
 }

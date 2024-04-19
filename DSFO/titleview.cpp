@@ -14,11 +14,12 @@ TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
 
     titleScene = new QGraphicsScene(sceneBox, this);
     plane = titleScene->addPixmap(QPixmap::fromImage(planeImage));
+
     title = titleScene->addText("Welcome to DSFO!", QFont("Arial Rounded MT Bold", 30));
     title->setPos(sceneBox.center().x() - title->boundingRect().width() / 2, sceneBox.center().y() - title->boundingRect().height() / 2);
 
     timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &TitleView::handleTrigger);
+    connect(timer, &QTimer::timeout, this, &TitleView::movePlane);
     timer->start(timeStep * 1000);
 
     b2BodyDef groundBodyDef;
@@ -45,7 +46,7 @@ TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
     setScene(titleScene);
 }
 
-void TitleView::handleTrigger(){
+void TitleView::movePlane(){
     world.Step(timeStep, velocityIterations, positionIterations);
     b2Vec2 position = body->GetPosition();
 

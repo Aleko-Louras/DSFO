@@ -18,7 +18,7 @@ public:
     ~TitleView();
 
 private slots:
-    void handleTrigger();
+    void movePlane();
 
 private:
     void resizeEvent(QResizeEvent *event) override;
