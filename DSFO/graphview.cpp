@@ -4,6 +4,8 @@
 #include <QPushButton>
 #include <QGraphicsProxyWidget>
 #include <QComboBox>
+#include <queue>
+#include <QTimer>
 
 GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     // ESSENTIAL SETTINGS!
@@ -56,7 +58,7 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
         graphScene->addItem(flightPath);
     }
 
-    QComboBox *selector = new QComboBox();
+    selector = new QComboBox();
     for (const QString& airport : vertices.keys())
         selector->addItem(airport);
     airportSelector = graphScene->addWidget(selector);
@@ -64,6 +66,8 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     QPushButton *animate = new QPushButton("Animate");
     animationButton = graphScene->addWidget(animate);
     animationButton->setPos(50, 50);
+
+    connect(animate, &QPushButton::clicked, this, &GraphView::startAnimation);
 
     setScene(graphScene);
 }
@@ -107,14 +111,67 @@ void GraphView::resizeEvent(QResizeEvent *event)
     move(x,y);
 }
 
+void GraphView::startAnimation() {
+    Node* node = vertices[selector->currentText()];
+    qDebug() << node->neighbors.length();
+    for (Node* node : vertices.values())
+    {
+        node->reset();
+    }
+    node->total = 0;
+    std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue = new std::priority_queue<Node*, QVector<Node*>, Comparison>();
+    priorityQueue->push(node);
+    animationStep(priorityQueue);
+}
+
+void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue) {
+    Node* node = priorityQueue->top();
+    priorityQueue->pop();
+
+    //Update the node that we are visiting
+    qDebug() << "here";
+    node->setBrush(QBrush(Qt::yellow));
+
+    int staggerTiming = 0;
+    for (Edge* edge : node->neighbors)
+    {
+        //Find neighbor based on edge
+        Node* neighbor;
+        if (edge->neighbors.first == node)
+            neighbor = edge->neighbors.second;
+        else
+            neighbor = edge->neighbors.first;
+        //Flash and unflash edges we are looking at
+        QTimer::singleShot(staggerTiming*1000, this, [this, edge]{edge->setPen(QPen(Qt::yellow, 5));});
+        QTimer::singleShot((staggerTiming+1)*1000, this, [this, edge]{edge->setPen(QPen(Qt::black, 5));});
+
+        if (node->total + edge->cost < neighbor->total && !neighbor->visited)
+        {
+            neighbor->total = node->total + edge->cost;
+            qDebug() << neighbor->total << " is tot now";
+            priorityQueue->push(neighbor);
+        }
+        staggerTiming ++;
+    }
+    //Stagger updating node so text does not turn white until after visiting
+    QTimer::singleShot((staggerTiming+1)*1000, this, [this, node]{node->setBrush(QBrush(Qt::black));});
+    QTimer::singleShot((staggerTiming+1)*1000, this, [this, node]{node->visited = true;});
+    if (!priorityQueue->empty())
+    {
+
+        QTimer::singleShot((staggerTiming+2)*1000, this, [this, priorityQueue]{animationStep(priorityQueue);});
+    }
+}
+
 Node::Node(QGraphicsItem *parent) : QGraphicsEllipseItem(parent)
 {
     setBrush(Qt::gray);
+    qDebug() << "in node constructor";
 }
 
 Node::~Node()
 {
-    delete totalText;
+    //delete totalText;
 }
 
 void Node::reset() {
@@ -125,8 +182,10 @@ void Node::reset() {
 
 void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     QGraphicsEllipseItem::paint(painter, option, widget);
-    painter->setFont(QFont("Helvetica [Cronyx]", 10));
-    painter->drawText(boundingRect(), Qt::AlignCenter, total == INT_MAX ? "∞" : QString::number(total));
+    painter->setFont(QFont("Helvetica [Cronyx]", 6));
+    if (visited)
+        painter->setPen(QPen(Qt::white));
+    painter->drawText(boundingRect(), Qt::AlignCenter, total == INT_MAX ? "∞" : "$" + QString::number(total));
 }
 
 void Node::addEdge(Node* neighbor, int cost) {
