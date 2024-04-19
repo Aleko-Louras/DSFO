@@ -118,6 +118,7 @@ void GraphView::startAnimation() {
 }
 
 void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue) {
+
     Node* node = priorityQueue->top();
     priorityQueue->pop();
 
@@ -134,24 +135,33 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
         else
             neighbor = edge->neighbors.first;
         //Flash and unflash edges we are looking at
-        QTimer::singleShot(staggerTiming*1000, this, [this, edge]{edge->setPen(QPen(Qt::yellow, 5));});
-        QTimer::singleShot((staggerTiming+1)*1000, this, [this, edge]{edge->setPen(QPen(Qt::black, 5));});
+        QTimer::singleShot(staggerTiming*animationSpeed, this, [this, edge]{edge->setPen(QPen(Qt::yellow, 5));});
+        QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [this, edge]{edge->setPen(QPen(Qt::black, 5));});
+
+        if (!neighbor->visited)
+        {
+            QTimer::singleShot(staggerTiming*animationSpeed, this, [this, neighbor]{neighbor->setBrush(QBrush(Qt::lightGray));});
+            QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [this, neighbor]{neighbor->setBrush(QBrush(Qt::gray));});
+        }
 
         if (node->total + edge->cost < neighbor->total && !neighbor->visited)
         {
             neighbor->total = node->total + edge->cost;
-            priorityQueue->push(neighbor);
+            //Have to change node brush slightly for some reason to get text to display correctly
+            if (!neighbor->addedToQueue)
+            {
+                priorityQueue->push(neighbor);
+                neighbor->addedToQueue = true;
+            }
         }
         staggerTiming ++;
     }
-    //Stagger updating node so text does not turn white until after visiting
-    QTimer::singleShot((staggerTiming+1)*1000, this, [this, node]{node->setBrush(QBrush(Qt::black));});
-    QTimer::singleShot((staggerTiming+1)*1000, this, [this, node]{node->visited = true;});
-    if (!priorityQueue->empty())
-    {
 
-        QTimer::singleShot((staggerTiming+2)*1000, this, [this, priorityQueue]{animationStep(priorityQueue);});
-    }
+    //Stagger updating node so text does not turn white until after visiting
+    QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [this, node]{node->setBrush(QBrush(Qt::black));});
+    QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [this, node]{node->visited = true;});
+    if (!priorityQueue->empty())
+        QTimer::singleShot((staggerTiming+2)*animationSpeed, this, [this, priorityQueue]{animationStep(priorityQueue);});
 }
 
 Node::Node(QGraphicsItem *parent) : QGraphicsEllipseItem(parent)
@@ -166,6 +176,7 @@ Node::~Node()
 
 void Node::reset() {
     visited = false;
+    addedToQueue = false;
     total = INT_MAX;
     setBrush(Qt::gray);
 }
