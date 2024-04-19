@@ -39,7 +39,6 @@ private:
 
 struct Comparison {
     bool operator()(const Node* first, const Node* second){
-        qDebug() << "comparing " << first->total << " " << second->total;
         return first->total > second->total;
     }
 };

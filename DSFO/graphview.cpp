@@ -113,11 +113,8 @@ void GraphView::resizeEvent(QResizeEvent *event)
 
 void GraphView::startAnimation() {
     Node* node = vertices[selector->currentText()];
-    qDebug() << node->neighbors.length();
     for (Node* node : vertices.values())
-    {
         node->reset();
-    }
     node->total = 0;
     std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue = new std::priority_queue<Node*, QVector<Node*>, Comparison>();
     priorityQueue->push(node);
@@ -129,7 +126,6 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
     priorityQueue->pop();
 
     //Update the node that we are visiting
-    qDebug() << "here";
     node->setBrush(QBrush(Qt::yellow));
 
     int staggerTiming = 0;
@@ -148,7 +144,6 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
         if (node->total + edge->cost < neighbor->total && !neighbor->visited)
         {
             neighbor->total = node->total + edge->cost;
-            qDebug() << neighbor->total << " is tot now";
             priorityQueue->push(neighbor);
         }
         staggerTiming ++;
@@ -166,7 +161,6 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
 Node::Node(QGraphicsItem *parent) : QGraphicsEllipseItem(parent)
 {
     setBrush(Qt::gray);
-    qDebug() << "in node constructor";
 }
 
 Node::~Node()
