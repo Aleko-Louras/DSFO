@@ -31,7 +31,20 @@ MainWindow::MainWindow(QWidget *parent)
         descriptions.append(stream.readLine());
     }
 
+    QFile questions(":/texts/questions.txt");
+    questions.open(QFile::ReadOnly);
+    QTextStream questionStream(&questions);
+    while (!questionStream.atEnd())
+    {
+        questionDescriptions.append(questionStream.readLine());
+    }
+
     ui->summary->setText(descriptions.at(0));
+    ui->questionLabel->setText(questionDescriptions.at(0));
+    ui->answerA->setText(questionDescriptions.at(1));
+    ui->answerB->setText(questionDescriptions.at(2));
+    ui->answerC->setText(questionDescriptions.at(3));
+    ui->answerD->setText(questionDescriptions.at(4));
 
     QFile additionalTexts(":/texts/additionalDescriptions.txt");
     additionalTexts.open(QFile::ReadOnly);

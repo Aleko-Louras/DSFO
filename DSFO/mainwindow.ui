@@ -47,7 +47,7 @@
             <x>0</x>
             <y>0</y>
             <width>198</width>
-            <height>481</height>
+            <height>468</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -76,35 +76,35 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_2">
+            <widget class="QLabel" name="questionLabel">
              <property name="text">
               <string>Question</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox">
+            <widget class="QCheckBox" name="answerA">
              <property name="text">
               <string>CheckBox</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_2">
+            <widget class="QCheckBox" name="answerB">
              <property name="text">
               <string>CheckBox</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_3">
+            <widget class="QCheckBox" name="answerC">
              <property name="text">
               <string>CheckBox</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_4">
+            <widget class="QCheckBox" name="answerD">
              <property name="text">
               <string>CheckBox</string>
              </property>
@@ -337,7 +337,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>43</height>
     </rect>
    </property>
   </widget>
