@@ -30,13 +30,13 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     addEdge("Las Vegas", "San Francisco", 180);
     addEdge("Los Angeles", "San Francisco", 100);
 
-    vertices["Albuquerque"]->setRect(360, 250, 25, 25);
-    vertices["Denver"]->setRect(390, 140, 25, 25);
-    vertices["Phoenix"]->setRect(225, 290, 25, 25);
-    vertices["Salt Lake City"]->setRect(260, 90, 25, 25);
-    vertices["Los Angeles"]->setRect(95, 260, 25, 25);
-    vertices["Las Vegas"]->setRect(165, 200, 25, 25);
-    vertices["San Francisco"]->setRect(30, 130, 25, 25);
+    vertices["Albuquerque"]->setRect(360, 250, 30, 30);
+    vertices["Denver"]->setRect(390, 140, 30, 30);
+    vertices["Phoenix"]->setRect(225, 290, 30, 30);
+    vertices["Salt Lake City"]->setRect(260, 90, 30, 30);
+    vertices["Los Angeles"]->setRect(95, 260, 30, 30);
+    vertices["Las Vegas"]->setRect(165, 200, 30, 30);
+    vertices["San Francisco"]->setRect(30, 130, 30, 30);
 
     qDebug() << vertices.count();
 
@@ -159,8 +159,8 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
         QTimer::singleShot(staggerTiming*animationSpeed, this, [edge]{edge->setPen(QPen(Qt::yellow, 5)); edge->costText->setBrush(Qt::yellow);});
         QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [edge]{edge->setPen(QPen(Qt::black, 5)); edge->costText->setBrush(Qt::black);});
 
-        QTimer::singleShot(staggerTiming*animationSpeed, this, [neighbor]{neighbor->setBrush(Qt::lightGray);});
-        QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [neighbor]{neighbor->setBrush(Qt::gray);});
+        QTimer::singleShot(staggerTiming*animationSpeed, this, [neighbor]{neighbor->setBrush(Qt::gray);});
+        // QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [neighbor]{neighbor->setBrush(Qt::gray);});
 
         if (node->total + edge->cost < neighbor->total && !neighbor->visited)
         {
@@ -185,6 +185,7 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
 Node::Node(QGraphicsItem *parent) : QGraphicsEllipseItem(parent)
 {
     setBrush(Qt::gray);
+    setPen(QPen(Qt::black, 2));
 }
 
 void Node::reset() {
@@ -196,7 +197,7 @@ void Node::reset() {
 
 void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     QGraphicsEllipseItem::paint(painter, option, widget);
-    painter->setFont(QFont("Helvetica [Cronyx]", 6));
+    painter->setFont(QFont("Helvetica [Cronyx]", 8));
     if (visited)
         painter->setPen(QPen(Qt::white));
     painter->drawText(boundingRect(), Qt::AlignCenter, total == INT_MAX ? "∞" : "$" + QString::number(total));
@@ -220,14 +221,25 @@ Edge::~Edge()
 
 void Edge::updateLine() {
     QGraphicsLineItem::setLine(QLineF(first->rect().center(), second->rect().center()));
-
-    qreal angleInRadians(line().angle() * M_PI / 180);
-    QVector2D angleVector(sin(angleInRadians), cos(angleInRadians));
-    QRectF textBox(boundingRect().topLeft() - angleVector.toPointF() * 15, boundingRect().size());
     QFont font("Helvetica [Cronyx]", 10);
     font.setBold(true);
 
     costText = new QGraphicsSimpleTextItem(QString::number(cost));
     costText->setFont(font);
-    costText->setPos(textBox.center().x() - costText->boundingRect().width() / 2, textBox.center().y() - costText->boundingRect().height() / 2);
+
+    // I prepare to compute the offset by deriving a perpendicular angle vector
+    // from the line.
+    qreal angleInRadians(line().angle() * M_PI / 180);
+    QVector2D angleVector(sin(angleInRadians), cos(angleInRadians));
+    // Your first want to offset by the width of the pen.
+    QVector2D offsetFromLine(pen().width(), pen().width());
+    // Then add the dimensions of the text (divided by 2) to the offset.
+    offsetFromLine += QVector2D(costText->boundingRect().width() / 2, costText->boundingRect().height() / 2);
+    // Multiply by the angle vector for a perpendicular and angle-dependent offset.
+    offsetFromLine *= angleVector;
+    // Finally, an element is centered on the point offset point.
+    offsetFromLine += QVector2D(costText->boundingRect().width() / 2, costText->boundingRect().height() / 2);
+    // With the offset's help, it doesn't matter if the text's font is changed;
+    // it will still appear a reasonable distance from the line.
+    costText->setPos(boundingRect().center() - offsetFromLine.toPointF());
 }
