@@ -41,6 +41,8 @@ private:
     QDialog* info;
     QLabel* infoText;
 
+    int userScore = 0;
+
     void setQuestion(int currentPage);
 };
 #endif // MAINWINDOW_H

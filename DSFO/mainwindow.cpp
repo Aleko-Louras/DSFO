@@ -215,6 +215,7 @@ void MainWindow::checkAnswer() {
 
     if (ui->answerA->isChecked()) {
         ui->answerA->setStyleSheet("color: green");
+        userScore++;
     }
     if (ui->answerB->isChecked()) {
         ui->answerB->setStyleSheet("color: red");
