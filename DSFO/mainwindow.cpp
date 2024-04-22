@@ -170,16 +170,23 @@ void MainWindow::setQuestion(int currentPage) {
 
     if (currentPage == 1) {
         ui->questionLabel->setText(questionDescriptions.at(0));
+        ui->questionLabel->setWordWrap(true);
         ui->answerA->setText(questionDescriptions.at(1));
         ui->answerB->setText(questionDescriptions.at(2));
         ui->answerC->setText(questionDescriptions.at(3));
         ui->answerD->setText(questionDescriptions.at(4));
     }
     if (currentPage == 2) {
-        ui->questionLabel->setText(questionDescriptions.at(5));
-        ui->answerA->setText(questionDescriptions.at(6));
-        ui->answerB->setText(questionDescriptions.at(7));
-        ui->answerC->setText(questionDescriptions.at(8));
-        ui->answerD->setText(questionDescriptions.at(9));
+        QString labelText = "Which of the following statements best describes the essence of the stack data structure?<br><br>"
+                            "A) A data structure that follows the Last In, First Out (LIFO) principle, where the last element added is the first one to be removed.<br><br>"
+                            "B) A data structure that follows the First In, First Out (FIFO) principle, where the first element added is the first one to be removed.<br><br>"
+                            "C) A data structure that allows elements to be accessed randomly, without any specific order.<br><br>"
+                            "D) A data structure that organizes elements in a hierarchical manner, resembling the structure of a tree.";
+        ui->questionLabel->setText(labelText);
+
+        ui->answerA->setText("A");
+        ui->answerB->setText("B");
+        ui->answerC->setText("C");
+        ui->answerD->setText("D");
     }
 }
