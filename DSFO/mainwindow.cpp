@@ -169,6 +169,21 @@ void MainWindow::onPageChanged() {
 void MainWindow::setQuestion(int currentPage) {
     qDebug() << currentPage;
 
+    ui->answerA->setEnabled(true);
+    ui->answerB->setEnabled(true);
+    ui->answerC->setEnabled(true);
+    ui->answerD->setEnabled(true);
+
+    ui->answerA->setChecked(false);
+    ui->answerB->setChecked(false);
+    ui->answerC->setChecked(false);
+    ui->answerD->setChecked(false);
+
+    ui->answerA->setStyleSheet("");
+    ui->answerB->setStyleSheet("");
+    ui->answerC->setStyleSheet("");
+    ui->answerD->setStyleSheet("");
+
     if (currentPage == 1) {
         ui->questionLabel->setText(questionDescriptions.at(0));
         ui->questionLabel->setWordWrap(true);
