@@ -73,11 +73,27 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     slider->setMaximum(200);
     slider->setValue(60);
 
-    QLabel *label = new QLabel("label");
+    QLabel* sliderLabel = new QLabel("Faster                                         Slower");
+    sliderLabel->setFixedSize(slider->size());
+    animationSliderLabel = graphScene->addWidget(sliderLabel);
+    animationSliderLabel->setPos(0, 330);
+
+    label = new QLabel();
+    label->setFixedSize(200, 100);
+    label->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    label->setWordWrap(true);
+    label->setVisible(false);
+    label->setStyleSheet("background-color: rgba(0,0,0,0);");
     animationLabel = graphScene->addWidget(label);
-    animationLabel->setPos(380, 25);
+    animationLabel->setPos(300, 0);
+
+    tips = new QPushButton("Display tips");
+    tipsButton = graphScene->addWidget(tips);
+    tipsButton->setPos(200, 0);
 
     connect(animate, &QPushButton::clicked, this, &GraphView::startAnimation);
+
+    connect(tips, &QPushButton::clicked, this, &GraphView::toggleTips);
 
     setScene(graphScene);
 }
@@ -89,6 +105,11 @@ GraphView::~GraphView() {
     delete animationButton;
     delete animationSlider;
     delete animationLabel;
+    delete tipsButton;
+    delete label;
+    delete slider;
+    delete selector;
+    delete tips;
 }
 
 void GraphView::addEdge(QString port1, QString port2, int cost) {
@@ -162,6 +183,9 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
         QTimer::singleShot(staggerTiming*animationSpeed, this, [neighbor]{neighbor->setBrush(Qt::lightGray);});
         QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [neighbor]{neighbor->setBrush(Qt::gray);});
 
+        int oldCost = neighbor->total;
+        QTimer::singleShot(staggerTiming*animationSpeed, this, [this, node, edge, neighbor, oldCost]{updateAnimationLabel(node, edge, neighbor, oldCost);});
+
         if (node->total + edge->cost < neighbor->total && !neighbor->visited)
         {
             neighbor->total = node->total + edge->cost;
@@ -177,13 +201,45 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
 
     //Stagger updating node so text does not turn white until after visiting
     QTimer::singleShot((staggerTiming)*animationSpeed, this, [node]{node->setBrush(QBrush(Qt::black)); node->visited = true;});
-    // QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [node]{});
+
     if (!priorityQueue->empty())
+    {
+        QTimer::singleShot(staggerTiming*animationSpeed, this, [this, priorityQueue]{label->setText("The cheapest known non-visited node is " + vertices.key(priorityQueue->top()) + ", so go there next.");});
         QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [this, priorityQueue]{animationStep(priorityQueue);});
+    }
+    else
+        QTimer::singleShot(staggerTiming*animationSpeed, this, [this, priorityQueue]{label->setText("Every node has been visited, so we are done!");});
 }
 
-Node::Node(QGraphicsItem *parent) : QGraphicsEllipseItem(parent)
-{
+void GraphView::updateAnimationLabel(Node* node, Edge* edge, Node* neighbor, int oldValue) {
+    QString text;
+    int calculatedCost = edge->cost + node->total;
+    text += "The cost from " + vertices.key(node) + " to " + vertices.key(neighbor) + " is " + QString::number(edge->cost) + " + " + QString::number(node->total) + " = " + QString::number(calculatedCost) + ".";
+    if (oldValue == INT_MAX)
+        text += " This is the first path we have found to this node, so update the cost.";
+    else if (oldValue > calculatedCost)
+        text += " This is cheaper than the old cost of " + QString::number(oldValue) + ", so update the cost.";
+    else if (oldValue < calculatedCost)
+        text += " This is more expensive than the old cost of " + QString::number(oldValue) + ", so don't update the cost.";
+    else
+        text += " This is the same as the old cost, so nothing really changes.";
+    label->setText(text);
+}
+
+void GraphView::toggleTips() {
+    if (tips->text() == "Display tips")
+    {
+        tips->setText("Hide tips");
+        label->setVisible(true);
+    }
+    else
+    {
+        tips->setText("Display tips");
+        label->setVisible(false);
+    }
+}
+
+Node::Node(QGraphicsItem *parent) : QGraphicsEllipseItem(parent) {
     setBrush(Qt::gray);
 }
 
