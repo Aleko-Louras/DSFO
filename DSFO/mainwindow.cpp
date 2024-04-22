@@ -147,6 +147,7 @@ void MainWindow::onNextClicked() {
 
     ui->stackedPages->setCurrentIndex(std::min(ui->stackedPages->count() - 1, nextPage));
     ui->backButton->setEnabled(true);
+
 }
 
 void MainWindow::onPageChanged() {
@@ -156,9 +157,29 @@ void MainWindow::onPageChanged() {
     int currentPage = ui->stackedPages->currentIndex();
     if(currentPage < additionalDescriptions.size()) {
         infoText->setText(additionalDescriptions.at(currentPage));
+        setQuestion(currentPage);
     } else {
         infoText->setText("No additional information available");
     }
 
     ui->summaryLayout->setVisible(currentPage != 0);
+}
+
+void MainWindow::setQuestion(int currentPage) {
+    qDebug() << currentPage;
+
+    if (currentPage == 1) {
+        ui->questionLabel->setText(questionDescriptions.at(0));
+        ui->answerA->setText(questionDescriptions.at(1));
+        ui->answerB->setText(questionDescriptions.at(2));
+        ui->answerC->setText(questionDescriptions.at(3));
+        ui->answerD->setText(questionDescriptions.at(4));
+    }
+    if (currentPage == 2) {
+        ui->questionLabel->setText(questionDescriptions.at(5));
+        ui->answerA->setText(questionDescriptions.at(6));
+        ui->answerB->setText(questionDescriptions.at(7));
+        ui->answerC->setText(questionDescriptions.at(8));
+        ui->answerD->setText(questionDescriptions.at(9));
+    }
 }

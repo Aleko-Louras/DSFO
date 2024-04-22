@@ -39,5 +39,7 @@ private:
     QPushButton* readMoreButton;
     QDialog* info;
     QLabel* infoText;
+
+    void setQuestion(int currentPage);
 };
 #endif // MAINWINDOW_H

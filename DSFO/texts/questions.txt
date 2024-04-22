@@ -3,3 +3,10 @@ SLC->LAS->SFO
 SLC->LAX->SFO
 SLC->LAS->LAX->SFO
 No path exists
+Which of the following statements best describes the essence of the stack data structure?
+A data structure that follows the Last In, First Out (LIFO) principle, where the last element added is the first one to be removed.
+A data structure that follows the First In, First Out (FIFO) principle, where the first element added is the first one to be removed.
+A data structure that allows elements to be accessed randomly, without any specific order.
+A data structure that organizes elements in a hierarchical manner, resembling the structure of a tree.
+
+
