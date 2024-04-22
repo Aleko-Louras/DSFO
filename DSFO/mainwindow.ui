@@ -24,7 +24,7 @@
        </size>
       </property>
       <property name="title">
-       <string>Description</string>
+       <string/>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -127,7 +127,7 @@
     <item row="1" column="3">
      <widget class="QGroupBox" name="pageManager">
       <property name="title">
-       <string>PageManager</string>
+       <string/>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
@@ -175,7 +175,7 @@
        <enum>Qt::RightToLeft</enum>
       </property>
       <property name="title">
-       <string>GraphView</string>
+       <string/>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
