@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
            this, &MainWindow::onBackClicked);
     connect(ui->stackedPages, &QStackedWidget::currentChanged,
            this, &MainWindow::onPageChanged);
+    connect(ui->checkAnswerButton, &QPushButton::clicked, this, &MainWindow::checkAnswer);
 
     QFile texts(":/texts/descriptions.txt");
     texts.open(QFile::ReadOnly);
@@ -188,5 +189,25 @@ void MainWindow::setQuestion(int currentPage) {
         ui->answerB->setText("B");
         ui->answerC->setText("C");
         ui->answerD->setText("D");
+    }
+}
+
+void MainWindow::checkAnswer() {
+    ui->answerA->setEnabled(false);
+    ui->answerB->setEnabled(false);
+    ui->answerC->setEnabled(false);
+    ui->answerD->setEnabled(false);
+
+    if (ui->answerA->isChecked()) {
+        ui->answerA->setStyleSheet("color: green");
+    }
+    if (ui->answerB->isChecked()) {
+        ui->answerB->setStyleSheet("color: red");
+    }
+    if (ui->answerC->isChecked()) {
+        ui->answerC->setStyleSheet("color: red");
+    }
+    if (ui->answerD->isChecked()) {
+        ui->answerD->setStyleSheet("color: red");
     }
 }

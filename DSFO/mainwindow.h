@@ -28,6 +28,7 @@ private slots:
 
 public slots:
     void showMoreInfo();
+    void checkAnswer();
 
 
 
