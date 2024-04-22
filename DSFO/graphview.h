@@ -10,6 +10,7 @@
 #include <QGraphicsEllipseItem>
 #include <QComboBox>
 #include <queue>
+#include <QPushButton>
 
 class Edge;
 class Node : public QGraphicsEllipseItem {
@@ -72,6 +73,9 @@ private:
 
     void startAnimation();
     void animationStep(std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue);
+    void updateAnimationLabel(Node* node, Edge* edge, Node* neighbor, int oldValue);
+    void toggleTips();
+
 
     /// Resizes 'this' StackView alongside its parent widget.
     void resizeEvent(QResizeEvent *event) override;
@@ -91,8 +95,12 @@ private:
     QGraphicsProxyWidget *animationButton;
     QGraphicsProxyWidget *animationLabel;
     QGraphicsProxyWidget *animationSlider;
+    QGraphicsProxyWidget *animationSliderLabel;
+    QGraphicsProxyWidget *tipsButton;
     QComboBox *selector;
     QSlider *slider;
+    QLabel *label;
+    QPushButton *tips;
     // Ratio of width to height (currently 5:4)
     // qreal aspectRatio = 1.25;
 

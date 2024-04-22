@@ -35,6 +35,7 @@ private:
     Ui::MainWindow *ui;
     QVector<QString> descriptions;
     QVector<QString> additionalDescriptions;
+    QVector<QString> questionDescriptions;
     QPushButton* readMoreButton;
     QDialog* info;
     QLabel* infoText;
