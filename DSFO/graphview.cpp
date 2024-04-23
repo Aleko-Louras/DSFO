@@ -234,15 +234,66 @@ void GraphView::generateCosts() {
         int randomOffset = randomValue - input/(2*2);
         return input + randomOffset;
     };
-    //Adjusted cost by approximately dividing air distance by 5
+
     addEdge("Albuquerque", "Denver", randomOffsetize(70));
     addEdge("Albuquerque", "Phoenix", randomOffsetize(65));
     addEdge("Denver", "Salt Lake City", randomOffsetize(75));
-    addEdge("Phoenix", "Los Angeles", randomOffsetize(70));
-    addEdge("Phoenix", "Salt Lake City", randomOffsetize(100));
-    addEdge("Las Vegas", "Salt Lake City", randomOffsetize(72));
-    addEdge("Las Vegas", "Los Angeles", randomOffsetize(55));
-    addEdge("Las Vegas", "San Francisco", randomOffsetize(125));
+
+    bool slcToWest = false; //Failsafe to make sure slc is at least connected to lv or sf
+
+    //80% chance to have from LV to SLC
+    if (rand() % 10 > 0)
+    {
+        addEdge("Las Vegas", "Salt Lake City", randomOffsetize(72));
+        slcToWest = true;
+    }
+    //20% chance to have edge from SLC to SF
+    if (rand()% 10 > 7)
+    {
+        addEdge("Salt Lake City", "San Francisco", randomOffsetize(160));
+        slcToWest = true;
+    }
+    if (!slcToWest)
+        addEdge("Salt Lake City", "San Francisco", randomOffsetize(160));
+
+    int lvConnectionsRand = rand() % 10;
+
+    //60% chance to have edge from LV to SF and LA to LV, 20% to have only one, 20% to have the other only one
+    if (lvConnectionsRand > 3)
+    {
+        addEdge("Las Vegas", "San Francisco", randomOffsetize(125));
+        addEdge("Las Vegas", "Los Angeles", randomOffsetize(55));
+    }
+    else if (lvConnectionsRand > 1)
+        addEdge("Las Vegas", "San Francisco", randomOffsetize(125));
+    else
+        addEdge("Las Vegas", "Los Angeles", randomOffsetize(55));
+
+    //Randomize connections from phoenix to lv and la
+    int southConnectionsRand = rand() % 10;
+
+    //40% chance one connection, 40% chance the other, 20% chance both
+    if (southConnectionsRand <= 3)
+        addEdge("Phoenix", "Los Angeles", randomOffsetize(70));
+    else if (southConnectionsRand <= 7)
+        addEdge("Phoenix", "Las Vegas", randomOffsetize(80));
+    else
+    {
+        addEdge("Phoenix", "Los Angeles", randomOffsetize(70));
+        addEdge("Phoenix", "Las Vegas", randomOffsetize(80));
+    }
+
+    //Randomize connections from denver to phoenix/slc to albuquerque
+    int rockiesConnections = rand() % 10;
+
+    //20% chance one connection, 20% chance the other, 60% chance neither and have phx->slc instead
+    if (rockiesConnections <= 1)
+        addEdge("Salt Lake City", "Albuquerque", randomOffsetize(150));
+    else if (rockiesConnections <= 3)
+        addEdge("Phoenix", "Denver", randomOffsetize(150));
+    else
+        addEdge("Phoenix", "Salt Lake City", randomOffsetize(100));
+
     addEdge("Los Angeles", "San Francisco", randomOffsetize(70));
 
     vertices["Albuquerque"]->setRect(360, 250, 30, 30);
