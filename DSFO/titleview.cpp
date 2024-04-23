@@ -17,6 +17,10 @@ TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
 
     title = titleScene->addText("Welcome to DSFO!", QFont("Arial Rounded MT Bold", 30));
     title->setPos(sceneBox.center().x() - title->boundingRect().width() / 2, sceneBox.center().y() - title->boundingRect().height() / 2);
+    QGraphicsTextItem *info = titleScene->addText("This game simulates graphs and stacks in the setting of an airport. Graphs represent the routes and destinations  a plane can travel. Stacks will represent the baggage on the carousel. Click the next button to continue or go to 'Menu' at the top left and click 'More Information'");
+    info->setFont(QFont("Arial", 12));
+    info->setTextWidth(this->width() - 20);
+    info->setPos(10, this->height() - 150);
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &TitleView::movePlane);

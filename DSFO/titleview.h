@@ -44,6 +44,7 @@ private:
     std::vector<b2Vec2> angles;
     std::vector<QPixmap> images;
     int angleIndex;
+
 };
 
 #endif // TITLEVIEW_H
