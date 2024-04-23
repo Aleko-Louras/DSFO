@@ -62,6 +62,11 @@
            <height>0</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <pointsize>18</pointsize>
+          </font>
+         </property>
          <property name="horizontalScrollBarPolicy">
           <enum>Qt::ScrollBarAlwaysOff</enum>
          </property>
@@ -74,7 +79,7 @@
             <x>0</x>
             <y>0</y>
             <width>198</width>
-            <height>540</height>
+            <height>515</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -88,7 +93,7 @@
              </property>
              <property name="font">
               <font>
-               <pointsize>9</pointsize>
+               <pointsize>18</pointsize>
               </font>
              </property>
              <property name="text">
@@ -403,7 +408,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>43</height>
     </rect>
    </property>
   </widget>
