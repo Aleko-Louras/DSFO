@@ -172,7 +172,6 @@ void MainWindow::onPageChanged() {
 }
 
 void MainWindow::setQuestion(int currentPage) {
-    qDebug() << currentPage;
 
     //Lambda/nested function to create random offsets for incorrect answers
     auto randomOffsetize = [](int input) {
@@ -264,8 +263,4 @@ void MainWindow::generateRandomPath () {
         randomDestination = cheapestCosts.value(randomSource).at(randomDestinationInt).first;
         randomCost = cheapestCosts.value(randomSource).at(randomDestinationInt).second;
     } while (randomCost < maxCost(randomSource));
-}
-
-void MainWindow::toggleAnswerButton () {
-    qDebug() << "pushed";
 }

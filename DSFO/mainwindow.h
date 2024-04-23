@@ -26,7 +26,6 @@ private slots:
     void onNextClicked();
     void onBackClicked();
     void onPageChanged();
-    void toggleAnswerButton();
 
 public slots:
     void showMoreInfo();
