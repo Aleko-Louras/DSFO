@@ -88,11 +88,10 @@ MainWindow::MainWindow(QWidget *parent)
 //    connect(pageComboBox, &QComboBox::activated,
 //            stackedWidget, &QStackedWidget::setCurrentIndex);
 
-    //Initialize read more button
-    readMoreButton = new QPushButton(this);
-    readMoreButton->setText("Read More");
-    readMoreButton->setGeometry(0, 0, 100, 50);
-
+    QMenu *menu = menuBar()->addMenu(tr("Menu"));
+    readMore = new QAction(tr("&More Information"), this);
+    menu->addAction(readMore);
+    connect(readMore, &QAction::triggered, this, &MainWindow::showMoreInfo);
     //Initialize info dialog
     info = new QDialog(this);
     info->setWindowTitle("More Information");
@@ -103,7 +102,7 @@ MainWindow::MainWindow(QWidget *parent)
     QPushButton *closeButton = new QPushButton("Close", info);
     closeButton->setGeometry(QRect(100,150,100,30));
     connect(closeButton, &QPushButton::clicked, info, &QDialog::close);
-    connect(readMoreButton, &QPushButton::clicked, this, &MainWindow::showMoreInfo);
+    ui->summaryLayout->setVisible(false);
 
     ui->summaryLayout->setVisible(false);
 }
@@ -159,7 +158,10 @@ void MainWindow::onNextClicked() {
 void MainWindow::onPageChanged() {
     ui->pageTracker->setText(QString("Page " + QString::number(ui->stackedPages->currentIndex() + 1) +
                                      " of " + QString::number(ui->stackedPages->count())));
-    ui->summary->setText(descriptions.at(ui->stackedPages->currentIndex()));
+    if (ui->stackedPages->currentIndex() == 1)
+        ui->summary->setText("Imagine you are planning a trip around the American Southwest. You have a tight budget, so you want to save as much as possible on your flight costs. Unfortunately, it's a busy time of year for the airline companies, and flights are inconsistent in their prices and availability. Given a graph (pictured on the left) of given flights and costs for a week, how do you find the cheapest way to travel from a certain city to a certain city? <br><br> A solution to this problem is to use something known as Dijkstra's algorithm. Dijkstra's algorithm entails a few basic steps, that can be explained with this airport analogy here: <br><br> 1. Set the cost for the start airport to $0, and the cost for destination airports to infinity. Select the starting airport to look at first. <br><br> 2. Calculate the cost of travelling to each adjacent airport from the airport we are looking at, and if the new cost is cheaper, update the cost. <br><br> 3. Mark this airport as visited, and find the cheapest airport that we have found a path to (and that hasn't been visited) and look at that one next. <br><br> 4. Repeat step 2 if there is a cheapest non-visited airport that was found. <br><br> 5. If all airports have been visited, we are done.<br><br> You can test your knowledge of Dijkstra's by asking questions and playing an animation for clarity,  and you can try a new random scenario to make the paths different.");
+    else
+        ui->summary->setText(descriptions.at(ui->stackedPages->currentIndex()));
     int currentPage = ui->stackedPages->currentIndex();
     if(currentPage < additionalDescriptions.size()) {
         infoText->setText(additionalDescriptions.at(currentPage));

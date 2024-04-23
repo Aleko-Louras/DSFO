@@ -1,6 +1,5 @@
-Here is more on how to play the game
-Here is more on graphs
-Here is more on stacks
+This game simulate graphs and stacks in the setting an airport. Graphs represent the airports a plane can travel to and stack will represent the luggage on the carousel.
+You have to change the graph without animating to be able to answer questions. If you're confused, you can press the display tips button at the top of the graph.
 Here is more on queues
 
 

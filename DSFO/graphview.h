@@ -101,6 +101,7 @@ private:
 
     int animationSpeed;
 
+    std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue;
     QGraphicsScene *graphScene;
     QGraphicsEllipseItem *node;
     QGraphicsPixmapItem *westCoast;
@@ -111,10 +112,13 @@ private:
     QGraphicsProxyWidget *animationSliderLabel;
     QGraphicsProxyWidget *tipsButton;
     QGraphicsProxyWidget *newGraphButton;
+    QPushButton *animate;
+    QLabel* sliderLabel;
     QComboBox *selector;
     QSlider *slider;
     QLabel *label;
     QPushButton *tips;
+    QPushButton *newGraph;
     // Ratio of width to height (currently 5:4)
     // qreal aspectRatio = 1.25;
 

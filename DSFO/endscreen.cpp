@@ -5,6 +5,7 @@ EndScreen::EndScreen(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::EndScreen),  world(b2Vec2(0.0f, 0.0f))
 {
+
     ui->setupUi(this);
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &EndScreen::handleTrigger);
