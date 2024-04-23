@@ -23,9 +23,10 @@ class GraphicsAnimator : public QGraphicsObject {
     // to set up the necessary read and write methods.
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 private:
-    QGraphicsItem *target;
     QPropertyAnimation *targetAnimation;
 public:
+    QGraphicsItem *target;
+
     /// Constructs a GraphicsAnimator given a parentItem and animation
     GraphicsAnimator(QGraphicsItem *target, const QByteArray &propertyName);
     /// Read method for a QGraphicsItem's position
@@ -41,7 +42,7 @@ public:
     /// bounding box is nonexistant and can't be clicked.
     QRectF boundingRect() const;
     /// Returns the animation set for 'this' GraphicsAnimator.
-    QPropertyAnimation *animation() const;
+    QPropertyAnimation *animation();
 };
 
 #endif // GRAPHICSANIMATOR_H

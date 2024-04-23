@@ -10,4 +10,4 @@ QPointF GraphicsAnimator::pos() const { return target->pos(); }
 void GraphicsAnimator::setPos(const QPointF &newPos) { target->setPos(newPos); }
 void GraphicsAnimator::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {}
 QRectF GraphicsAnimator::boundingRect() const { return QRectF(); }
-QPropertyAnimation* GraphicsAnimator::animation() const { return targetAnimation; }
+QPropertyAnimation* GraphicsAnimator::animation() { return targetAnimation; }

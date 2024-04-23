@@ -7,6 +7,8 @@
 #include <QGraphicsView>
 #include <QGraphicsWidget>
 #include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
+
 #include "graphicsanimator.h"
 
 class StackView : public QGraphicsView
@@ -27,12 +29,18 @@ class StackView : public QGraphicsView
         QGraphicsRectItem *sendingConveyor;
         QGraphicsLineItem *divider;
         // Luggage-related items
-        QGraphicsRectItem *luggage;
-        GraphicsAnimator *animator;
+        // QGraphicsRectItem *luggage;
+        // QParallelAnimationGroup *luggageAnimation = new QParallelAnimationGroup(this);
+        // GraphicsAnimator *animator;
         QGraphicsProxyWidget *luggageAdder;
+
+        QList<GraphicsAnimator*> luggage;
 
         /// Resizes 'this' StackView alongside its parent widget.
         void resizeEvent(QResizeEvent *event) override;
+
+    private slots:
+        void addLuggage();
 };
 
 #endif // STACKVIEW_H
