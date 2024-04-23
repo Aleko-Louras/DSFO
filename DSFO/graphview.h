@@ -105,12 +105,12 @@ signals:
     ///
     /// \brief animationButtonPushed: simple signal for when the animation button is pushed in the graphView
     ///
-    animationButtonPushed();
+    void animationButtonPushed();
 
     ///
     /// \brief newGraphPushed: simple signal for when the new graph button is pushed in the graphView
     ///
-    newGraphPushed();
+    void newGraphPushed();
 
 private:
 
