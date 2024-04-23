@@ -74,7 +74,7 @@
             <x>0</x>
             <y>0</y>
             <width>198</width>
-            <height>493</height>
+            <height>534</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -238,7 +238,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedPages">
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="titlePage">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -378,6 +378,18 @@
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="page">
+          <widget class="EndScreen" name="endScreen" native="true">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>541</width>
+             <height>481</height>
+            </rect>
+           </property>
+          </widget>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -412,6 +424,12 @@
    <class>TitleView</class>
    <extends>QGraphicsView</extends>
    <header>titleview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>EndScreen</class>
+   <extends>QWidget</extends>
+   <header location="global">endscreen.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -16,14 +16,22 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>50</y>
-     <width>421</width>
-     <height>371</height>
+     <x>100</x>
+     <y>150</y>
+     <width>331</width>
+     <height>151</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>30</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>End screen! Bye World!</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
  </widget>
