@@ -7,12 +7,16 @@
 #include <queue>
 #include <QTimer>
 #include <QMargins>
+#include <ctime>
 
 GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
+
     // ESSENTIAL SETTINGS!
     setMinimumSize(500, 400);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    srand(time(NULL));
 
     QRectF sceneBox(0, 0, width(), height());
     QImage westCoastMap = QImage(":/images/swbackground.png").scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -20,25 +24,7 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     graphScene = new QGraphicsScene(sceneBox, this);
     westCoast = graphScene->addPixmap(QPixmap::fromImage(westCoastMap));
 
-    addEdge("Albuquerque", "Denver", 80);
-    addEdge("Albuquerque", "Phoenix", 80);
-    addEdge("Denver", "Salt Lake City", 120);
-    addEdge("Phoenix", "Los Angeles", 130);
-    addEdge("Phoenix", "Salt Lake City", 200);
-    addEdge("Las Vegas", "Salt Lake City", 90);
-    addEdge("Las Vegas", "Los Angeles", 50);
-    addEdge("Las Vegas", "San Francisco", 180);
-    addEdge("Los Angeles", "San Francisco", 100);
-
-    vertices["Albuquerque"]->setRect(360, 250, 30, 30);
-    vertices["Denver"]->setRect(390, 140, 30, 30);
-    vertices["Phoenix"]->setRect(225, 290, 30, 30);
-    vertices["Salt Lake City"]->setRect(260, 90, 30, 30);
-    vertices["Los Angeles"]->setRect(95, 260, 30, 30);
-    vertices["Las Vegas"]->setRect(165, 200, 30, 30);
-    vertices["San Francisco"]->setRect(30, 130, 30, 30);
-
-    qDebug() << vertices.count();
+    generateCosts();
 
     QSet<Edge*> edges;
 
@@ -47,12 +33,6 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
         for (Edge *flightPath : airport->neighbors)
             edges << flightPath;
         airport->setZValue(1);
-    }
-
-    for (Edge *flightPath : edges) {
-        flightPath->updateLine();
-        graphScene->addItem(flightPath);
-        graphScene->addItem(flightPath->costText);
     }
 
     selector = new QComboBox();
@@ -91,9 +71,15 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     tipsButton = graphScene->addWidget(tips);
     tipsButton->setPos(200, 0);
 
-    connect(animate, &QPushButton::clicked, this, &GraphView::startAnimation);
+    QPushButton *newGraph = new QPushButton("Randomize graph");
+    newGraphButton = graphScene->addWidget(newGraph);
+    newGraphButton->setPos(0, 375);
 
+    connect(animate, &QPushButton::clicked, this, &GraphView::startAnimation);
     connect(tips, &QPushButton::clicked, this, &GraphView::toggleTips);
+    connect(newGraph, &QPushButton::clicked, this, &GraphView::randomizeGraph);
+
+    calculateCheapestCosts();
 
     setScene(graphScene);
 }
@@ -119,7 +105,7 @@ void GraphView::addEdge(QString port1, QString port2, int cost) {
         vertices[port1] = new Node();
     if(!vertices.contains(port2))
         vertices[port2] = new Node();
-    // Adds a new edge from vertex1 to vertex2
+    // Adds a new edge from vertex1 to vertex2    
     vertices[port1]->addEdge(vertices[port2], cost);
 }
 
@@ -144,6 +130,7 @@ void GraphView::resizeEvent(QResizeEvent *event)
 }
 
 void GraphView::startAnimation() {
+    emit animationButtonPushed();
     Node* node = vertices[selector->currentText()];
     for (Node* node : vertices.values())
         node->reset();
@@ -236,6 +223,126 @@ void GraphView::toggleTips() {
     {
         tips->setText("Display tips");
         label->setVisible(false);
+    }
+}
+
+void GraphView::generateCosts() {
+
+    auto randomOffsetize = [](int input) {
+        //Randomize by +- max 1/4 of input
+        int randomValue = (rand() % input)/2;
+        int randomOffset = randomValue - input/(2*2);
+        return input + randomOffset;
+    };
+    //Adjusted cost by approximately dividing air distance by 5
+    addEdge("Albuquerque", "Denver", randomOffsetize(70));
+    addEdge("Albuquerque", "Phoenix", randomOffsetize(65));
+    addEdge("Denver", "Salt Lake City", randomOffsetize(75));
+    addEdge("Phoenix", "Los Angeles", randomOffsetize(70));
+    addEdge("Phoenix", "Salt Lake City", randomOffsetize(100));
+    addEdge("Las Vegas", "Salt Lake City", randomOffsetize(72));
+    addEdge("Las Vegas", "Los Angeles", randomOffsetize(55));
+    addEdge("Las Vegas", "San Francisco", randomOffsetize(125));
+    addEdge("Los Angeles", "San Francisco", randomOffsetize(70));
+
+    vertices["Albuquerque"]->setRect(360, 250, 30, 30);
+    vertices["Denver"]->setRect(390, 140, 30, 30);
+    vertices["Phoenix"]->setRect(225, 290, 30, 30);
+    vertices["Salt Lake City"]->setRect(260, 90, 30, 30);
+    vertices["Los Angeles"]->setRect(95, 260, 30, 30);
+    vertices["Las Vegas"]->setRect(165, 200, 30, 30);
+    vertices["San Francisco"]->setRect(30, 130, 30, 30);
+
+    QSet<Edge*> edges;
+
+    for (Node *airport : vertices)
+        for (Edge *flightPath : airport->neighbors)
+            edges << flightPath;
+
+    for (Edge *flightPath : edges) {
+        flightPath->updateLine();
+        graphScene->addItem(flightPath);
+        graphScene->addItem(flightPath->costText);
+    }
+
+}
+
+void GraphView::startDijkstra(Node* node) {
+    node->total = 0;
+    std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue = new std::priority_queue<Node*, QVector<Node*>, Comparison>();
+    priorityQueue->push(node);
+    dijkstraStep(priorityQueue);
+}
+
+void GraphView::dijkstraStep(std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue) {
+
+    Node* node = priorityQueue->top();
+    priorityQueue->pop();
+
+    node->visited = true;
+
+    for (Edge* edge : node->neighbors)
+    {
+        //Find neighbor based on edge
+        Node* neighbor;
+        if (edge->first == node)
+            neighbor = edge->second;
+        else
+            neighbor = edge->first;
+
+        if (neighbor->visited)
+            continue;
+
+        if (node->total + edge->cost < neighbor->total && !neighbor->visited)
+        {
+            neighbor->total = node->total + edge->cost;
+            if (!neighbor->addedToQueue)
+            {
+                priorityQueue->push(neighbor);
+                neighbor->addedToQueue = true;
+            }
+        }
+    }
+    if (!priorityQueue->empty())
+        dijkstraStep(priorityQueue);
+}
+
+QHash<QString, QVector<std::pair<QString, int>>> GraphView::getCheapestCosts() {
+    return cheapestCosts;
+}
+
+void GraphView::randomizeGraph() {
+    for (Node* node : vertices)
+    {
+        for (Edge* edge : node->neighbors)
+        {
+            if (graphScene->items().contains(edge->costText))
+                graphScene->removeItem(edge->costText);
+            if (graphScene->items().contains(edge))
+                graphScene->removeItem(edge);
+        }
+        node->neighbors.clear();
+    }
+    generateCosts();
+    calculateCheapestCosts();
+    emit newGraphPushed();
+}
+
+void GraphView::calculateCheapestCosts() {
+    QVector<std::pair<QString, int>> costsForNode;
+    //Run dijkstra on each node to populate cheapest costs array
+    for (Node* node : vertices)
+    {
+        //Run dijkstra for node we are looking at
+        startDijkstra(node);
+        costsForNode.clear();
+        //Now for every node in the graph, the cheapest cost is stored in the total member so just populate the cheapestCosts with that
+        for (Node* destination : vertices)
+        {
+            costsForNode.push_back(std::pair(vertices.key(destination), destination->total));
+            destination->reset();
+        }
+        cheapestCosts.insert(vertices.key(node), costsForNode);
     }
 }
 

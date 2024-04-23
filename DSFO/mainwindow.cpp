@@ -24,6 +24,11 @@ MainWindow::MainWindow(QWidget *parent)
            this, &MainWindow::onPageChanged);
     connect(ui->checkAnswerButton, &QPushButton::clicked, this, &MainWindow::checkAnswer);
 
+    connect(ui->graphicsView, &GraphView::animationButtonPushed, this, [this]{ui->checkAnswerButton->setDisabled(true);});
+    connect(ui->graphicsView, &GraphView::newGraphPushed, this, [this]{ui->checkAnswerButton->setEnabled(true); generateRandomPath(); setQuestion(ui->stackedPages->currentIndex());});
+
+    generateRandomPath();
+
     QFile texts(":/texts/descriptions.txt");
     texts.open(QFile::ReadOnly);
     QTextStream stream(&texts);
@@ -40,12 +45,12 @@ MainWindow::MainWindow(QWidget *parent)
         questionDescriptions.append(questionStream.readLine());
     }
 
-    ui->summary->setText(descriptions.at(0));
-    ui->questionLabel->setText(questionDescriptions.at(0));
-    ui->answerA->setText(questionDescriptions.at(1));
-    ui->answerB->setText(questionDescriptions.at(2));
-    ui->answerC->setText(questionDescriptions.at(3));
-    ui->answerD->setText(questionDescriptions.at(4));
+    //Push back buttons into a list
+    answerButtons.push_back(ui->answerA);
+    answerButtons.push_back(ui->answerB);
+    answerButtons.push_back(ui->answerC);
+    answerButtons.push_back(ui->answerD);
+
 
     QFile additionalTexts(":/texts/additionalDescriptions.txt");
     additionalTexts.open(QFile::ReadOnly);
@@ -169,28 +174,32 @@ void MainWindow::onPageChanged() {
 void MainWindow::setQuestion(int currentPage) {
     qDebug() << currentPage;
 
-    ui->answerA->setEnabled(true);
-    ui->answerB->setEnabled(true);
-    ui->answerC->setEnabled(true);
-    ui->answerD->setEnabled(true);
+    //Lambda/nested function to create random offsets for incorrect answers
+    auto randomOffsetize = [](int input) {
+        //Randomize by +- max 1/6 of input
+        int randomValue = (rand() % input)/3;
+        int randomOffset = randomValue - input/(3*2);
+        return input + randomOffset;
+    };
 
-    ui->answerA->setChecked(false);
-    ui->answerB->setChecked(false);
-    ui->answerC->setChecked(false);
-    ui->answerD->setChecked(false);
-
-    ui->answerA->setStyleSheet("");
-    ui->answerB->setStyleSheet("");
-    ui->answerC->setStyleSheet("");
-    ui->answerD->setStyleSheet("");
+    for (QRadioButton* answer : answerButtons)
+    {
+        answer->setEnabled(true);
+        answer->setChecked(false);
+        answer->setStyleSheet("");
+    }
 
     if (currentPage == 1) {
-        ui->questionLabel->setText(questionDescriptions.at(0));
+        ui->questionLabel->setText("What is the cheapest cost when travelling from " + randomSource + " to " + randomDestination + "?");
         ui->questionLabel->setWordWrap(true);
-        ui->answerA->setText(questionDescriptions.at(1));
-        ui->answerB->setText(questionDescriptions.at(2));
-        ui->answerC->setText(questionDescriptions.at(3));
-        ui->answerD->setText(questionDescriptions.at(4));
+        correctIndex = rand() % 4;
+        for (int i = 0; i < 4; i ++)
+        {
+            if (i == correctIndex)
+                answerButtons.at(i)->setText(QString::number(randomCost));
+            else
+                answerButtons.at(i)->setText(QString::number(randomOffsetize(randomCost)));
+        }
     }
     if (currentPage == 2) {
         QString labelText = "Which of the following statements best describes the essence of the stack data structure?<br><br>"
@@ -208,22 +217,55 @@ void MainWindow::setQuestion(int currentPage) {
 }
 
 void MainWindow::checkAnswer() {
-    ui->answerA->setEnabled(false);
-    ui->answerB->setEnabled(false);
-    ui->answerC->setEnabled(false);
-    ui->answerD->setEnabled(false);
+    if (ui->checkAnswerButton->text() == "New question")
+    {
+        generateRandomPath();
+        setQuestion(ui->stackedPages->currentIndex());
+        ui->checkAnswerButton->setText("Check answer");
+        return;
+    }
 
-    if (ui->answerA->isChecked()) {
-        ui->answerA->setStyleSheet("color: green");
-        userScore++;
+    for (QRadioButton* answer : answerButtons)
+    {
+        answer->setEnabled(false);
+        if (answer->isChecked())
+        {
+            if (answerButtons.indexOf(answer) == correctIndex)
+            {
+                answer->setStyleSheet("color: green");
+                userScore ++;
+            }
+            else
+                answer->setStyleSheet("color: red");
+        }
     }
-    if (ui->answerB->isChecked()) {
-        ui->answerB->setStyleSheet("color: red");
-    }
-    if (ui->answerC->isChecked()) {
-        ui->answerC->setStyleSheet("color: red");
-    }
-    if (ui->answerD->isChecked()) {
-        ui->answerD->setStyleSheet("color: red");
-    }
+    ui->checkAnswerButton->setText("New question");
+}
+
+void MainWindow::generateRandomPath () {
+
+    cheapestCosts = ui->graphicsView->getCheapestCosts();
+
+    auto maxCost = [this](QString input) {
+        int max = 0;
+        for (std::pair<QString, int> pair : cheapestCosts.value(input))
+            if (pair.second > max)
+                max = pair.second;
+        return max;
+    };
+
+    randomCost = 0;
+    //Loop through and make sure that the cost question we are asking is not trivial; right now the questions are filtered so we are only asking questions with maximal distance
+    do
+    {
+        int randomSourceInt = rand() % 7;
+        int randomDestinationInt = rand() % 7;
+        randomSource = cheapestCosts.keys().at(randomSourceInt);
+        randomDestination = cheapestCosts.value(randomSource).at(randomDestinationInt).first;
+        randomCost = cheapestCosts.value(randomSource).at(randomDestinationInt).second;
+    } while (randomCost < maxCost(randomSource));
+}
+
+void MainWindow::toggleAnswerButton () {
+    qDebug() << "pushed";
 }

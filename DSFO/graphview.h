@@ -54,6 +54,7 @@ public:
 
     GraphView(QWidget *parent = nullptr);
     ~GraphView();
+    QHash<QString, QVector<std::pair<QString, int>>> getCheapestCosts();
 
     // void startDijkstraAnimation();
     // void advanceDijkstraStep(Node* node);
@@ -66,6 +67,10 @@ public:
     // void flashEdge(Edge edge, Node* node);
     // void createConnections();
 
+signals:
+    animationButtonPushed();
+    newGraphPushed();
+
 private:
 
 
@@ -75,13 +80,21 @@ private:
     void animationStep(std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue);
     void updateAnimationLabel(Node* node, Edge* edge, Node* neighbor, int oldValue);
     void toggleTips();
-
+    void generateCosts();
+    void startDijkstra(Node* node);
+    void dijkstraStep(std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue);
+    void randomizeGraph();
+    void calculateCheapestCosts();
 
     /// Resizes 'this' StackView alongside its parent widget.
     void resizeEvent(QResizeEvent *event) override;
 
 
     QHash<QString, Node*> vertices;
+
+    //To be populated with the cheapest costs to each city from each city, for quizzing purposes.
+    //Hash city string name to list of pairs of target city name and int cheapest cost.
+    QHash<QString, QVector<std::pair<QString, int>>> cheapestCosts;
 
     // Ratio of width to height (currently 5:4)
     qreal aspectRatio = 1.25;
@@ -97,6 +110,7 @@ private:
     QGraphicsProxyWidget *animationSlider;
     QGraphicsProxyWidget *animationSliderLabel;
     QGraphicsProxyWidget *tipsButton;
+    QGraphicsProxyWidget *newGraphButton;
     QComboBox *selector;
     QSlider *slider;
     QLabel *label;

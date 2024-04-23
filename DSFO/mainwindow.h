@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QDialog>
 #include <QLabel>
+#include <QRadioButton>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,6 +26,7 @@ private slots:
     void onNextClicked();
     void onBackClicked();
     void onPageChanged();
+    void toggleAnswerButton();
 
 public slots:
     void showMoreInfo();
@@ -40,9 +42,17 @@ private:
     QPushButton* readMoreButton;
     QDialog* info;
     QLabel* infoText;
+    QVector<QRadioButton*> answerButtons;
+
+    QHash<QString, QList<std::pair<QString, int>>> cheapestCosts;
+    int randomCost;
+    QString randomSource;
+    QString randomDestination;
+    int correctIndex;
 
     int userScore = 0;
 
     void setQuestion(int currentPage);
+    void generateRandomPath();
 };
 #endif // MAINWINDOW_H
