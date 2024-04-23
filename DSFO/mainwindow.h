@@ -28,6 +28,7 @@ private slots:
 
 public slots:
     void showMoreInfo();
+    void checkAnswer();
 
 
 
@@ -39,5 +40,9 @@ private:
     QPushButton* readMoreButton;
     QDialog* info;
     QLabel* infoText;
+
+    int userScore = 0;
+
+    void setQuestion(int currentPage);
 };
 #endif // MAINWINDOW_H

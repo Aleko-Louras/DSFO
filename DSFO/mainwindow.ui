@@ -74,7 +74,7 @@
             <x>0</x>
             <y>0</y>
             <width>198</width>
-            <height>539</height>
+            <height>493</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -113,37 +113,37 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="answerA">
+            <widget class="QRadioButton" name="answerA">
              <property name="text">
               <string>CheckBox</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="answerB">
+            <widget class="QRadioButton" name="answerB">
              <property name="text">
               <string>CheckBox</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="answerC">
+            <widget class="QRadioButton" name="answerC">
              <property name="text">
               <string>CheckBox</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="answerD">
+            <widget class="QRadioButton" name="answerD">
              <property name="text">
               <string>CheckBox</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="checkAnswerButton">
              <property name="text">
-              <string>PushButton</string>
+              <string>Check Answer</string>
              </property>
             </widget>
            </item>
@@ -391,7 +391,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

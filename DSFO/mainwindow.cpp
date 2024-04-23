@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
            this, &MainWindow::onBackClicked);
     connect(ui->stackedPages, &QStackedWidget::currentChanged,
            this, &MainWindow::onPageChanged);
+    connect(ui->checkAnswerButton, &QPushButton::clicked, this, &MainWindow::checkAnswer);
 
     QFile texts(":/texts/descriptions.txt");
     texts.open(QFile::ReadOnly);
@@ -147,6 +148,7 @@ void MainWindow::onNextClicked() {
 
     ui->stackedPages->setCurrentIndex(std::min(ui->stackedPages->count() - 1, nextPage));
     ui->backButton->setEnabled(true);
+
 }
 
 void MainWindow::onPageChanged() {
@@ -156,9 +158,72 @@ void MainWindow::onPageChanged() {
     int currentPage = ui->stackedPages->currentIndex();
     if(currentPage < additionalDescriptions.size()) {
         infoText->setText(additionalDescriptions.at(currentPage));
+        setQuestion(currentPage);
     } else {
         infoText->setText("No additional information available");
     }
 
     ui->summaryLayout->setVisible(currentPage != 0);
+}
+
+void MainWindow::setQuestion(int currentPage) {
+    qDebug() << currentPage;
+
+    ui->answerA->setEnabled(true);
+    ui->answerB->setEnabled(true);
+    ui->answerC->setEnabled(true);
+    ui->answerD->setEnabled(true);
+
+    ui->answerA->setChecked(false);
+    ui->answerB->setChecked(false);
+    ui->answerC->setChecked(false);
+    ui->answerD->setChecked(false);
+
+    ui->answerA->setStyleSheet("");
+    ui->answerB->setStyleSheet("");
+    ui->answerC->setStyleSheet("");
+    ui->answerD->setStyleSheet("");
+
+    if (currentPage == 1) {
+        ui->questionLabel->setText(questionDescriptions.at(0));
+        ui->questionLabel->setWordWrap(true);
+        ui->answerA->setText(questionDescriptions.at(1));
+        ui->answerB->setText(questionDescriptions.at(2));
+        ui->answerC->setText(questionDescriptions.at(3));
+        ui->answerD->setText(questionDescriptions.at(4));
+    }
+    if (currentPage == 2) {
+        QString labelText = "Which of the following statements best describes the essence of the stack data structure?<br><br>"
+                            "A) A data structure that follows the Last In, First Out (LIFO) principle, where the last element added is the first one to be removed.<br><br>"
+                            "B) A data structure that follows the First In, First Out (FIFO) principle, where the first element added is the first one to be removed.<br><br>"
+                            "C) A data structure that allows elements to be accessed randomly, without any specific order.<br><br>"
+                            "D) A data structure that organizes elements in a hierarchical manner, resembling the structure of a tree.";
+        ui->questionLabel->setText(labelText);
+
+        ui->answerA->setText("A");
+        ui->answerB->setText("B");
+        ui->answerC->setText("C");
+        ui->answerD->setText("D");
+    }
+}
+
+void MainWindow::checkAnswer() {
+    ui->answerA->setEnabled(false);
+    ui->answerB->setEnabled(false);
+    ui->answerC->setEnabled(false);
+    ui->answerD->setEnabled(false);
+
+    if (ui->answerA->isChecked()) {
+        ui->answerA->setStyleSheet("color: green");
+        userScore++;
+    }
+    if (ui->answerB->isChecked()) {
+        ui->answerB->setStyleSheet("color: red");
+    }
+    if (ui->answerC->isChecked()) {
+        ui->answerC->setStyleSheet("color: red");
+    }
+    if (ui->answerD->isChecked()) {
+        ui->answerD->setStyleSheet("color: red");
+    }
 }
