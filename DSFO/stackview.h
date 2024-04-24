@@ -8,7 +8,8 @@
 #include <QGraphicsWidget>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
-
+#include <QPixMap>
+#include <QGraphicsPixmapItem>
 #include "graphicsanimator.h"
 
 class StackView : public QGraphicsView
@@ -38,6 +39,8 @@ class StackView : public QGraphicsView
         QGraphicsProxyWidget *testButton;
 
         QList<GraphicsAnimator*> luggage;
+        QPixmap *planeImg;
+        QGraphicsPixmapItem *planePixmap;
 
         /// Resizes 'this' StackView alongside its parent widget.
         void resizeEvent(QResizeEvent *event) override;
