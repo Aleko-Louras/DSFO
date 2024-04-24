@@ -34,13 +34,13 @@ class StackView : public QGraphicsView
         // QGraphicsRectItem *luggage;
         // QParallelAnimationGroup *luggageAnimation = new QParallelAnimationGroup(this);
         // GraphicsAnimator *animator;
-        QGraphicsProxyWidget *luggageAdder;
+        QGraphicsProxyWidget *addZone;
         QGraphicsProxyWidget *animationButton;
         QGraphicsProxyWidget *testButton;
 
         QList<GraphicsAnimator*> luggage;
-        QPixmap *planeImg;
-        QGraphicsPixmapItem *planePixmap;
+
+        QRectF receiveZoneRect;
 
         /// Resizes 'this' StackView alongside its parent widget.
         void resizeEvent(QResizeEvent *event) override;
