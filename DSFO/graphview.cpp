@@ -24,8 +24,10 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     graphScene = new QGraphicsScene(sceneBox, this);
     westCoast = graphScene->addPixmap(QPixmap::fromImage(westCoastMap));
 
+    //Generate edge costs
     generateCosts();
 
+    //Add nodes to the scene
     QSet<Edge*> edges;
 
     for (Node *airport : vertices) {
@@ -35,6 +37,7 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
         airport->setZValue(1);
     }
 
+    //Set up a ton of UI elements
     selector = new QComboBox();
     for (const QString& airport : vertices.keys())
         selector->addItem(airport);
@@ -42,7 +45,7 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     airportSelector->setPos(0, 250);
     airportSelector->setZValue(1);
 
-    QPushButton *animate = new QPushButton("Animate");
+    animate = new QPushButton("Animate");
     animationButton = graphScene->addWidget(animate);
     animationButton->setPos(100, 375);
 
@@ -73,15 +76,20 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     tipsButton = graphScene->addWidget(tips);
     tipsButton->setPos(200, 0);
 
-    QPushButton *newGraph = new QPushButton("Randomize graph");
+    newGraph = new QPushButton("Randomize graph");
     newGraphButton = graphScene->addWidget(newGraph);
     newGraphButton->setPos(0, 375);
 
+    //Connect a few buttons
     connect(animate, &QPushButton::clicked, this, &GraphView::startAnimation);
     connect(tips, &QPushButton::clicked, this, &GraphView::toggleTips);
     connect(newGraph, &QPushButton::clicked, this, &GraphView::randomizeGraph);
 
+    //Calculate the cheapest costs for cities.
     calculateCheapestCosts();
+
+    //Create pq
+    priorityQueue = new std::priority_queue<Node*, QVector<Node*>, Comparison>();
 
     setScene(graphScene);
 }
@@ -94,10 +102,14 @@ GraphView::~GraphView() {
     delete animationSlider;
     delete animationLabel;
     delete tipsButton;
+    delete animate;
+    delete sliderLabel;
     delete label;
     delete slider;
     delete selector;
     delete tips;
+    delete newGraph;
+    delete priorityQueue;
 }
 
 void GraphView::addEdge(QString port1, QString port2, int cost) {
@@ -107,7 +119,7 @@ void GraphView::addEdge(QString port1, QString port2, int cost) {
         vertices[port1] = new Node();
     if(!vertices.contains(port2))
         vertices[port2] = new Node();
-    // Adds a new edge from vertex1 to vertex2    
+    // Adds a new edge from vertex1 to vertex2
     vertices[port1]->addEdge(vertices[port2], cost);
 }
 
@@ -132,12 +144,15 @@ void GraphView::resizeEvent(QResizeEvent *event)
 }
 
 void GraphView::startAnimation() {
+    //Take care of UI and event stuff
     emit animationButtonPushed();
+    newGraph->setEnabled(false);
+    //Select start node from combobox
     Node* node = vertices[selector->currentText()];
     for (Node* node : vertices.values())
         node->reset();
     node->total = 0;
-    std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue = new std::priority_queue<Node*, QVector<Node*>, Comparison>();
+    //Pq will already be empty when animation starts
     priorityQueue->push(node);
     animationStep(priorityQueue);
 }
@@ -146,12 +161,14 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
 
     animationSpeed = slider->value()*20;
 
+    //Get start node
     Node* node = priorityQueue->top();
     priorityQueue->pop();
 
     //Update the node that we are visiting
     node->setBrush(QBrush(Qt::yellow));
 
+    //Stagger updating ui elements with cursed single shot timing
     int staggerTiming = 0;
     for (Edge* edge : node->neighbors)
     {
@@ -169,16 +186,17 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
         QTimer::singleShot(staggerTiming*animationSpeed, this, [edge]{edge->setPen(QPen(Qt::yellow, 5)); edge->costText->setBrush(Qt::yellow);});
         QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [edge]{edge->setPen(QPen(Qt::black, 5)); edge->costText->setBrush(Qt::black);});
 
-        QTimer::singleShot(staggerTiming*animationSpeed, this, [neighbor]{neighbor->setBrush(Qt::gray);});
-        // QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [neighbor]{neighbor->setBrush(Qt::gray);});
+        QTimer::singleShot(staggerTiming*animationSpeed, this, [neighbor]{neighbor->setBrush(QBrush(Qt::lightGray));});
+        QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [neighbor]{neighbor->setBrush(QBrush(Qt::gray));});
 
+        //Get old cost for updating label
         int oldCost = neighbor->total;
         QTimer::singleShot(staggerTiming*animationSpeed, this, [this, node, edge, neighbor, oldCost]{updateAnimationLabel(node, edge, neighbor, oldCost);});
 
+        //Check if we need to update node total
         if (node->total + edge->cost < neighbor->total && !neighbor->visited)
         {
             neighbor->total = node->total + edge->cost;
-            //Have to change node brush slightly for some reason to get text to display correctly
             if (!neighbor->addedToQueue)
             {
                 priorityQueue->push(neighbor);
@@ -191,13 +209,17 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
     //Stagger updating node so text does not turn white until after visiting
     QTimer::singleShot((staggerTiming)*animationSpeed, this, [node]{node->setBrush(QBrush(Qt::black)); node->visited = true;});
 
+    //Check if pq is empty to know if we need to end
     if (!priorityQueue->empty())
     {
         QTimer::singleShot(staggerTiming*animationSpeed, this, [this, priorityQueue]{label->setText("The cheapest known non-visited node is " + vertices.key(priorityQueue->top()) + ", so go there next.");});
         QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [this, priorityQueue]{animationStep(priorityQueue);});
     }
     else
+    {
         QTimer::singleShot(staggerTiming*animationSpeed, this, [this, priorityQueue]{label->setText("Every node has been visited, so we are done!");});
+        newGraph->setEnabled(true);
+    }
 }
 
 void GraphView::updateAnimationLabel(Node* node, Edge* edge, Node* neighbor, int oldValue) {
@@ -298,6 +320,7 @@ void GraphView::generateCosts() {
 
     addEdge("Los Angeles", "San Francisco", randomOffsetize(70));
 
+    //Add node bounding boxes
     vertices["Albuquerque"]->setRect(360, 250, 30, 30);
     vertices["Denver"]->setRect(390, 140, 30, 30);
     vertices["Phoenix"]->setRect(225, 290, 30, 30);
@@ -306,6 +329,7 @@ void GraphView::generateCosts() {
     vertices["Las Vegas"]->setRect(165, 200, 30, 30);
     vertices["San Francisco"]->setRect(30, 130, 30, 30);
 
+    //Add edges to scene
     QSet<Edge*> edges;
 
     for (Node *airport : vertices)
@@ -321,6 +345,7 @@ void GraphView::generateCosts() {
 }
 
 void GraphView::startDijkstra(Node* node) {
+    //Run dijsktra without running ui to populate cheapestCosts
     node->total = 0;
     std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue = new std::priority_queue<Node*, QVector<Node*>, Comparison>();
     priorityQueue->push(node);
@@ -329,6 +354,7 @@ void GraphView::startDijkstra(Node* node) {
 
 void GraphView::dijkstraStep(std::priority_queue<Node*, QVector<Node*>, Comparison>* priorityQueue) {
 
+    //Same as before but no single shots
     Node* node = priorityQueue->top();
     priorityQueue->pop();
 
@@ -365,6 +391,7 @@ QHash<QString, QVector<std::pair<QString, int>>> GraphView::getCheapestCosts() {
 }
 
 void GraphView::randomizeGraph() {
+    //Loop through edges, remove old edges from scene, clear neighbors, generate costs, calculate cheapest costs
     for (Node* node : vertices)
     {
         for (Edge* edge : node->neighbors)

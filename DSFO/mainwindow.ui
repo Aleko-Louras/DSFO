@@ -74,7 +74,7 @@
             <x>0</x>
             <y>0</y>
             <width>198</width>
-            <height>539</height>
+            <height>521</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -241,7 +241,7 @@
           <number>0</number>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="titlePage">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -415,7 +415,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>37</height>
     </rect>
    </property>
   </widget>

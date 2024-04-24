@@ -1,30 +1,61 @@
 #include "endscreen.h"
-#include "ui_endscreen.h"
+#include <QResizeEvent>
+#include <QGraphicsPixmapItem>
 
-EndScreen::EndScreen(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::EndScreen),  world(b2Vec2(0.0f, 0.0f))
+EndScreen::EndScreen(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f, 0.0f))
 {
-    ui->setupUi(this);
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &EndScreen::handleTrigger);
-    timer->start(10);
+    // ESSENTIAL SETTINGS!
+    setMinimumSize(1200, 800);//would love to move it to the right to center it but havent found a way to make it work.
+    //setAlignment(Qt::AlignCenter);
 
-    QPixmap pixmap(":/images/airplane-front-view-design-illustration-free.png");
-    int w = ui->label->width();
-    int h = ui->label->height();
-    // set a scaled pixmap to a w x h window keeping its aspect ratio
-    ui->label->setPixmap(pixmap.scaled(w,h,Qt::KeepAspectRatio));
-    b2BodyDef myBodyDef;
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    QRectF sceneBox(0, 0, width(), height());
+    QImage planeImage = QImage(":/images/firstPlane.png").scaled(90, 90, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    titleScene = new QGraphicsScene(sceneBox, this);
+    plane = titleScene->addPixmap(QPixmap::fromImage(planeImage));
+    titleScene->setSceneRect(QRectF(-125, 0, width(), height()));
+    QString text = "We are ready for take off!\n\nYour score was: " + QString::number(userScore);
+    title = titleScene->addText(text, QFont("Arial Rounded MT Bold", 30));
+    title->setPos(sceneBox.center().x() - title->boundingRect().width() / 2, sceneBox.center().y() - title->boundingRect().height() / 2);
+    titleScene->setBackgroundBrush(Qt::darkCyan);
+
+    setScene(titleScene);
+}
+
+void EndScreen::movePlane(){
+    world.Step(timeStep, velocityIterations, positionIterations);
+    b2Vec2 position = body->GetPosition();
+    plane->setPos(position.x, position.y);
+
+}
+
+EndScreen::~EndScreen()
+{
+    delete titleScene;
+    delete plane;
+    delete title;
+    delete timer;
+}
+void EndScreen::triggerAnimation(int userScore){
+
+
+
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &EndScreen::movePlane);
+    timer->start(timeStep * 1000);
+
     b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(0.0f, -10.0f);
+    groundBodyDef.position.Set(0.0f, 30.0f);
     b2Body* groundBody = world.CreateBody(&groundBodyDef);
     b2PolygonShape groundBox;
-    groundBox.SetAsBox(50.0f, 3.0f);
+    groundBox.SetAsBox(50.0f, -30.0f);
     groundBody->CreateFixture(&groundBox, -5.0f);
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(0.0f, 0.0f);
+    bodyDef.position.Set(560.0f, 600.0f);
     body = world.CreateBody(&bodyDef);
     b2PolygonShape dynamicBox;
     dynamicBox.SetAsBox(1.0f, 1.0f);
@@ -32,38 +63,33 @@ EndScreen::EndScreen(QWidget *parent)
     fixtureDef.shape = &dynamicBox;
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.3f;
-    //fixtureDef.restitution = 0.9f;
     body->CreateFixture(&fixtureDef);
-    //body->ApplyForce( b2Vec2(1.0f,0), body->GetWorldCenter(), true);
+    // apply right impulse, but only if max velocity is not reached yet
+    body->ApplyForce( b2Vec2(0, -12000.0f), body->GetWorldCenter(), true);
+    title->setPlainText("We are ready for take off!\n\nYour score was: " + QString::number(userScore));
 }
 
-void EndScreen::handleTrigger(){
-
-        float timeStep = 1.0f / 60.0f;
-        int32 velocityIterations = 6;
-        int32 positionIterations = 2;
-
-        world.Step(timeStep, velocityIterations, positionIterations);
-        b2Vec2 position = body->GetPosition();
-
-        // Convert position from meters to pixels
-        float pixelsPerMeter = 30;
-        float xPosPixels = position.x * pixelsPerMeter;
-        float yPosPixels = position.y * pixelsPerMeter;
-
-        int widgetWidth = this->width();
-        int labelWidth = ui->label->width();
-
-        const int wrapWidth = widgetWidth + labelWidth; // Total width for wrapping
-
-        float wrappedXPos = std::fmod(xPosPixels, wrapWidth);
-
-        if (wrappedXPos < 0)
-            wrappedXPos += wrapWidth;
-
-        ui->label->move(wrappedXPos - labelWidth, yPosPixels - (yPosPixels * 30));
-}
-EndScreen::~EndScreen()
+void EndScreen::resizeEvent(QResizeEvent *event)
 {
-    delete ui;
+    QWidget *parent = parentWidget();
+    if (!parent) return;
+
+    int newWidth = event->size().width();
+    int newHeight = event->size().height();
+    // Ensures that the width and height don't violate the aspect ratio.
+    if (newWidth < newHeight * aspectRatio)
+        resize(newWidth, newWidth / aspectRatio);
+    else resize(newHeight * aspectRatio, newHeight);
+
+    // Fairly straightforward: scales the QGraphicsScene
+    fitInView(titleScene->sceneRect(), Qt::KeepAspectRatio);
+
+    // Centers StackView inside its parent widget
+    int x = (parent->width() - width()) / 2;
+    int y = (parent->height() - height()) / 2;
+    move(x,y);
+
+    // Methods like this could be useful if we wanted to move
+    // things around after resizing
+    // divider->moveBy(100, 0);
 }
