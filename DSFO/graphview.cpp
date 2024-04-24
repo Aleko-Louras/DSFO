@@ -184,7 +184,8 @@ void GraphView::animationStep(std::priority_queue<Node*, QVector<Node*>, Compari
         QTimer::singleShot(staggerTiming*animationSpeed, this, [edge]{edge->setPen(QPen(Qt::yellow, 5)); edge->costText->setBrush(Qt::yellow);});
         QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [edge]{edge->setPen(QPen(Qt::black, 5)); edge->costText->setBrush(Qt::black);});
 
-        QTimer::singleShot(staggerTiming*animationSpeed, this, [neighbor]{neighbor->setBrush(Qt::gray);});
+        QTimer::singleShot(staggerTiming*animationSpeed, this, [neighbor]{neighbor->setBrush(QBrush(Qt::lightGray));});
+        QTimer::singleShot((staggerTiming+1)*animationSpeed, this, [neighbor]{neighbor->setBrush(QBrush(Qt::gray));});
 
         //Get old cost for updating label
         int oldCost = neighbor->total;
