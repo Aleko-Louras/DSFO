@@ -7,7 +7,7 @@
 #include <QDialog>
 #include <QLabel>
 #include <QRadioButton>
-
+#include <QTimer>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -43,7 +43,7 @@ private:
     QDialog* info;
     QLabel* infoText;
     QVector<QRadioButton*> answerButtons;
-
+    QTimer timer;
     QHash<QString, QList<std::pair<QString, int>>> cheapestCosts;
     int randomCost;
     QString randomSource;

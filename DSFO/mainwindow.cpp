@@ -6,7 +6,7 @@
 #include <iostream>
 #include <QFile>
 #include <QTextStream>
-
+#include <QTimer>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -157,7 +157,7 @@ void MainWindow::onNextClicked() {
     //if we reach the end screen, trigger its box2d animation
     if(ui->stackedPages->currentIndex() == 3){
         ui->summaryLayout->setVisible(false);
-        ui->endScreen->triggerAnimation();
+        ui->endScreen->triggerAnimation(userScore);
     }
 
 }

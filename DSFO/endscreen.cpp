@@ -5,7 +5,7 @@
 EndScreen::EndScreen(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f, 0.0f))
 {
     // ESSENTIAL SETTINGS!
-    setMinimumSize(800, 100);//would love to move it to the right to center it but havent found a way to make it work.
+    setMinimumSize(1200, 800);//would love to move it to the right to center it but havent found a way to make it work.
     //setAlignment(Qt::AlignCenter);
 
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -16,14 +16,13 @@ EndScreen::EndScreen(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
 
     titleScene = new QGraphicsScene(sceneBox, this);
     plane = titleScene->addPixmap(QPixmap::fromImage(planeImage));
-    //titleScene->setSceneRect(QRectF(500, 0, width(), height()));
-    title = titleScene->addText("We are ready for take off!", QFont("Arial Rounded MT Bold", 30));
+    titleScene->setSceneRect(QRectF(-125, 0, width(), height()));
+    QString text = "We are ready for take off!\n\nYour score was: " + QString::number(userScore);
+    title = titleScene->addText(text, QFont("Arial Rounded MT Bold", 30));
     title->setPos(sceneBox.center().x() - title->boundingRect().width() / 2, sceneBox.center().y() - title->boundingRect().height() / 2);
     titleScene->setBackgroundBrush(Qt::darkCyan);
 
-
     setScene(titleScene);
-
 }
 
 void EndScreen::movePlane(){
@@ -40,20 +39,23 @@ EndScreen::~EndScreen()
     delete title;
     delete timer;
 }
-void EndScreen::triggerAnimation(){
+void EndScreen::triggerAnimation(int userScore){
+
+
+
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &EndScreen::movePlane);
     timer->start(timeStep * 1000);
 
     b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(0.0f, -10.0f);
+    groundBodyDef.position.Set(0.0f, 30.0f);
     b2Body* groundBody = world.CreateBody(&groundBodyDef);
     b2PolygonShape groundBox;
-    groundBox.SetAsBox(50.0f, 3.0f);
+    groundBox.SetAsBox(50.0f, -30.0f);
     groundBody->CreateFixture(&groundBox, -5.0f);
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(350.0f, 200.0f);
+    bodyDef.position.Set(560.0f, 600.0f);
     body = world.CreateBody(&bodyDef);
     b2PolygonShape dynamicBox;
     dynamicBox.SetAsBox(1.0f, 1.0f);
@@ -62,9 +64,9 @@ void EndScreen::triggerAnimation(){
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.3f;
     body->CreateFixture(&fixtureDef);
-
     // apply right impulse, but only if max velocity is not reached yet
     body->ApplyForce( b2Vec2(0, -12000.0f), body->GetWorldCenter(), true);
+    title->setPlainText("We are ready for take off!\n\nYour score was: " + QString::number(userScore));
 }
 
 void EndScreen::resizeEvent(QResizeEvent *event)

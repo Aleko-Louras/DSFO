@@ -14,12 +14,13 @@ class EndScreen : public QGraphicsView
 public:
     EndScreen(QWidget *parent = nullptr);
     ~EndScreen();
-    void triggerAnimation();
-
+    void triggerAnimation(int userScore);
+\
 private slots:
     void movePlane();
 private:
     void resizeEvent(QResizeEvent *event) override;
+    int userScore = 0;
 
     qreal aspectRatio = 1.25;
 
