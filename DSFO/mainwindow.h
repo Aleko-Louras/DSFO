@@ -7,6 +7,7 @@
 #include <QDialog>
 #include <QLabel>
 #include <QRadioButton>
+#include <QAction>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,8 +22,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-signals:
-    void triggerEndScreen();
+
 private slots:
     void onNextClicked();
     void onBackClicked();
@@ -39,7 +39,7 @@ private:
     QVector<QString> descriptions;
     QVector<QString> additionalDescriptions;
     QVector<QString> questionDescriptions;
-    QPushButton* readMoreButton;
+    QAction* readMore;
     QDialog* info;
     QLabel* infoText;
     QVector<QRadioButton*> answerButtons;
