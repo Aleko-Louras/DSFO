@@ -117,7 +117,7 @@ void GraphView::addEdge(QString port1, QString port2, int cost) {
         vertices[port1] = new Node();
     if(!vertices.contains(port2))
         vertices[port2] = new Node();
-    // Adds a new edge from vertex1 to vertex2    
+    // Adds a new edge from vertex1 to vertex2
     vertices[port1]->addEdge(vertices[port2], cost);
 }
 

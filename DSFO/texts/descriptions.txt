@@ -1,6 +1,8 @@
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+//Separate descriptions on each line.
+//Line corresponds to page index-1.
 
-Imagine you are planning a trip around the American Southwest. You have a tight budget, so you want to save as much as possible on your flight costs. Unfortunately, it's a busy time of year for the airline companies, and flights are inconsistent in their prices and availability. Given a graph (pictured on the left) of given flights and costs for a week, how do you find the cheapest way to travel from a certain city to a certain city? A solution to this problem is to use something known as Dijkstra's algorithm. Dijkstra's algorithm entails a few basic steps, that can be explained with this airport analogy here: 1. Set the cost for the start airport to $0, and the cost for destination airports to infinity. Select the starting airport to look at first. 2. Calculate the cost of travelling to each adjacent airport from the airport we are looking at, and if the new cost is cheaper, update the cost. 3. Mark this airport as visited, and find the cheapest airport that we have found a path to (and that hasn't been visited) and look at that one next. 4. Repeat step 2 if there is a cheapest non-visited airport that was found. 5. If all airports have been visited, we are done. You can test your knowledge of Dijkstra's by asking questions and playing an animation for clarity,  and you can try a new random scenario to make the paths different.
-You've arrived at your desination. You've found your baggage claim carousel. Click the 'Add Luggage' sign to find your bag.
+
 
 
 

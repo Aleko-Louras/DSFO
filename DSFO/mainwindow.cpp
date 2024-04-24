@@ -17,11 +17,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->stackedPages->setCurrentIndex(0);
 
     connect(ui->nextButton, &QPushButton::clicked,
-           this, &MainWindow::onNextClicked);
+            this, &MainWindow::onNextClicked);
     connect(ui->backButton, &QPushButton::clicked,
-           this, &MainWindow::onBackClicked);
+            this, &MainWindow::onBackClicked);
     connect(ui->stackedPages, &QStackedWidget::currentChanged,
-           this, &MainWindow::onPageChanged);
+            this, &MainWindow::onPageChanged);
     connect(ui->checkAnswerButton, &QPushButton::clicked, this, &MainWindow::checkAnswer);
 
     connect(ui->graphicsView, &GraphView::animationButtonPushed, this, [this]{ui->checkAnswerButton->setDisabled(true);});
@@ -51,34 +51,34 @@ MainWindow::MainWindow(QWidget *parent)
     {
         additionalDescriptions.append(stream2.readLine());
     }
-   // QStackedWidget *stackedWidget = new QStackedWidget;
+    // QStackedWidget *stackedWidget = new QStackedWidget;
 
-   // QWidget *firstPageWidget = new QWidget;
-   // stackedWidget->addWidget(firstPageWidget);
+    // QWidget *firstPageWidget = new QWidget;
+    // stackedWidget->addWidget(firstPageWidget);
 
-   // QVBoxLayout *layout = new QVBoxLayout;
-   // layout->addWidget(stackedWidget);
-   // setLayout(layout);
+    // QVBoxLayout *layout = new QVBoxLayout;
+    // layout->addWidget(stackedWidget);
+    // setLayout(layout);
 
-//    QWidget *firstPageWidget = new QWidget;
-//    QWidget *secondPageWidget = new QWidget;
-//    QWidget *thirdPageWidget = new QWidget;
+    //    QWidget *firstPageWidget = new QWidget;
+    //    QWidget *secondPageWidget = new QWidget;
+    //    QWidget *thirdPageWidget = new QWidget;
 
-//    QStackedWidget *stackedWidget = new QStackedWidget;
-//    stackedWidget->addWidget(firstPageWidget);
-//    stackedWidget->addWidget(secondPageWidget);
-//    stackedWidget->addWidget(thirdPageWidget);
+    //    QStackedWidget *stackedWidget = new QStackedWidget;
+    //    stackedWidget->addWidget(firstPageWidget);
+    //    stackedWidget->addWidget(secondPageWidget);
+    //    stackedWidget->addWidget(thirdPageWidget);
 
-//    QVBoxLayout *layout = new QVBoxLayout;
-//    layout->addWidget(stackedWidget);
-//    setLayout(layout);
+    //    QVBoxLayout *layout = new QVBoxLayout;
+    //    layout->addWidget(stackedWidget);
+    //    setLayout(layout);
 
-//    QComboBox *pageComboBox = new QComboBox;
-//    pageComboBox->addItem(tr("Page 1"));
-//    pageComboBox->addItem(tr("Page 2"));
-//    pageComboBox->addItem(tr("Page 3"));
-//    connect(pageComboBox, &QComboBox::activated,
-//            stackedWidget, &QStackedWidget::setCurrentIndex);
+    //    QComboBox *pageComboBox = new QComboBox;
+    //    pageComboBox->addItem(tr("Page 1"));
+    //    pageComboBox->addItem(tr("Page 2"));
+    //    pageComboBox->addItem(tr("Page 3"));
+    //    connect(pageComboBox, &QComboBox::activated,
+    //            stackedWidget, &QStackedWidget::setCurrentIndex);
 
     QMenu *menu = menuBar()->addMenu(tr("Menu"));
     readMore = new QAction(tr("&More Information"), this);
