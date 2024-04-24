@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <QPainter>
 #include <QTransform>
+#include <QLabel>
 
 class TitleView : public QGraphicsView
 {
@@ -44,6 +45,7 @@ private:
     std::vector<b2Vec2> angles;
     std::vector<QPixmap> images;
     int angleIndex;
+    QLabel *label;
 };
 
 #endif // TITLEVIEW_H

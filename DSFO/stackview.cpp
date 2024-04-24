@@ -206,5 +206,3 @@ void StackView::tryNextAnimation() {
             animator, &GraphicsAnimator::deleteLater);
 
 }
-
-

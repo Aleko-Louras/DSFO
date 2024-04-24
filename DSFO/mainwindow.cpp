@@ -99,12 +99,16 @@ MainWindow::MainWindow(QWidget *parent)
     infoText = new QLabel(info);
     infoText->setWordWrap(true);
     infoText->setGeometry(QRect(0,0,300,150));
+    int currentPage = ui->stackedPages->currentIndex();
+    infoText->setText(additionalDescriptions.at(currentPage));
+
     QPushButton *closeButton = new QPushButton("Close", info);
     closeButton->setGeometry(QRect(100,150,100,30));
     connect(closeButton, &QPushButton::clicked, info, &QDialog::close);
     ui->summaryLayout->setVisible(false);
 
     ui->summaryLayout->setVisible(false);
+
 }
 
 void MainWindow::showMoreInfo() {
@@ -207,11 +211,17 @@ void MainWindow::setQuestion(int currentPage) {
         }
     }
     if (currentPage == 2) {
-        QString labelText = "Which of the following statements best describes the essence of the stack data structure?<br><br>"
-                            "A) A data structure that follows the Last In, First Out (LIFO) principle, where the last element added is the first one to be removed.<br><br>"
-                            "B) A data structure that follows the First In, First Out (FIFO) principle, where the first element added is the first one to be removed.<br><br>"
-                            "C) A data structure that allows elements to be accessed randomly, without any specific order.<br><br>"
-                            "D) A data structure that organizes elements in a hierarchical manner, resembling the structure of a tree.";
+        QString labelText =
+            "Imagine you are checking your bags. Bags enter the plane based on when they're checked in. "
+            "The ones that are checked in first are put at the botton of the 'stack,' and it grows. Think of it like a stack of plates. "
+            "The first one that goes on the stack ends up the last, or 'bottom' item. Check three bags using the '+' button and then click animate to see what happens."
+            "Notice how there is no way to get the first bag back without removing the others first. This is the essence of the stack data structure. "
+            "<br><br>"
+            "Which of the following statements best describes the essence of the stack data structure?<br><br>"
+            "A) A data structure that follows the Last In, First Out (LIFO) principle, where the last element added is the first one to be removed.<br><br>"
+            "B) A data structure that follows the First In, First Out (FIFO) principle, where the first element added is the first one to be removed.<br><br>"
+            "C) A data structure that allows elements to be accessed randomly, without any specific order.<br><br>"
+            "D) A data structure that organizes elements in a hierarchical manner, resembling the structure of a tree.";
         ui->questionLabel->setText(labelText);
 
         ui->answerA->setText("A");

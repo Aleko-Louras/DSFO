@@ -18,6 +18,14 @@ TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
     title = titleScene->addText("Welcome to DSFO!", QFont("Arial Rounded MT Bold", 30));
     title->setPos(sceneBox.center().x() - title->boundingRect().width() / 2, sceneBox.center().y() - title->boundingRect().height() / 2);
 
+    //Add a label to give information about the game
+    QLabel *label = new QLabel("This is an educational game that teaches users about stacks and graphs. If you are confused, click the 'Menu' button and then click 'More Information' to learn more. Enjoy!");
+    label->setWordWrap(true);
+    label->setAlignment(Qt::AlignCenter);
+    titleScene->addWidget(label);
+    //Set the label at the bottom
+    label->setGeometry(0, 300, 500, 100);
+
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &TitleView::movePlane);
     timer->start(timeStep * 1000);

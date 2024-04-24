@@ -11,6 +11,7 @@
 #include <QPixMap>
 #include <QGraphicsPixmapItem>
 #include "graphicsanimator.h"
+#include <QLabel>
 
 class StackView : public QGraphicsView
 {
@@ -41,6 +42,8 @@ class StackView : public QGraphicsView
         QList<GraphicsAnimator*> luggage;
 
         QRectF receiveZoneRect;
+
+        QLabel label;
 
         /// Resizes 'this' StackView alongside its parent widget.
         void resizeEvent(QResizeEvent *event) override;
