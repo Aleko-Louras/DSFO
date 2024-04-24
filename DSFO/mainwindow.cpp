@@ -29,14 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     generateRandomPath();
 
-    QFile texts(":/texts/descriptions.txt");
-    texts.open(QFile::ReadOnly);
-    QTextStream stream(&texts);
-    while (!stream.atEnd())
-    {
-        descriptions.append(stream.readLine());
-    }
-
     QFile questions(":/texts/questions.txt");
     questions.open(QFile::ReadOnly);
     QTextStream questionStream(&questions);
