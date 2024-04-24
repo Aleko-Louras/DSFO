@@ -68,8 +68,8 @@ public:
     // void createConnections();
 
 signals:
-    animationButtonPushed();
-    newGraphPushed();
+    void animationButtonPushed();
+    void newGraphPushed();
 
 private:
 

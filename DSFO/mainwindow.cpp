@@ -154,6 +154,12 @@ void MainWindow::onNextClicked() {
     ui->stackedPages->setCurrentIndex(std::min(ui->stackedPages->count() - 1, nextPage));
     ui->backButton->setEnabled(true);
 
+    //if we reach the end screen, trigger its box2d animation
+    if(ui->stackedPages->currentIndex() == 3){
+        ui->summaryLayout->setVisible(false);
+        ui->endScreen->triggerAnimation();
+    }
+
 }
 
 void MainWindow::onPageChanged() {

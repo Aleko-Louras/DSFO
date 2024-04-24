@@ -21,7 +21,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
+signals:
+    void triggerEndScreen();
 private slots:
     void onNextClicked();
     void onBackClicked();

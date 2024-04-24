@@ -74,7 +74,7 @@
             <x>0</x>
             <y>0</y>
             <width>198</width>
-            <height>534</height>
+            <height>521</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -238,7 +238,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedPages">
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="titlePage">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -403,7 +403,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>37</height>
     </rect>
    </property>
   </widget>
