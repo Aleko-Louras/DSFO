@@ -50,6 +50,16 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
     // Below is where the scene is actually created and items added to it.
     stackScene = new QGraphicsScene(sceneBox, this);
     plane = stackScene->addRect(horizontalCenter, sceneBox.top(), planeWidth, planeHeight);
+
+
+    //Add plane
+    planeImg = new QPixmap(":/images/birdsEyePlane.png");
+    planeImg->scaled(planeWidth, planeHeight, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+    planePixmap = new QGraphicsPixmapItem(*planeImg);
+    planePixmap->setPos(horizontalCenter - planeImg->width()/2, sceneBox.top());
+    stackScene->addItem(planePixmap);
+
+
     divider = stackScene->addLine(dividingLine, QPen(Qt::black, 3));
 
     receivingConveyor = stackScene->addRect(leftConveyorX, leftConveyorY, conveyorWidth, conveyorHeight, QPen(Qt::black, 3), Qt::gray);

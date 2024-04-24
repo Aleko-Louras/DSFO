@@ -70,6 +70,7 @@ Title::Title(QWidget *parent)
 
 
 
+
     // qDebug() << "Title is being hit";
 
     //Initialize read more button
