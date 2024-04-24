@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->checkAnswerButton, &QPushButton::clicked, this, &MainWindow::checkAnswer);
 
     connect(ui->graphicsView, &GraphView::animationButtonPushed, this, [this]{ui->checkAnswerButton->setDisabled(true);});
-    connect(ui->graphicsView, &GraphView::newGraphPushed, this, [this]{ui->checkAnswerButton->setEnabled(true); generateRandomPath(); setQuestion(ui->stackedPages->currentIndex());});
+    connect(ui->graphicsView, &GraphView::newGraphPushed, this, [this]{ui->checkAnswerButton->setEnabled(true); ui->checkAnswerButton->setText("Check answer"); generateRandomPath(); setQuestion(ui->stackedPages->currentIndex());});
 
     generateRandomPath();
 
@@ -108,12 +108,6 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::showMoreInfo() {
-    int currentPageIndex = ui->stackedPages->currentIndex();
-    if(currentPageIndex < descriptions.size()) {
-        ui->summary->setText(descriptions.at(currentPageIndex));
-    } else {
-        infoText->setText("No additional information available");
-    }
     info->exec();
 }
 
@@ -176,6 +170,7 @@ void MainWindow::onPageChanged() {
         infoText->setText("No additional information available");
     }
 
+    ui->checkAnswerButton->setText("Check answer");
     ui->summaryLayout->setVisible(currentPage != 0);
 }
 
@@ -183,9 +178,12 @@ void MainWindow::setQuestion(int currentPage) {
 
     //Lambda/nested function to create random offsets for incorrect answers
     auto randomOffsetize = [](int input) {
+        int randomOffset;
+        do {
         //Randomize by +- max 1/6 of input
         int randomValue = (rand() % input)/3;
-        int randomOffset = randomValue - input/(3*2);
+        randomOffset = randomValue - input/(3*2);
+        } while (input + randomOffset == 0);
         return input + randomOffset;
     };
 
@@ -231,7 +229,6 @@ void MainWindow::checkAnswer() {
         ui->checkAnswerButton->setText("Check answer");
         return;
     }
-
     for (QRadioButton* answer : answerButtons)
     {
         answer->setEnabled(false);
