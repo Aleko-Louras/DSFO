@@ -74,7 +74,7 @@
             <x>0</x>
             <y>0</y>
             <width>198</width>
-            <height>534</height>
+            <height>539</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -237,8 +237,11 @@
        </property>
        <item>
         <widget class="QStackedWidget" name="stackedPages">
+         <property name="lineWidth">
+          <number>0</number>
+         </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="titlePage">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -324,6 +327,9 @@
            <enum>Qt::RightToLeft</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <property name="leftMargin">
             <number>0</number>
            </property>
@@ -349,6 +355,12 @@
                <width>500</width>
                <height>400</height>
               </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Plain</enum>
              </property>
              <property name="lineWidth">
               <number>0</number>
@@ -403,7 +415,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

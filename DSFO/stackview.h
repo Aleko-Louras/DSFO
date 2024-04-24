@@ -28,11 +28,14 @@ class StackView : public QGraphicsView
         QGraphicsRectItem *sendingTunnel;
         QGraphicsRectItem *sendingConveyor;
         QGraphicsLineItem *divider;
+        QGraphicsItem *plane;
         // Luggage-related items
         // QGraphicsRectItem *luggage;
         // QParallelAnimationGroup *luggageAnimation = new QParallelAnimationGroup(this);
         // GraphicsAnimator *animator;
         QGraphicsProxyWidget *luggageAdder;
+        QGraphicsProxyWidget *animationButton;
+        QGraphicsProxyWidget *testButton;
 
         QList<GraphicsAnimator*> luggage;
 
@@ -40,7 +43,9 @@ class StackView : public QGraphicsView
         void resizeEvent(QResizeEvent *event) override;
 
     private slots:
+        void tryNextAnimation();
         void addLuggage();
+        void animate();
 };
 
 #endif // STACKVIEW_H

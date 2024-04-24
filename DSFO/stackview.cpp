@@ -12,6 +12,7 @@
 #include <QPushButton>
 #include <QGraphicsProxyWidget>
 #include <QTimer>
+#include <QGraphicsLinearLayout>
 
 StackView::StackView(QWidget *parent) : QGraphicsView(parent)
 {
@@ -19,12 +20,14 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
     QRectF sceneBox(0, 0, 500, 400); //! This is linked to the aspect ratio
     qreal horizontalCenter = sceneBox.center().x();
 
-    qreal tunnelWidth = 100;
-    qreal tunnelHeight = 50;
-    qreal conveyorWidth = 75;
-    qreal conveyorHeight = 200;
-    qreal luggageAdderWidth = 60;
-    qreal luggageAdderHeight = 50;
+    qreal tunnelWidth = 80;
+    qreal tunnelHeight = 40;
+    qreal conveyorWidth = 64;
+    qreal conveyorHeight = 160;
+    qreal luggageAdderWidth = 54;
+    qreal luggageAdderHeight = 40;
+    qreal planeWidth = sceneBox.width() / 2;
+    qreal planeHeight = 200;
 
     // All of the values below are defined using positions relative to the
     // sceneBox, which helps with reusability and, possibly, readability.
@@ -44,58 +47,42 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
     qreal luggageAdderY = tunnelHeight + conveyorHeight - luggageAdderHeight - (conveyorWidth - luggageAdderWidth) / 2;
     QLineF dividingLine(horizontalCenter, sceneBox.top(), horizontalCenter, sceneBox.bottom());
 
-    // Below is where the scene is actually created and
-    // items added to it.
+    // Below is where the scene is actually created and items added to it.
     stackScene = new QGraphicsScene(sceneBox, this);
+    plane = stackScene->addRect(horizontalCenter, sceneBox.top(), planeWidth, planeHeight);
     divider = stackScene->addLine(dividingLine, QPen(Qt::black, 3));
 
     receivingConveyor = stackScene->addRect(leftConveyorX, leftConveyorY, conveyorWidth, conveyorHeight, QPen(Qt::black, 3), Qt::gray);
     sendingConveyor = stackScene->addRect(rightConveyorX, rightConveyorY, conveyorWidth, conveyorHeight, QPen(Qt::black, 3), Qt::gray);
-
     receivingTunnel = stackScene->addRect(leftTunnelX, leftTunnelY, tunnelWidth, tunnelHeight, QPen(Qt::black, 3), Qt::gray);
     sendingTunnel = stackScene->addRect(rightTunnelX, rightTunnelY, tunnelWidth, tunnelHeight, QPen(Qt::black, 3), Qt::gray);
 
     receivingTunnel->setZValue(1);
     sendingTunnel->setZValue(1);
 
-    QPushButton *addLuggage = new QPushButton("Add \nLuggage");
+    QPushButton *addLuggage = new QPushButton("+");
     addLuggage->setFixedSize(luggageAdderWidth, luggageAdderHeight);
-    addLuggage->setStyleSheet("QPushButton {"
-                              "background-color: white; "
-                              "}");
+    addLuggage->setStyleSheet("QPushButton { background-color: white; }");
     addLuggage->move(luggageAdderX, luggageAdderY);
     connect(addLuggage, &QPushButton::clicked,
             this, &StackView::addLuggage);
-
     luggageAdder = stackScene->addWidget(addLuggage);
-    // luggage = stackScene->addRect(0, 0, 60, 50, QPen(Qt::black, 2), Qt::white);
 
-    // // This is useful for animating multiple objects at the same time.
-    // // It's not yet necessary, so I only include it now for demo purposes.
-    // QParallelAnimationGroup *luggageAnimation = new QParallelAnimationGroup(this);
-    // luggageAnimation->setLoopCount(1);
+    // QGraphicsWidget *centralButtons = new QGraphicsWidget;
+    // stackScene->addItem(new QGraphicsWidget);
+    // QGraphicsLinearLayout *buttonsContainer = new QGraphicsLinearLayout(Qt::Vertical, centralButtons);
 
-    // animator = new GraphicsAnimator(luggage, "pos");
-    // animator->animation()->setStartValue(QPointF(luggageAdderX, luggageAdderY));
-    // // animator->animation()->setKeyValueAt(0, QPointF(50, 200));
-    // // animator->animation()->setKeyValueAt(0.25, QPointF(200, 200));
-    // // animator->animation()->setKeyValueAt(0.5, QPointF(200, 50));
-    // animator->animation()->setKeyValueAt(0.75, QPointF(luggageAdderX, sceneBox.top()));
-    // animator->animation()->setEndValue(QPointF(luggageAdderX, sceneBox.top()));
-    // animator->animation()->setDuration(3000);
-    // // animator->animation()->setEasingCurve(QEasingCurve::SineCurve);
+    QPushButton *animationBtn = new QPushButton("Animate");
+    connect(animationBtn, &QPushButton::clicked,
+            this, &StackView::animate);
+    animationBtn->setStyleSheet("QPushButton { background-color: white; }"
+                                "QPushButton::default { background-color: red; }");
+    animationBtn->setEnabled(false);
 
-    // // animator->animation()->setLoopCount(-1);
-    // // animator->animation()->start();
-    // animation->addAnimation(animator->animation());
-    // animation->setLoopCount(-1);
-    // animation->start();
+    animationButton = stackScene->addWidget(animationBtn);
+    animationButton->setPos(horizontalCenter - animationButton->minimumWidth() / 2, sceneBox.center().y()  - animationButton->minimumHeight() / 2);
 
     setScene(stackScene);
-
-    // sendingConveyor->setFlag(QGraphicsItem::ItemIsSelectable);
-    // luggage->setFlag(QGraphicsItem::ItemIsMovable);
-    // centerOn(horizontalCenter, rect().center().y());
 }
 
 StackView::~StackView() {
@@ -127,29 +114,66 @@ void StackView::resizeEvent(QResizeEvent *event)
     int x = (parent->width() - width()) / 2;
     int y = (parent->height() - height()) / 2;
     move(x,y);
-
-    // Methods like this could be useful if we wanted to move
-    // things around after resizing
-    // divider->moveBy(100, 0);
 }
 
 void StackView::addLuggage() {
-    if (luggageAdder->isVisible()) {
-        luggageAdder->setVisible(false);
+    if (!luggageAdder->isVisible())
+        return;
 
-        QGraphicsRectItem *bag = stackScene->addRect(0, 0, 60, 50, QPen(Qt::black, 2), Qt::white);
-        GraphicsAnimator *luggageAnimator = new GraphicsAnimator(bag, "pos");
+    luggageAdder->setVisible(false);
 
-        luggage.push_back(luggageAnimator);
+    QGraphicsRectItem *bag = stackScene->addRect(luggageAdder->rect(), QPen(Qt::black, 2), Qt::white);
+    QGraphicsTextItem *number = new QGraphicsTextItem("A", bag);
+    number->setPos(QPointF(bag->x() + (bag->boundingRect().width() / 2), bag->y() + (bag->boundingRect().height() / 2)));
 
-        luggageAnimator->animation()->setStartValue(luggageAdder->pos());
-        luggageAnimator->animation()->setKeyValueAt(0.25, QPointF(luggageAdder->pos() - QPointF(0, luggageAdder->size().height())));
-        luggageAnimator->animation()->setEndValue(QPointF(luggageAdder->x(), sceneRect().top()));
-        luggageAnimator->animation()->setDuration(3000);
-        luggageAnimator->animation()->start();
+    GraphicsAnimator *luggageAnimator = new GraphicsAnimator(bag, "pos");
+    connect(luggageAnimator->animation(), &QPropertyAnimation::finished,
+            this,
+            [this, luggageAnimator] {
+                luggageAnimator->setPos(QPointF(sceneRect().center().x() + luggageAdder->x(), sceneRect().bottom() - luggageAdder->rect().height()));
+                luggageAnimator->animation()->setStartValue(luggageAnimator->pos());
+                luggageAnimator->animation()->setEndValue(QPointF(luggageAnimator->pos().x(), sceneRect().bottom() - luggageAdder->y() - luggageAdder->rect().height()));
+                luggageAnimator->animation()->setDuration(3000);
+            });
 
-        QTimer::singleShot(800, this, [this] {luggageAdder->setVisible(true);});
+    luggageAnimator->animation()->setStartValue(luggageAdder->pos());
+    luggageAnimator->animation()->setEndValue(QPointF(luggageAdder->x(), sceneRect().top()));
+    luggageAnimator->animation()->setDuration(3000);
+    luggageAnimator->animation()->start();
+
+    luggage.push_back(luggageAnimator);
+    animationButton->setEnabled(luggage.count() > 2);
+
+    QTimer::singleShot(800, this, [this] {luggageAdder->setVisible(true);});
+}
+
+void StackView::animate() {
+    animationButton->setEnabled(false);
+
+    if (luggage.last()->animation()->state() == QAbstractAnimation::Running) {
+        QTimer::singleShot(luggage.last()->animation()->duration() - luggage.last()->animation()->currentTime(), this, &StackView::animate);
+        return;
     }
+
+qDebug() << "Animate called";
+
+    tryNextAnimation();
+}
+
+void StackView::tryNextAnimation() {
+
+    if (luggage.empty())
+        return;
+
+    GraphicsAnimator *animator = luggage.takeAt(luggage.size() - 1);
+    QPropertyAnimation *animation = animator->animation();
+    qreal targetWidth = animator->target->boundingRect().width();
+    qreal endY = animation->endValue().toPointF().y();
+
+    animation->start();
+
+    QTimer::singleShot(animation->duration() * (targetWidth / (sceneRect().bottom() - endY)) * 1.1, this, &StackView::tryNextAnimation);
+    qDebug() << "Lambda called";
 }
 
 

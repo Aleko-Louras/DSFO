@@ -47,6 +47,7 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     animationButton->setPos(100, 375);
 
     slider = new QSlider(Qt::Horizontal);
+    slider->setStyleSheet("background-color: rgba(0,0,0,0);");
     animationSlider = graphScene->addWidget(slider);
     animationSlider->setPos(0, 350);
     slider->setMinimum(10);
@@ -54,6 +55,7 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     slider->setValue(60);
 
     QLabel* sliderLabel = new QLabel("Faster                                         Slower");
+    sliderLabel->setStyleSheet("background-color: rgba(0,0,0,0);");
     sliderLabel->setFixedSize(slider->size());
     animationSliderLabel = graphScene->addWidget(sliderLabel);
     animationSliderLabel->setPos(0, 330);
