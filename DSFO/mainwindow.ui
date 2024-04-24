@@ -74,7 +74,7 @@
             <x>0</x>
             <y>0</y>
             <width>198</width>
-            <height>521</height>
+            <height>539</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -241,7 +241,7 @@
           <number>0</number>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="titlePage">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -375,11 +375,11 @@
               <enum>QAbstractScrollArea::AdjustToContents</enum>
              </property>
              <property name="backgroundBrush">
-              <brush brushstyle="CrossPattern">
+              <brush brushstyle="Dense1Pattern">
                <color alpha="255">
-                <red>0</red>
-                <green>0</green>
-                <blue>0</blue>
+                <red>232</red>
+                <green>222</green>
+                <blue>114</blue>
                </color>
               </brush>
              </property>
@@ -415,7 +415,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>37</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

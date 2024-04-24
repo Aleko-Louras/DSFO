@@ -147,37 +147,39 @@ void StackView::addLuggage() {
     // Animates luggage's progress along the receiving conveyor
     luggageAnimator->animation()->setStartValue(luggageAdder->pos());
     luggageAnimator->animation()->setEndValue(QPointF(luggageAdder->x(), sceneRect().top()));
-    luggageAnimator->animation()->setDuration(3000);
+    luggageAnimator->animation()->setDuration(2000);
     luggageAnimator->animation()->start();
 
-    qreal delay = 3000 * (luggageAdder->boundingRect().height() / luggageAdder->y());
+    qreal delay = 2000 * (luggageAdder->boundingRect().height() / luggageAdder->y());
 
     QTimer::singleShot(delay, this, [this] {luggageAdder->setVisible(true);});
 }
 
 void StackView::animate() {
     animationButton->setEnabled(false);
+    luggageAdder->setEnabled(false);
+
+    if (luggage.last()->animation()->state() == QAbstractAnimation::Running) {
+        QTimer::singleShot(luggage.last()->animation()->duration() - luggage.last()->animation()->currentTime(), this, &StackView::tryNextAnimation);
+        return;
+    }
+
     tryNextAnimation();
 }
 
 void StackView::tryNextAnimation() {
 
     if (luggage.empty()) {
-        animationButton->setEnabled(true);
+        luggageAdder->setEnabled(true);
         return;
     }
 
-    if (luggage.first()->animation()->state() == QAbstractAnimation::Running) {
-        QTimer::singleShot(luggage.first()->animation()->duration() - luggage.first()->animation()->currentTime(), this, &StackView::tryNextAnimation);
-        return;
-    }
-
-    GraphicsAnimator *animator = luggage.takeFirst();
+    GraphicsAnimator *animator = luggage.takeLast();
     QPropertyAnimation *animation = animator->animation();
 
-    qreal targetHeight = animator->target->boundingRect().height();
+    qreal targetWidth = animator->target->boundingRect().width();
     qreal travelDistance = sceneRect().bottom() - animation->endValue().toPointF().y();
-    qreal delay = animation->duration() * (targetHeight / travelDistance) * 1.2;
+    qreal delay = animation->duration() * (targetWidth / travelDistance);
 
     animation->start();
     QTimer::singleShot(delay, this, &StackView::tryNextAnimation);
