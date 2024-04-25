@@ -1,3 +1,9 @@
+/**
+cpp file for the end screen, which displays a plane animation using Box2D
+University of Utah CS 3505 final project, group LAQE
+Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
+**/
+
 #include "endscreen.h"
 #include <QResizeEvent>
 #include <QGraphicsPixmapItem>
