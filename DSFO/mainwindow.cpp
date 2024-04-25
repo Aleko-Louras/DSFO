@@ -184,9 +184,9 @@ void MainWindow::setQuestion(int currentPage) {
     auto randomOffsetize = [](int input) {
         int randomOffset;
         do {
-        //Randomize by +- max 1/6 of input
-        int randomValue = (rand() % input)/3;
-        randomOffset = randomValue - input/(3*2);
+            //Randomize by +- max 1/6 of input
+            int randomValue = (rand() % input)/3;
+            randomOffset = randomValue - input/(3*2);
         } while (input + randomOffset == 0);
         return input + randomOffset;
     };
@@ -236,6 +236,7 @@ void MainWindow::checkAnswer() {
     {
         for (QRadioButton* answer : answerButtons)
         {
+
 
             if (answerButtons.indexOf(answer) == 0){
                 answer->setStyleSheet("color: green");
