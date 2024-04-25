@@ -70,7 +70,7 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
 
     QPushButton *addLuggage = new QPushButton("+");
     addLuggage->setFixedSize(luggageZoneWidth, luggageZoneHeight);
-    addLuggage->setStyleSheet("QPushButton { background-color: white; }");
+    addLuggage->setStyleSheet("QPushButton { background-color: white; color: black;}");
     addLuggage->move(addZoneX, addZoneY);
     QFont font("Helvetica [Cronyx]", 16);
     font.setBold(true);
@@ -82,7 +82,7 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
     QPushButton *animationBtn = new QPushButton("Animate");
     connect(animationBtn, &QPushButton::clicked,
             this, &StackView::animate);
-    animationBtn->setStyleSheet("QPushButton { background-color: white; }"
+    animationBtn->setStyleSheet("QPushButton { background-color: white; color: black;}"
                                 "QPushButton::default { background-color: red; }");
     animationBtn->setEnabled(false);
 

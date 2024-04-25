@@ -232,6 +232,21 @@ void MainWindow::setQuestion(int currentPage) {
 }
 
 void MainWindow::checkAnswer() {
+    if (ui->stackedPages->currentIndex() == 2)
+    {
+        for (QRadioButton* answer : answerButtons)
+        {
+
+            if (answerButtons.indexOf(answer) == 0){
+                answer->setStyleSheet("color: green");
+                userScore++;
+            }
+            else
+                answer->setStyleSheet("color: red");
+        }
+        return;
+    }
+
     if (ui->checkAnswerButton->text() == "New question")
     {
         generateRandomPath();
@@ -247,7 +262,7 @@ void MainWindow::checkAnswer() {
             if (answerButtons.indexOf(answer) == correctIndex)
             {
                 answer->setStyleSheet("color: green");
-                userScore ++;
+                userScore++;
             }
             else
                 answer->setStyleSheet("color: red");
