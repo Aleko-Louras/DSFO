@@ -1,3 +1,9 @@
+/**
+cpp file for the main window, i.e. the graphical interface and where everything is displayed/interacted with
+University of Utah CS 3505 final project, group LAQE
+Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
+**/
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QStackedWidget>

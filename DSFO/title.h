@@ -1,3 +1,9 @@
+/**
+header file for the title, which is where the title plane animation/text is displayed
+University of Utah CS 3505 final project, group LAQE
+Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
+**/
+
 #ifndef TITLE_H
 #define TITLE_H
 

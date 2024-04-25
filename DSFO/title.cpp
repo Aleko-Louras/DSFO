@@ -1,3 +1,9 @@
+/**
+cpp file for the title, which is where the title plane animation/text is displayed
+University of Utah CS 3505 final project, group LAQE
+Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
+**/
+
 #include "title.h"
 #include "ui_title.h"
 #define DEGTORAD 0.0174532925199432957f

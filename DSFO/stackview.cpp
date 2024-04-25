@@ -1,3 +1,9 @@
+/**
+cpp file for the stack view. This is where the stack interactive clicker and animation is displayed, the implementation is here.
+University of Utah CS 3505 final project, group LAQE
+Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
+**/
+
 #include "stackview.h"
 #include <QObject>
 #include <QWidget>

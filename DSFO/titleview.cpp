@@ -1,3 +1,9 @@
+/**
+cpp file for the title view, which is where the title is actually displayed in the graphical interface.
+University of Utah CS 3505 final project, group LAQE
+Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
+**/
+
 #include "titleview.h"
 #include <QResizeEvent>
 #include <QGraphicsPixmapItem>
