@@ -10,13 +10,13 @@ EndScreen::EndScreen(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     QRectF sceneBox(0, 0, width(), height());
-    QImage planeImage = QImage(":/images/firstPlane.png").scaled(90, 90, Qt::KeepAspectRatio, Qt::SmoothTransformation).convertToFormat(QImage::Format_Mono);
+    QImage planeImage = QImage(":/images/firstPlane.png").scaled(80, 80, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     titleScene = new QGraphicsScene(sceneBox, this);
     plane = titleScene->addPixmap(QPixmap::fromImage(planeImage));
-    titleScene->setSceneRect(QRectF(-145, 0, width(), height()));
+    titleScene->setSceneRect(QRectF(0, 0, width(), height()));
     QString text = "We are ready for take off!\n\nYour score was: " + QString::number(userScore);
-    title = titleScene->addText(text, QFont("Arial Rounded MT Bold", 30));
+    title = titleScene->addText(text, QFont("Arial Rounded MT Bold", 20));
     title->setPos(sceneBox.center().x() - title->boundingRect().width() / 2, sceneBox.center().y() - title->boundingRect().height() / 2);
     titleScene->setBackgroundBrush(Qt::darkCyan);
 
@@ -53,7 +53,7 @@ void EndScreen::triggerAnimation(int userScore){
     groundBody->CreateFixture(&groundBox, -5.0f);
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(560.0f, 600.0f);
+    bodyDef.position.Set(200.0f, 600.0f);
     body = world.CreateBody(&bodyDef);
     b2PolygonShape dynamicBox;
     dynamicBox.SetAsBox(1.0f, 1.0f);
