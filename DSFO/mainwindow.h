@@ -37,9 +37,7 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
-    QVector<QString> descriptions;
     QVector<QString> additionalDescriptions;
-    QVector<QString> questionDescriptions;
     QAction* readMore;
     QDialog* info;
     QLabel* infoText;

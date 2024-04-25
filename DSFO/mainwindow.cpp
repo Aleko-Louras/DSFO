@@ -29,28 +29,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     generateRandomPath();
 
-    QFile description(":/texts/descriptions.txt");
-    description.open(QFile::ReadOnly);
-    QTextStream descriptionsStream(&description);
-    while (!descriptionsStream.atEnd())
-    {
-        descriptions.append(descriptionsStream.readLine());
-    }
-
-    QFile questions(":/texts/questions.txt");
-    questions.open(QFile::ReadOnly);
-    QTextStream questionStream(&questions);
-    while (!questionStream.atEnd())
-    {
-        questionDescriptions.append(questionStream.readLine());
-    }
-
     //Push back buttons into a list
     answerButtons.push_back(ui->answerA);
     answerButtons.push_back(ui->answerB);
     answerButtons.push_back(ui->answerC);
     answerButtons.push_back(ui->answerD);
-
 
     QFile additionalTexts(":/texts/additionalDescriptions.txt");
     additionalTexts.open(QFile::ReadOnly);
@@ -59,34 +42,6 @@ MainWindow::MainWindow(QWidget *parent)
     {
         additionalDescriptions.append(stream2.readLine());
     }
-    // QStackedWidget *stackedWidget = new QStackedWidget;
-
-    // QWidget *firstPageWidget = new QWidget;
-    // stackedWidget->addWidget(firstPageWidget);
-
-    // QVBoxLayout *layout = new QVBoxLayout;
-    // layout->addWidget(stackedWidget);
-    // setLayout(layout);
-
-    //    QWidget *firstPageWidget = new QWidget;
-    //    QWidget *secondPageWidget = new QWidget;
-    //    QWidget *thirdPageWidget = new QWidget;
-
-    //    QStackedWidget *stackedWidget = new QStackedWidget;
-    //    stackedWidget->addWidget(firstPageWidget);
-    //    stackedWidget->addWidget(secondPageWidget);
-    //    stackedWidget->addWidget(thirdPageWidget);
-
-    //    QVBoxLayout *layout = new QVBoxLayout;
-    //    layout->addWidget(stackedWidget);
-    //    setLayout(layout);
-
-    //    QComboBox *pageComboBox = new QComboBox;
-    //    pageComboBox->addItem(tr("Page 1"));
-    //    pageComboBox->addItem(tr("Page 2"));
-    //    pageComboBox->addItem(tr("Page 3"));
-    //    connect(pageComboBox, &QComboBox::activated,
-    //            stackedWidget, &QStackedWidget::setCurrentIndex);
 
     QMenu *menu = menuBar()->addMenu(tr("Menu"));
     readMore = new QAction(tr("&More Information"), this);
@@ -126,11 +81,6 @@ void MainWindow::onBackClicked() {
 
     ui->backButton->setEnabled(previousPage > 0);
 
-    // if (previousPage <= 0)
-    //     ui->backButton->setEnabled(false);
-    // else
-    //     ui->backButton->setEnabled(true);
-
     ui->stackedPages->setCurrentIndex(std::max(0, previousPage));
 
     ui->nextButton->setEnabled(true);
@@ -141,12 +91,6 @@ void MainWindow::onNextClicked() {
 
     // Disables nextButton if the last page has been reached (LESS READABLE, MORE COMPACT)
     ui->nextButton->setEnabled(nextPage < ui->stackedPages->count() - 1);
-
-    // Disables nextButton if the last page has been reached (MORE READABLE, LESS COMPACT)
-    // if (nextPage >= ui->stackedPages->count() - 1)
-    //     ui->nextButton->setEnabled(false);
-    // else
-    //     ui->nextButton->setEnabled(true);
 
     ui->stackedPages->setCurrentIndex(std::min(ui->stackedPages->count() - 1, nextPage));
     ui->backButton->setEnabled(true);
@@ -164,8 +108,16 @@ void MainWindow::onPageChanged() {
                                      " of " + QString::number(ui->stackedPages->count())));
     if (ui->stackedPages->currentIndex() == 1)
         ui->summary->setText("Imagine you are planning a trip around the American Southwest. You have a tight budget, so you want to save as much as possible on your flight costs. Unfortunately, it's a busy time of year for the airline companies, and flights are inconsistent in their prices and availability. Given a graph (pictured on the left) of given flights and costs for a week, how do you find the cheapest way to travel from a certain city to a certain city? <br><br> A solution to this problem is to use something known as Dijkstra's algorithm. Dijkstra's algorithm entails a few basic steps, that can be explained with this airport analogy here: <br><br> 1. Set the cost for the start airport to $0, and the cost for destination airports to infinity. Select the starting airport to look at first. <br><br> 2. Calculate the cost of travelling to each adjacent airport from the airport we are looking at, and if the new cost is cheaper, update the cost. <br><br> 3. Mark this airport as visited, and find the cheapest airport that we have found a path to (and that hasn't been visited) and look at that one next. <br><br> 4. Repeat step 2 if there is a cheapest non-visited airport that was found. <br><br> 5. If all airports have been visited, we are done.<br><br> You can test your knowledge of Dijkstra's by asking questions and playing an animation for clarity,  and you can try a new random scenario to make the paths different.");
-    else
-        ui->summary->setText(descriptions.at(ui->stackedPages->currentIndex()));
+    else if (ui->stackedPages->currentIndex() == 2)
+    {
+        QString labelText =
+            "Imagine you are checking your bags. Bags enter the plane based on when they're checked in. "
+            "The ones that are checked in first are put at the botton of the 'stack,' and it grows. Think of it like a stack of plates. "
+            "The first one that goes on the stack ends up the last, or 'bottom' item. Check three bags using the '+' button and then click animate to see what happens."
+            "Notice how there is no way to get the first bag back without removing the others first. This is the essence of the stack data structure. "
+            "<br><br>";
+        ui->summary->setText(labelText);
+    }
     int currentPage = ui->stackedPages->currentIndex();
     if(currentPage < additionalDescriptions.size()) {
         infoText->setText(additionalDescriptions.at(currentPage));
@@ -212,11 +164,6 @@ void MainWindow::setQuestion(int currentPage) {
     }
     if (currentPage == 2) {
         QString labelText =
-            "Imagine you are checking your bags. Bags enter the plane based on when they're checked in. "
-            "The ones that are checked in first are put at the botton of the 'stack,' and it grows. Think of it like a stack of plates. "
-            "The first one that goes on the stack ends up the last, or 'bottom' item. Check three bags using the '+' button and then click animate to see what happens."
-            "Notice how there is no way to get the first bag back without removing the others first. This is the essence of the stack data structure. "
-            "<br><br>"
             "Which of the following statements best describes the essence of the stack data structure?<br><br>"
             "A) A data structure that follows the Last In, First Out (LIFO) principle, where the last element added is the first one to be removed.<br><br>"
             "B) A data structure that follows the First In, First Out (FIFO) principle, where the first element added is the first one to be removed.<br><br>"
@@ -236,8 +183,6 @@ void MainWindow::checkAnswer() {
     {
         for (QRadioButton* answer : answerButtons)
         {
-
-
             if (answerButtons.indexOf(answer) == 0){
                 answer->setStyleSheet("color: green");
                 userScore++;

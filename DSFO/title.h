@@ -21,9 +21,7 @@ public:
     void changeDirection(b2Vec2 position);
 
 public slots:
-//               // void setPosition(QRect newPosition);
      void handleTrigger();
-//     void setPosition();
      void movePlaneUpDown();
 
 private:

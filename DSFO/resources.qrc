@@ -1,25 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/emptynode.png</file>
-        <file>images/fillednode.png</file>
         <file>images/firstPlane.png</file>
-        <file>images/flashednode.png</file>
         <file>images/image.png</file>
-        <file>images/secondPlane.png</file>
         <file>images/swbackground.png</file>
-        <file>images/aq-px.png</file>
-        <file>images/dv-aq.png</file>
-        <file>images/la-lv.png</file>
-        <file>images/la-sf.png</file>
-        <file>images/lv-sf.png</file>
-        <file>images/px-la.png</file>
-        <file>images/slc-dv.png</file>
-        <file>images/slc-lv.png</file>
-        <file>images/slc-px.png</file>
-        <file>texts/descriptions.txt</file>
         <file>texts/additionalDescriptions.txt</file>
-        <file>images/airplane-front-view-design-illustration-free-.png</file>
-        <file>texts/questions.txt</file>
         <file>images/birdsEyePlane.png</file>
     </qresource>
 </RCC>

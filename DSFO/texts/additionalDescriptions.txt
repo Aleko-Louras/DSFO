@@ -1,12 +1,4 @@
 You found it. There is no more additional information at this point in the game.
 Press the animation button to see a Dijkstra animation. Use the slider to control the animation speed. The combo box controls which city the animation starts from. To be able to answer questions, you need to create a new graph without playing the animation.
 You must click the '+' button at least three times to see them go into the plane.
-Here is more on queues
-
-
-
-
-
-
-
-
+Thanks for playing!
