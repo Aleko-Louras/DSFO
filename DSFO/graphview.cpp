@@ -23,6 +23,7 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
 
     graphScene = new QGraphicsScene(sceneBox, this);
     westCoast = graphScene->addPixmap(QPixmap::fromImage(westCoastMap));
+    priorityQueue = new std::priority_queue<Node*, QVector<Node*>, Comparison>();
 
     //Generate edge costs
     generateCosts();
@@ -32,27 +33,35 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
 
     for (Node *airport : vertices) {
         graphScene->addItem(airport);
-        for (Edge *flightPath : airport->neighbors)
-            edges << flightPath;
         airport->setZValue(1);
     }
 
-    //Set up a ton of UI elements
-    selector = new QComboBox();
-    for (const QString& airport : vertices.keys())
-        selector->addItem(airport);
-    airportSelector = graphScene->addWidget(selector);
-    airportSelector->setPos(0, 250);
-    airportSelector->setZValue(1);
+    //! GROUP: Here I place everything that's going in the center
+    qreal horizontalCenter = sceneBox.center().x();
 
     animate = new QPushButton("Animate");
     animationButton = graphScene->addWidget(animate);
-    animationButton->setPos(100, 375);
+    animationButton->setPos(horizontalCenter - animate->width() / 2, 0);
 
+    //! GROUP: Here I place everything going on the left
+    newGraph = new QPushButton("Randomize graph");
+    newGraphButton = graphScene->addWidget(newGraph);
+    newGraphButton->setPos(0, 0);
+
+    selector = new QComboBox();
+    selector->setMaxVisibleItems(3);
+    selector->setFixedHeight(newGraph->height());
+    for (const QString& airport : vertices.keys())
+        selector->addItem(airport);
+    airportSelector = graphScene->addWidget(selector);
+    airportSelector->setPos((animate->x() + newGraph->rect().right() - selector->width()) / 2, 0);
+    airportSelector->setZValue(1);
+
+    //! GROUP: Here I place everything going on the right
     slider = new QSlider(Qt::Horizontal);
     slider->setStyleSheet("background-color: rgba(0,0,0,0);");
     animationSlider = graphScene->addWidget(slider);
-    animationSlider->setPos(0, 350);
+    animationSlider->setPos((sceneBox.right() + animate->x() + animate->width() - slider->width()) / 2, 0);
     slider->setMinimum(10);
     slider->setMaximum(200);
     slider->setValue(60);
@@ -61,8 +70,9 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     sliderLabel->setStyleSheet("background-color: rgba(0,0,0,0);");
     sliderLabel->setFixedSize(slider->size());
     animationSliderLabel = graphScene->addWidget(sliderLabel);
-    animationSliderLabel->setPos(0, 330);
+    animationSliderLabel->setPos(slider->x(), slider->height());
 
+    //! GROUP: Everything else - nodes, edges, tips - is placed after this point
     label = new QLabel();
     label->setFixedSize(200, 100);
     label->setAlignment(Qt::AlignTop | Qt::AlignLeft);
@@ -70,27 +80,18 @@ GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
     label->setVisible(false);
     label->setStyleSheet("background-color: rgba(0,0,0,0);");
     animationLabel = graphScene->addWidget(label);
-    animationLabel->setPos(300, 0);
+    animationLabel->setPos(0, 335);
 
     tips = new QPushButton("Display tips");
     tipsButton = graphScene->addWidget(tips);
-    tipsButton->setPos(200, 0);
+    tipsButton->setPos(0, label->y() - tips->height());
 
-    newGraph = new QPushButton("Randomize graph");
-    newGraphButton = graphScene->addWidget(newGraph);
-    newGraphButton->setPos(0, 375);
-
-    //Connect a few buttons
     connect(animate, &QPushButton::clicked, this, &GraphView::startAnimation);
     connect(tips, &QPushButton::clicked, this, &GraphView::toggleTips);
     connect(newGraph, &QPushButton::clicked, this, &GraphView::randomizeGraph);
 
     //Calculate the cheapest costs for cities.
     calculateCheapestCosts();
-
-    //Create pq
-    priorityQueue = new std::priority_queue<Node*, QVector<Node*>, Comparison>();
-
     setScene(graphScene);
 }
 
