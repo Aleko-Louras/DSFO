@@ -79,7 +79,7 @@
             <x>0</x>
             <y>0</y>
             <width>198</width>
-            <height>539</height>
+            <height>540</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -93,7 +93,7 @@
              </property>
              <property name="font">
               <font>
-               <pointsize>15</pointsize>
+               <pointsize>12</pointsize>
               </font>
              </property>
              <property name="text">
@@ -109,6 +109,11 @@
            </item>
            <item>
             <widget class="QLabel" name="questionLabel">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>Question</string>
              </property>
@@ -119,6 +124,11 @@
            </item>
            <item>
             <widget class="QRadioButton" name="answerA">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>CheckBox</string>
              </property>
@@ -126,6 +136,11 @@
            </item>
            <item>
             <widget class="QRadioButton" name="answerB">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>CheckBox</string>
              </property>
@@ -133,6 +148,11 @@
            </item>
            <item>
             <widget class="QRadioButton" name="answerC">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>CheckBox</string>
              </property>
@@ -140,6 +160,11 @@
            </item>
            <item>
             <widget class="QRadioButton" name="answerD">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>CheckBox</string>
              </property>
@@ -147,6 +172,11 @@
            </item>
            <item>
             <widget class="QPushButton" name="checkAnswerButton">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>Check Answer</string>
              </property>
@@ -415,7 +445,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
