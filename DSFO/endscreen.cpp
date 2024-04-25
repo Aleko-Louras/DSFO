@@ -5,14 +5,14 @@
 EndScreen::EndScreen(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f, 0.0f))
 {
     // ESSENTIAL SETTINGS!
-    setMinimumSize(1200, 800);//would love to move it to the right to center it but havent found a way to make it work.
+    setMinimumSize(500, 400);//would love to move it to the right to center it but havent found a way to make it work.
     //setAlignment(Qt::AlignCenter);
 
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     QRectF sceneBox(0, 0, width(), height());
-    QImage planeImage = QImage(":/images/firstPlane.png").scaled(90, 90, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QImage planeImage = QImage(":/images/firstPlane.png").scaled(90, 90, Qt::KeepAspectRatio, Qt::SmoothTransformation).convertToFormat(QImage::Format_Mono);
 
     titleScene = new QGraphicsScene(sceneBox, this);
     plane = titleScene->addPixmap(QPixmap::fromImage(planeImage));
@@ -88,8 +88,4 @@ void EndScreen::resizeEvent(QResizeEvent *event)
     int x = (parent->width() - width()) / 2;
     int y = (parent->height() - height()) / 2;
     move(x,y);
-
-    // Methods like this could be useful if we wanted to move
-    // things around after resizing
-    // divider->moveBy(100, 0);
 }
