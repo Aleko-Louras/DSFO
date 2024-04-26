@@ -111,7 +111,7 @@ void MainWindow::onPageChanged()
         QString labelText =
             "Imagine you are checking your bags. Bags enter the plane based on when they're checked in. "
             "The ones that are checked in first are put at the botton of the 'stack,' and it grows. Think of it like a stack of plates. "
-            "The first one that goes on the stack ends up the last, or 'bottom' item. Check three bags using the '+' button and then click animate to see what happens."
+            "The first one that goes on the stack ends up the last, or 'bottom' item. Check three bags using the '+' button and then click animate to see what happens. "
             "Notice how there is no way to get the first bag back without removing the others first. This is the essence of the stack data structure. "
             "<br><br>";
         ui->summary->setText(labelText);
@@ -169,7 +169,7 @@ void MainWindow::setQuestion(int currentPage)
             "D) A data structure that organizes elements in a hierarchical manner, resembling the structure of a tree.";
         ui->questionLabel->setText(labelText);
 
-        ui->answerA->setText("A A data structure that follows the Last In, First Out (LIFO) principle, where the last element added is the first one to be removed.<br><br>");
+        ui->answerA->setText("A");
         ui->answerB->setText("B");
         ui->answerC->setText("C");
         ui->answerD->setText("D");

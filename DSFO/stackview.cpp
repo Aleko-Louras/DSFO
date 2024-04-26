@@ -78,8 +78,6 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
     animationButton->setPos(horizontalCenter - animationButton->minimumWidth() / 2, sceneBox.center().y()  - animationButton->minimumHeight() / 2);
 
     QImage planeImg(":/images/birdsEyePlane.png");
-    qDebug() << planeImg.width();
-    qDebug() << planeImg.height();
     planeImg = planeImg.scaled(500, 400, Qt::KeepAspectRatio, Qt::SmoothTransformation).copy(QRect(120, 100, 300, 200));
 
     QGraphicsPixmapItem *plane = stackScene->addPixmap(QPixmap::fromImage(planeImg));
