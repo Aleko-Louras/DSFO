@@ -50,46 +50,37 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
     receiveZoneRect = QRectF(horizontalCenter + addZoneX, rightConveyorY + (conveyorWidth - luggageZoneWidth) / 2,
                              luggageZoneWidth, luggageZoneHeight);
 
-
-
     // Below is where the scene is actually created and items added to it.
     stackScene = new QGraphicsScene(sceneBox, this);
-    // plane = stackScene->addRect(horizontalCenter, sceneBox.top(), planeWidth, planeHeight);
-
-
-
-    divider = stackScene->addLine(dividingLine, QPen(Qt::black, 3));
-
-    receivingConveyor = stackScene->addRect(leftConveyorX, leftConveyorY, conveyorWidth, conveyorHeight, QPen(Qt::black, 3), Qt::gray);
-    sendingConveyor = stackScene->addRect(rightConveyorX, rightConveyorY, conveyorWidth, conveyorHeight + 100, QPen(Qt::black, 3), Qt::gray);
-    receivingTunnel = stackScene->addRect(leftTunnelX, leftTunnelY, tunnelWidth, tunnelHeight, QPen(Qt::black, 3), Qt::gray);
-    sendingTunnel = stackScene->addRect(rightTunnelX, rightTunnelY, tunnelWidth, tunnelHeight, QPen(Qt::black, 3), Qt::gray);
-
+    stackScene->addLine(dividingLine, QPen(Qt::black, 3));
+    stackScene->addRect(leftConveyorX, leftConveyorY, conveyorWidth, conveyorHeight, QPen(Qt::black, 3), Qt::gray);
+    stackScene->addRect(rightConveyorX, rightConveyorY, conveyorWidth, conveyorHeight + 100, QPen(Qt::black, 3), Qt::gray);
+    // Conveyor tunnels are placed above the conveyor and any luggage added later on.
+    QGraphicsRectItem *receivingTunnel = stackScene->addRect(leftTunnelX, leftTunnelY, tunnelWidth, tunnelHeight, QPen(Qt::black, 3), Qt::gray);
+    QGraphicsRectItem *sendingTunnel = stackScene->addRect(rightTunnelX, rightTunnelY, tunnelWidth, tunnelHeight, QPen(Qt::black, 3), Qt::gray);
     receivingTunnel->setZValue(1);
     sendingTunnel->setZValue(1);
 
+    QFont addZoneFont("Helvetica [Cronyx]", 16);
+    addZoneFont.setBold(true);
+
+    // The "addZone" allows the user to place luggage on the conveyor.
     QPushButton *addLuggage = new QPushButton("+");
+    connect(addLuggage, &QPushButton::clicked,this, &StackView::addLuggage);
     addLuggage->setFixedSize(luggageZoneWidth, luggageZoneHeight);
     addLuggage->setStyleSheet("QPushButton { background-color: white; color: black;}");
     addLuggage->move(addZoneX, addZoneY);
-    QFont font("Helvetica [Cronyx]", 16);
-    font.setBold(true);
-    addLuggage->setFont(font);
-    connect(addLuggage, &QPushButton::clicked,
-            this, &StackView::addLuggage);
+    addLuggage->setFont(addZoneFont);
     addZone = stackScene->addWidget(addLuggage);
 
+    // An animation button allows the user to start the receiving conveyor.
     QPushButton *animationBtn = new QPushButton("Animate");
-    connect(animationBtn, &QPushButton::clicked,
-            this, &StackView::animate);
-    animationBtn->setStyleSheet("QPushButton { background-color: white; color: black;}"
-                                "QPushButton::default { background-color: red; }");
+    connect(animationBtn, &QPushButton::clicked, this, &StackView::animate);
+    animationBtn->setStyleSheet("QPushButton { background-color: white; color: black; }");
     animationBtn->setEnabled(false);
-
     animationButton = stackScene->addWidget(animationBtn);
     animationButton->setPos(horizontalCenter - animationButton->minimumWidth() / 2, sceneBox.center().y()  - animationButton->minimumHeight() / 2);
 
-    //Add plane
     QImage planeImg(":/images/birdsEyePlane.png");
     qDebug() << planeImg.width();
     qDebug() << planeImg.height();
@@ -104,11 +95,6 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
 
 StackView::~StackView() {
     delete stackScene;
-    delete receivingTunnel;
-    delete receivingConveyor;
-    delete sendingTunnel;
-    delete sendingConveyor;
-    delete divider;
     delete addZone;
 }
 
@@ -194,15 +180,16 @@ void StackView::tryNextAnimation() {
 
     GraphicsAnimator *animator = luggage.takeLast();
     QPropertyAnimation *animation = animator->animation();
+    connect(animation, &QPropertyAnimation::finished, animator, &GraphicsAnimator::deleteLater);
 
-    qreal targetHeight = receiveZoneRect.height() * 2;
-    qreal travelDistance = sceneRect().bottom() - animation->endValue().toPointF().y();
-    qreal delay = animation->duration() * (targetHeight / travelDistance);
+    // Sets a delay so that one luggage can't overlap another
+    qreal targetHeight = receiveZoneRect.height();
+    qreal travelDistance = animation->startValue().toPointF().y() - animation->endValue().toPointF().y();
+    qreal delay = animation->duration() * (targetHeight / travelDistance) * 1.5;
 
     animation->start();
     QTimer::singleShot(delay, this, &StackView::tryNextAnimation);
 
-    connect(animation, &QPropertyAnimation::finished,
-            animator, &GraphicsAnimator::deleteLater);
+
 
 }

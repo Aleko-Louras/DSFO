@@ -1,5 +1,5 @@
-#ifndef ENDSCREEN_H
-#define ENDSCREEN_H
+#ifndef ENDVIEW_H
+#define ENDVIEW_H
 
 #include <QGraphicsView>
 #include <QWidget>
@@ -7,13 +7,14 @@
 #include <QTimer>
 #include <QPainter>
 #include <QTransform>
+#include <QGraphicsView>
 
-class EndScreen : public QGraphicsView
+class EndView : public QGraphicsView
 {
     Q_OBJECT
 public:
-    EndScreen(QWidget *parent = nullptr);
-    ~EndScreen();
+    EndView(QWidget *parent = nullptr);
+    ~EndView();
     void triggerAnimation(int userScore);
 \
 private slots:

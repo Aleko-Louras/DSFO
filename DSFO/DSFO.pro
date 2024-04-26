@@ -55,13 +55,12 @@ SOURCES += \
     Box2D/Dynamics/b2World.cpp \
     Box2D/Dynamics/b2WorldCallbacks.cpp \
     Box2D/Rope/b2Rope.cpp \
-    endscreen.cpp \
+    endview.cpp \
     graphicsanimator.cpp \
     graphview.cpp \
     main.cpp \
     mainwindow.cpp \
     stackview.cpp \
-    title.cpp \
     titleview.cpp
 
 HEADERS += \
@@ -112,18 +111,15 @@ HEADERS += \
     Box2D/Dynamics/b2World.h \
     Box2D/Dynamics/b2WorldCallbacks.h \
     Box2D/Rope/b2Rope.h \
-    endscreen.h \
+    endview.h \
     graphicsanimator.h \
     graphview.h \
     mainwindow.h \
     stackview.h \
-    title.h \
     titleview.h
 
 FORMS += \
-    endscreen.ui \
-    mainwindow.ui \
-    title.ui
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

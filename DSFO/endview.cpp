@@ -1,11 +1,11 @@
-#include "endscreen.h"
+#include "endview.h"
 #include <QResizeEvent>
 #include <QGraphicsPixmapItem>
 
-EndScreen::EndScreen(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f, 0.0f))
+EndView::EndView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f, 0.0f))
 {
     // ESSENTIAL SETTINGS!
-    setMinimumSize(500, 400);//would love to move it to the right to center it but havent found a way to make it work.
+    setMinimumSize(500, 400);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -18,31 +18,29 @@ EndScreen::EndScreen(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
     QString text = "We are ready for take off!\n\nYour score was: " + QString::number(userScore);
     title = titleScene->addText(text, QFont("Arial Rounded MT Bold", 20));
     title->setPos(sceneBox.center().x() - title->boundingRect().width() / 2, sceneBox.center().y() - title->boundingRect().height() / 2);
-    titleScene->setBackgroundBrush(Qt::darkCyan);
 
     setScene(titleScene);
 }
 
-void EndScreen::movePlane(){
+void EndView::movePlane(){
     world.Step(timeStep, velocityIterations, positionIterations);
     b2Vec2 position = body->GetPosition();
     plane->setPos(position.x, position.y);
-
+    titleScene->update();
 }
 
-EndScreen::~EndScreen()
+EndView::~EndView()
 {
     delete titleScene;
     delete plane;
     delete title;
     delete timer;
 }
-void EndScreen::triggerAnimation(int userScore){
 
-
-
+void EndView::triggerAnimation(int userScore)
+{
     timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &EndScreen::movePlane);
+    connect(timer, &QTimer::timeout, this, &EndView::movePlane);
     timer->start(timeStep * 1000);
 
     b2BodyDef groundBodyDef;
@@ -67,7 +65,7 @@ void EndScreen::triggerAnimation(int userScore){
     title->setPlainText("We are ready for take off!\n\nYour score was: " + QString::number(userScore));
 }
 
-void EndScreen::resizeEvent(QResizeEvent *event)
+void EndView::resizeEvent(QResizeEvent *event)
 {
     QWidget *parent = parentWidget();
     if (!parent) return;

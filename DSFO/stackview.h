@@ -24,12 +24,6 @@ class StackView : public QGraphicsView
         qreal aspectRatio = 1.25;
 
         QGraphicsScene *stackScene;
-        // Items drawn in the QGraphicsScene
-        QGraphicsRectItem *receivingTunnel;
-        QGraphicsRectItem *receivingConveyor;
-        QGraphicsRectItem *sendingTunnel;
-        QGraphicsRectItem *sendingConveyor;
-        QGraphicsLineItem *divider;
         QGraphicsItem *plane;
         // Luggage-related items
         // QGraphicsRectItem *luggage;
@@ -37,13 +31,10 @@ class StackView : public QGraphicsView
         // GraphicsAnimator *animator;
         QGraphicsProxyWidget *addZone;
         QGraphicsProxyWidget *animationButton;
-        QGraphicsProxyWidget *testButton;
 
         QList<GraphicsAnimator*> luggage;
 
         QRectF receiveZoneRect;
-
-        QLabel label;
 
         /// Resizes 'this' StackView alongside its parent widget.
         void resizeEvent(QResizeEvent *event) override;
