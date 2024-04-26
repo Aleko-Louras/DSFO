@@ -1,3 +1,9 @@
+/**
+header file for the main window, i.e. the graphical interface and where everything is displayed/interacted with
+University of Utah CS 3505 final project, group LAQE
+Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
+**/
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -37,9 +43,7 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
-    QVector<QString> descriptions;
     QVector<QString> additionalDescriptions;
-    QVector<QString> questionDescriptions;
     QAction* readMore;
     QDialog* info;
     QLabel* infoText;

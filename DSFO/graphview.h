@@ -1,3 +1,9 @@
+/**
+header file for the graphview, i.e. the Dijkstra view and animation.
+University of Utah CS 3505 final project, group LAQE
+Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
+**/
+
 #ifndef GRAPHVIEW_H
 #define GRAPHVIEW_H
 

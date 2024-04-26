@@ -1,5 +1,0 @@
-What is the cheapest flight path between Salt Lake City and San Fransisco
-SLC->LAS->SFO
-SLC->LAX->SFO
-SLC->LAS->LAX->SFO
-No path exists

@@ -229,7 +229,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>TextLabel</string>
+          <string>Page 1 of 4</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
