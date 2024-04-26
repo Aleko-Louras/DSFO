@@ -7,14 +7,8 @@ Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 #ifndef TITLEVIEW_H
 #define TITLEVIEW_H
 
-#include <QObject>
-#include <QResizeEvent>
 #include <QGraphicsView>
-#include <QWidget>
 #include <Box2D/Box2D.h>
-#include <QTimer>
-#include <QPainter>
-#include <QTransform>
 #include <QLabel>
 
 class TitleView : public QGraphicsView
@@ -43,15 +37,9 @@ private:
 
     QGraphicsScene *titleScene;
     QGraphicsPixmapItem *plane;
-    QGraphicsTextItem *title;
 
     b2World world;
     b2Body* body;
-    QTimer* timer;
-    std::vector<b2Vec2> angles;
-    std::vector<QPixmap> images;
-    int angleIndex;
-    QLabel *label;
 };
 
 #endif // TITLEVIEW_H

@@ -7,16 +7,13 @@ Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 #ifndef GRAPHVIEW_H
 #define GRAPHVIEW_H
 
-#include <QWidget>
-#include <QToolButton>
-#include <QDebug>
-#include <QMap>
-#include <QLabel>
+#include <QList>
+#include <QGraphicsItem>
 #include <QGraphicsView>
-#include <QGraphicsEllipseItem>
-#include <QComboBox>
 #include <queue>
 #include <QPushButton>
+#include <QLabel>
+#include <QComboBox>
 
 class Edge;
 class Node : public QGraphicsEllipseItem {

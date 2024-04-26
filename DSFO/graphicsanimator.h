@@ -1,5 +1,10 @@
 /**
-header file for the graphics animator, which facilitates the animation of QGraphicsItems
+A proxy object that's useful for animating QGraphicsItems that don't
+extend QObject and therefore don't have properties to animate.
+
+Credit to Marek R from StackOverflow for this idea
+Post Link: https://stackoverflow.com/questions/30317184/how-to-animate-the-outline-of-a-qgraphicsitem-in-real-time
+
 University of Utah CS 3505 final project, group LAQE
 Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 **/
@@ -7,22 +12,9 @@ Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 #ifndef GRAPHICSANIMATOR_H
 #define GRAPHICSANIMATOR_H
 
-
-// Credit to Marek R from StackOverflow for this idea
-// Post Link: https://stackoverflow.com/questions/30317184/how-to-animate-the-outline-of-a-qgraphicsitem-in-real-time
-
-#include <QObject>
-#include <QWidget>
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 #include <QPropertyAnimation>
 
-/**
- * A proxy object that's useful for animating QGraphicsItems that don't
- * extend QObject and therefore don't have properties to animate.
- *
- * Credit to Marek R from StackOverflow for this idea
- * Post Link: https://stackoverflow.com/questions/30317184/how-to-animate-the-outline-of-a-qgraphicsitem-in-real-time
- **/
 class GraphicsAnimator : public QGraphicsObject {
     Q_OBJECT
     // If you need to define other properties, you'll need

@@ -7,6 +7,7 @@ Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 #include "titleview.h"
 #include <QResizeEvent>
 #include <QGraphicsPixmapItem>
+#include <QTimer>
 
 TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f, 0.0f))
 {
@@ -21,7 +22,7 @@ TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
     titleScene = new QGraphicsScene(sceneBox, this);
     plane = titleScene->addPixmap(QPixmap::fromImage(planeImage));
 
-    title = titleScene->addText("Welcome to DSFO!", QFont("Arial Rounded MT Bold", 30));
+    QGraphicsTextItem *title = titleScene->addText("Welcome to DSFO!", QFont("Arial Rounded MT Bold", 30));
     title->setPos(sceneBox.center().x() - title->boundingRect().width() / 2, sceneBox.center().y() - title->boundingRect().height() / 2);
 
     //Add a label to give information about the game
@@ -32,7 +33,7 @@ TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
     //Set the label at the bottom
     label->setGeometry(0, 300, 500, 100);
 
-    timer = new QTimer(this);
+    QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &TitleView::movePlane);
     timer->start(timeStep * 1000);
 
@@ -60,7 +61,8 @@ TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
     setScene(titleScene);
 }
 
-void TitleView::movePlane(){
+void TitleView::movePlane()
+{
     world.Step(timeStep, velocityIterations, positionIterations);
     b2Vec2 position = body->GetPosition();
 
@@ -92,8 +94,6 @@ TitleView::~TitleView()
 {
     delete titleScene;
     delete plane;
-    delete title;
-    delete timer;
 }
 
 void TitleView::resizeEvent(QResizeEvent *event)
@@ -115,8 +115,4 @@ void TitleView::resizeEvent(QResizeEvent *event)
     int x = (parent->width() - width()) / 2;
     int y = (parent->height() - height()) / 2;
     move(x,y);
-
-    // Methods like this could be useful if we wanted to move
-    // things around after resizing
-    // divider->moveBy(100, 0);
 }

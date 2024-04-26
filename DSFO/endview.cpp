@@ -1,6 +1,7 @@
 #include "endview.h"
-#include <QResizeEvent>
 #include <QGraphicsPixmapItem>
+#include <QTimer>
+#include <QResizeEvent>
 
 EndView::EndView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f, 0.0f))
 {

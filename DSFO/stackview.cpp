@@ -1,24 +1,15 @@
 /**
-cpp file for the stack view. This is where the stack interactive clicker and animation is displayed, the implementation is here.
+StackView teaches a user the stack data structure by creating a scenario
+in which luggage is loaded onto a plane with a FILO protocol.
+
 University of Utah CS 3505 final project, group LAQE
 Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 **/
 
 #include "stackview.h"
-#include <QObject>
-#include <QWidget>
-#include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QDebug>
-#include <QLayout>
-#include <QResizeEvent>
-#include <QSequentialAnimationGroup>
-#include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
 #include <QPushButton>
 #include <QGraphicsProxyWidget>
 #include <QTimer>
-#include <QGraphicsLinearLayout>
 
 StackView::StackView(QWidget *parent) : QGraphicsView(parent)
 {
@@ -32,8 +23,6 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
     qreal conveyorHeight = 160;
     qreal luggageZoneWidth = 40;
     qreal luggageZoneHeight = 30;
-    qreal planeDisplayWidth = 250 * 5;
-    qreal planeDisplayHeight = 150 * 5;
 
     // All of the values below are defined using positions relative to the
     // sceneBox, which helps with reusability and, possibly, readability.
@@ -56,11 +45,12 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
     receiveZoneRect = QRectF(horizontalCenter + addZoneX, rightConveyorY + (conveyorWidth - luggageZoneWidth) / 2,
                              luggageZoneWidth, luggageZoneHeight);
 
-    // Below is where the scene is actually created and items added to it.
+    //! Below is where the scene is actually created and items added to it.
     stackScene = new QGraphicsScene(sceneBox, this);
     stackScene->addLine(dividingLine, QPen(Qt::black, 3));
     stackScene->addRect(leftConveyorX, leftConveyorY, conveyorWidth, conveyorHeight, QPen(Qt::black, 3), Qt::gray);
     stackScene->addRect(rightConveyorX, rightConveyorY, conveyorWidth, conveyorHeight + 100, QPen(Qt::black, 3), Qt::gray);
+
     // Conveyor tunnels are placed above the conveyor and any luggage added later on.
     QGraphicsRectItem *receivingTunnel = stackScene->addRect(leftTunnelX, leftTunnelY, tunnelWidth, tunnelHeight, QPen(Qt::black, 3), Qt::gray);
     QGraphicsRectItem *sendingTunnel = stackScene->addRect(rightTunnelX, rightTunnelY, tunnelWidth, tunnelHeight, QPen(Qt::black, 3), Qt::gray);
@@ -92,14 +82,15 @@ StackView::StackView(QWidget *parent) : QGraphicsView(parent)
     qDebug() << planeImg.height();
     planeImg = planeImg.scaled(500, 400, Qt::KeepAspectRatio, Qt::SmoothTransformation).copy(QRect(120, 100, 300, 200));
 
-    plane = stackScene->addPixmap(QPixmap::fromImage(planeImg));
+    QGraphicsPixmapItem *plane = stackScene->addPixmap(QPixmap::fromImage(planeImg));
     plane->setPos(horizontalCenter, sceneBox.top());
     plane->setZValue(1);
 
     setScene(stackScene);
 }
 
-StackView::~StackView() {
+StackView::~StackView()
+{
     delete stackScene;
     delete addZone;
 }
@@ -125,7 +116,8 @@ void StackView::resizeEvent(QResizeEvent *event)
     move(x,y);
 }
 
-void StackView::addLuggage() {
+void StackView::addLuggage()
+{
     if (!addZone->isVisible())
         return;
 
@@ -165,20 +157,24 @@ void StackView::addLuggage() {
     QTimer::singleShot(delay, this, [this] {addZone->setVisible(true);});
 }
 
-void StackView::animate() {
+void StackView::animate()
+{
     animationButton->setEnabled(false);
     addZone->setEnabled(false);
 
-    if (luggage.last()->animation()->state() == QAbstractAnimation::Running) {
-        QTimer::singleShot(luggage.last()->animation()->duration() - luggage.last()->animation()->currentTime() + 100, this, &StackView::tryNextAnimation);
+    QPropertyAnimation *animation = luggage.last()->animation();
+    if (animation->state() == QAbstractAnimation::Running) {
+        // Prevents the animation from starting until all luggage is off
+        // the receiving conveyor.
+        QTimer::singleShot(animation->duration() - animation->currentTime() + 100, this, &StackView::tryNextAnimation);
         return;
     }
 
     tryNextAnimation();
 }
 
-void StackView::tryNextAnimation() {
-
+void StackView::tryNextAnimation()
+{
     if (luggage.empty()) {
         addZone->setEnabled(true);
         return;
@@ -195,7 +191,4 @@ void StackView::tryNextAnimation() {
 
     animation->start();
     QTimer::singleShot(delay, this, &StackView::tryNextAnimation);
-
-
-
 }

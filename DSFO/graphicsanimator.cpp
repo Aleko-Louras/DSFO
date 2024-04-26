@@ -1,5 +1,6 @@
 /**
-cpp file for the graphics animator, which facilitates the animation of QGraphicsItems
+Implementation of the GraphicsAnimator class, which facilitates the animation of QGraphicsItems
+
 University of Utah CS 3505 final project, group LAQE
 Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 **/

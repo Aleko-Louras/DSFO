@@ -6,12 +6,8 @@ Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QStackedWidget>
-#include <QComboBox>
-#include <QDebug>
 #include <QFile>
-#include <QTextStream>
-#include <QTimer>
+#include <QDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,7 +15,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     ui->setupUi(this);
-    qDebug() << ui->stackedPages->rect();
     ui->stackedPages->setCurrentIndex(0);
 
     connect(ui->nextButton, &QPushButton::clicked,
@@ -68,12 +63,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(closeButton, &QPushButton::clicked, info, &QDialog::close);
     ui->summaryLayout->setVisible(false);
 
-    ui->summaryLayout->setVisible(false);
-
     onPageChanged();
 }
 
-void MainWindow::showMoreInfo() {
+void MainWindow::showMoreInfo()
+{
     info->exec();
 }
 
@@ -106,7 +100,8 @@ void MainWindow::onNextClicked() {
 
 }
 
-void MainWindow::onPageChanged() {
+void MainWindow::onPageChanged()
+{
     ui->pageTracker->setText(QString("Page " + QString::number(ui->stackedPages->currentIndex() + 1) +
                                      " of " + QString::number(ui->stackedPages->count())));
     if (ui->stackedPages->currentIndex() == 1)
@@ -133,8 +128,8 @@ void MainWindow::onPageChanged() {
     ui->summaryLayout->setVisible(currentPage != 0);
 }
 
-void MainWindow::setQuestion(int currentPage) {
-
+void MainWindow::setQuestion(int currentPage)
+{
     //Lambda/nested function to create random offsets for incorrect answers
     auto randomOffsetize = [](int input) {
         int randomOffset;
@@ -174,7 +169,7 @@ void MainWindow::setQuestion(int currentPage) {
             "D) A data structure that organizes elements in a hierarchical manner, resembling the structure of a tree.";
         ui->questionLabel->setText(labelText);
 
-        ui->answerA->setText("A");
+        ui->answerA->setText("A A data structure that follows the Last In, First Out (LIFO) principle, where the last element added is the first one to be removed.<br><br>");
         ui->answerB->setText("B");
         ui->answerC->setText("C");
         ui->answerD->setText("D");
@@ -234,8 +229,7 @@ void MainWindow::generateRandomPath () {
 
     randomCost = 0;
     //Loop through and make sure that the cost question we are asking is not trivial; right now the questions are filtered so we are only asking questions with maximal distance
-    do
-    {
+    do {
         int randomSourceInt = rand() % 7;
         int randomDestinationInt = rand() % 7;
         randomSource = cheapestCosts.keys().at(randomSourceInt);

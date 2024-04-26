@@ -6,20 +6,13 @@ Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <QMainWindow>
-#include <QGraphicsScene>
-#include <QPushButton>
-#include <QDialog>
 #include <QLabel>
-#include <QRadioButton>
 #include <QTimer>
-#include <QAction>
+#include <QRadioButton>
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
+namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -29,18 +22,13 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
 private slots:
     void onNextClicked();
     void onBackClicked();
     void onPageChanged();
-
 public slots:
     void showMoreInfo();
     void checkAnswer();
-
-
-
 private:
     Ui::MainWindow *ui;
     QVector<QString> additionalDescriptions;

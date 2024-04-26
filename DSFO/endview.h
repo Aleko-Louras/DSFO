@@ -2,12 +2,7 @@
 #define ENDVIEW_H
 
 #include <QGraphicsView>
-#include <QWidget>
 #include <Box2D/Box2D.h>
-#include <QTimer>
-#include <QPainter>
-#include <QTransform>
-#include <QGraphicsView>
 
 class EndView : public QGraphicsView
 {

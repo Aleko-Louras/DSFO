@@ -1,5 +1,7 @@
 /**
-header file for the stack view. This is where the stack interactive clicker and animation is displayed, the implementation is here.
+StackView teaches a user the stack data structure by creating a scenario
+in which luggage is loaded onto a plane with a FILO protocol.
+
 University of Utah CS 3505 final project, group LAQE
 Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 **/
@@ -7,17 +9,9 @@ Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 #ifndef STACKVIEW_H
 #define STACKVIEW_H
 
-#include <QObject>
-#include <QWidget>
-#include <QGraphicsRectItem>
 #include <QGraphicsView>
-#include <QGraphicsWidget>
-#include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
-#include <QPixMap>
-#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
 #include "graphicsanimator.h"
-#include <QLabel>
 
 class StackView : public QGraphicsView
 {
@@ -30,11 +24,6 @@ class StackView : public QGraphicsView
         qreal aspectRatio = 1.25;
 
         QGraphicsScene *stackScene;
-        QGraphicsItem *plane;
-        // Luggage-related items
-        // QGraphicsRectItem *luggage;
-        // QParallelAnimationGroup *luggageAnimation = new QParallelAnimationGroup(this);
-        // GraphicsAnimator *animator;
         QGraphicsProxyWidget *addZone;
         QGraphicsProxyWidget *animationButton;
 
@@ -46,8 +35,15 @@ class StackView : public QGraphicsView
         void resizeEvent(QResizeEvent *event) override;
 
     private slots:
+        /// \brief tryNextAnimation will recursively animate the loading of luggage
+        /// onto the plane until the luggage list is empty.
         void tryNextAnimation();
+        /// \brief addLuggage will send a bag down the receiving conveyor that can
+        /// later be loaded onto the plane, temporarily disabling the addZone before
+        /// it does so.
         void addLuggage();
+        /// \brief animate will begin animation on the receiving conveyor by calling
+        /// tryNextAnimation.
         void animate();
 };
 
