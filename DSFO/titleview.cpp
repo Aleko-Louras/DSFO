@@ -11,7 +11,8 @@ Writen by Lucas Pearce, Ethan Block, Will Black, Quinn Pritchett, Aleko Louras
 
 TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f, 0.0f))
 {
-    // ESSENTIAL SETTINGS!
+    // QGraphicsScene structure settings including layout, initializing the size and location of the scene,
+    // and creating the pixmap image of a plane png along with the space for the title and the text itself.
     setMinimumSize(500, 400);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -30,39 +31,42 @@ TitleView::TitleView(QWidget *parent) : QGraphicsView(parent), world(b2Vec2(0.0f
     label->setWordWrap(true);
     label->setAlignment(Qt::AlignCenter);
     titleScene->addWidget(label);
-    //Set the label at the bottom
     label->setGeometry(0, 300, 500, 100);
 
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &TitleView::movePlane);
     timer->start(timeStep * 1000);
-
+    //initialize the ground in the box2d world
     b2BodyDef groundBodyDef;
     groundBodyDef.position.Set(0.0f, -10.0f);
     b2Body* groundBody = world.CreateBody(&groundBodyDef);
     b2PolygonShape groundBox;
     groundBox.SetAsBox(50.0f, 3.0f);
     groundBody->CreateFixture(&groundBox, -5.0f);
+    //settings for the planes box2d body
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.position.Set(0.0f, -1.5f);
     body = world.CreateBody(&bodyDef);
     b2PolygonShape dynamicBox;
     dynamicBox.SetAsBox(1.0f, 1.0f);
+    //essential fixture settings for the plane body
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.3f;
     body->CreateFixture(&fixtureDef);
 
-    // apply right impulse, but only if max velocity is not reached yet
+    //apply a left force on the planes body
     body->ApplyForce( b2Vec2(-1000.0f, 0), body->GetWorldCenter(), true);
 
+    //set the scene
     setScene(titleScene);
 }
 
-void TitleView::movePlane()
-{
+void TitleView::movePlane(){
+    //from the world, we get the location of the plane body in the engine world,
+    // and set the position of the plane png to be body position.
     world.Step(timeStep, velocityIterations, positionIterations);
     b2Vec2 position = body->GetPosition();
 
@@ -73,8 +77,9 @@ void TitleView::movePlane()
     int widgetWidth = this->width();
     int planeWidth = plane->boundingRect().width();
 
-    const int wrapWidth = widgetWidth + planeWidth; // Total width for wrapping
-
+    //calculate the measurements, locations, and size of the plane body for wrapping
+    //on the screen.
+    const int wrapWidth = widgetWidth + planeWidth;
     float wrappedXPos = std::fmod(xPosPixels, wrapWidth);
 
     if (wrappedXPos < 0)
